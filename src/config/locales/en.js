@@ -2,7 +2,9 @@ import { defineMessages } from 'react-intl'
 
 const messages = defineMessages({
   current_locale: 'en-US',
-  app_name: 'React Most Wanted',
+  blue: 'blue',
+  workspace: 'Workspace',
+  app_name: 'Greenfield',
   dashboard: 'Dashboard',
   about: 'About',
   page_not_found_demo: 'Page not found demo',

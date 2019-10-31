@@ -27,7 +27,7 @@ const config = {
     appId: '1:211084657743:web:e80abeba6a9f180bfe163a',
     measurementId: 'G-DYE7DFCBW6'
   },
-  firebase_providers: ['google.com', 'password', 'phone', 'anonymous'],
+  firebase_providers: ['google.com', 'password', 'github', 'phone', 'anonymous'],
   initial_state: {
     theme: 'dark',
     locale: 'en'

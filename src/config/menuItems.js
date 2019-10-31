@@ -1,14 +1,9 @@
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
-import Brightness2 from '@material-ui/icons/Brightness2'
-import Brightness7 from '@material-ui/icons/Brightness7'
-import Business from '@material-ui/icons/Business'
 import ChatIcon from '@material-ui/icons/Chat'
-import DaschboardIcon from '@material-ui/icons/Dashboard'
+import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
 import GroupIcon from '@material-ui/icons/Group'
-import InfoOutlined from '@material-ui/icons/InfoOutlined'
 import LanguageIcon from '@material-ui/icons/Language'
-import ListIcon from '@material-ui/icons/List'
-import LockIcon from '@material-ui/icons/Lock'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import PersonIcon from '@material-ui/icons/Person'
 import React from 'react'
 import Security from '@material-ui/icons/Security'
@@ -22,7 +17,6 @@ const getMenuItems = props => {
   const {
     locale,
     updateTheme,
-    switchNightMode,
     updateLocale,
     intl,
     themeSource,
@@ -72,12 +66,19 @@ const getMenuItems = props => {
         value: '/signin',
         onClick: handleSignOut,
         primaryText: intl.formatMessage({ id: 'sign_out' }),
-        leftIcon: <LockIcon />
+        leftIcon: <ExitToAppIcon />
       }
     ]
   }
 
   return [
+    {
+      visible: isAuthorised,
+      primaryText: intl.formatMessage({ id: 'workspace' }),
+      primaryTogglesNestedList: false,
+      leftIcon: <SettingsSystemDaydreamIcon />,
+      value: '/',
+    },
     {
       visible: isAuthorised,
       primaryText: intl.formatMessage({ id: 'chats' }),
@@ -123,6 +124,7 @@ const getMenuItems = props => {
       visible: isAuthorised
     },
     {
+      visible: isAuthorised,
       primaryText: intl.formatMessage({ id: 'settings' }),
       primaryTogglesNestedList: true,
       leftIcon: <SettingsIcon />,
@@ -142,13 +144,6 @@ const getMenuItems = props => {
           nestedItems: localeItems
         }
       ]
-    },
-    {
-      onClick: () => {
-        switchNightMode(!themeSource.isNightModeOn)
-      },
-      primaryText: intl.formatMessage({ id: themeSource.isNightModeOn ? 'day_mode' : 'night_mode' }),
-      leftIcon: themeSource.isNightModeOn ? <Brightness7 /> : <Brightness2 />
     },
     {
       visible: isAppInstallable && !isAppInstalled,

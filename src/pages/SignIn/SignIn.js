@@ -10,7 +10,12 @@ import { withStyles } from '@material-ui/core'
 import Logo from '../../components/Logo'
 
 const styles = theme => ({
+  wrap: {
+    display: 'flex',
+    height: '100%'
+  },
   text: {
+    margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -25,21 +30,19 @@ export class SignIn extends Component {
     const uiConfig = {
       signInSuccessUrl: '/',
       signInFlow: 'popup',
-      callbacks: {
-        signInSuccessWithAuthResult: () => {
-          return false
-        }
-      },
+      callbacks: { signInSuccessWithAuthResult: () => false },
       signInOptions: appConfig.firebase_providers,
       credentialHelper: firebaseui.auth.CredentialHelper.NONE
     }
 
     return (
       <Activity title={intl.formatMessage({ id: 'sign_in' })}>
+        <div className={classes.wrap}>
             <div className={classes.text}>
               <Logo />
                <AuthUI firebaseApp={firebaseApp} uiConfig={uiConfig} />
             </div>
+        </div>
       </Activity>
     )
   }

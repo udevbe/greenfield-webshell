@@ -113,6 +113,7 @@ const Activity = ({
       </Helmet>
 
       <AppBar
+        color='default'
         position={width !== 'sm' && width !== 'xs' ? 'absolute' : undefined}
         className={
           width !== 'sm' && width !== 'xs'

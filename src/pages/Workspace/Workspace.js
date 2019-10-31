@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import Scrollbar from '../../components/Scrollbar'
 
-class About extends Component {
+class Workspace extends Component {
   // Sorry for using setState here but I have to remove 'marked' from the dependencies
   // because of a vulnerability issue
   constructor (props) {
@@ -18,17 +18,13 @@ class About extends Component {
 
     return (
       <Activity
-        title={intl.formatMessage({ id: 'about' })}>
-
-        <Scrollbar>
-          <div style={{ backgroundColor: 'white', padding: 5 }} />
-        </Scrollbar>
+        title={intl.formatMessage({ id: 'workspace' })}>
 
       </Activity>
     )
   }
 }
 
-About.propTypes = {}
+Workspace.propTypes = {}
 
-export default injectIntl(About)
+export default injectIntl(Workspace)
