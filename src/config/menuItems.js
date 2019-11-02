@@ -1,10 +1,8 @@
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
-import ChatIcon from '@material-ui/icons/Chat'
 import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
 import GroupIcon from '@material-ui/icons/Group'
 import LanguageIcon from '@material-ui/icons/Language'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import PersonIcon from '@material-ui/icons/Person'
 import React from 'react'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
@@ -78,26 +76,6 @@ const getMenuItems = props => {
       primaryTogglesNestedList: false,
       leftIcon: <SettingsSystemDaydreamIcon />,
       value: '/'
-    },
-    {
-      visible: isAuthorised,
-      primaryText: intl.formatMessage({ id: 'chats' }),
-      primaryTogglesNestedList: true,
-      leftIcon: <ChatIcon />,
-      nestedItems: [
-        {
-          value: '/chats',
-          visible: isAuthorised,
-          primaryText: intl.formatMessage({ id: 'private' }),
-          leftIcon: <PersonIcon />
-        },
-        {
-          value: '/public_chats',
-          visible: isAuthorised,
-          primaryText: intl.formatMessage({ id: 'public' }),
-          leftIcon: <GroupIcon />
-        }
-      ]
     },
     {
       visible: isAuthorised, // In prod: isGranted('administration'),

@@ -1,6 +1,5 @@
 import React from 'react'
 import getAppRoutes from '../../components/AppRoutes'
-import { injectIntl } from 'react-intl'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { Switch, withRouter } from 'react-router-dom'
 
