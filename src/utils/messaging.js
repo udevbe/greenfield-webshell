@@ -1,8 +1,4 @@
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
-import UpdateIcon from '@material-ui/icons/Update'
 import moment from 'moment'
 import { toast } from 'react-toastify'
 
@@ -21,7 +17,7 @@ const initializeMessaging = (props, skipIfNoPermission = false) => {
     .once('value', snap => {
       if (snap.val()) {
         console.log('Notifications disabled by user')
-      } else if (skipIfNoPermission && ('Notification' in window && Notification.permission !== 'granted')) {
+      } else if (skipIfNoPermission && ('Notification' in window && window.Notification.permission !== 'granted')) {
         console.log('No permissions for Notifications')
       } else {
         console.log('Notifications initialized')
@@ -39,7 +35,7 @@ const initializeMessaging = (props, skipIfNoPermission = false) => {
 }
 
 const requestNotificationPermission = props => {
-  const { auth, notificationPermissionRequested, simpleValues, setSimpleValue, messaging, appConfig } = props
+  const { auth, notificationPermissionRequested, simpleValues, setSimpleValue, appConfig } = props
 
   const reengagingHours = appConfig.notificationsReengagingHours ? appConfig.notificationsReengagingHours : 48
   const requestNotificationPermission = notificationPermissionRequested
@@ -51,7 +47,7 @@ const requestNotificationPermission = props => {
     window.Notification.permission !== 'granted' &&
     auth.uid &&
     requestNotificationPermission &&
-    !simpleValues['notificationPermissionShown']
+    !simpleValues.notificationPermissionShown
   ) {
     setSimpleValue('notificationPermissionShown', true)
     toast.info(
@@ -80,12 +76,12 @@ const handleMessageReceived = (props, payload) => {
     toast.info(({ closeToast }) => getNotification(notificationData, closeToast), {
       position: toast.POSITION.BOTTOM_RIGHT,
       autoClose: notificationData.autoClose ? notificationData.autoClose : false,
-      closeButton:false
+      closeButton: false
     })
   } else {
     toast.info(({ closeToast }) => getNotification(notification, closeToast), {
       position: toast.POSITION.BOTTOM_RIGHT,
-      closeButton:false
+      closeButton: false
     })
   }
 }
@@ -107,8 +103,7 @@ const getNotification = (notification, closeToast) => {
   return <NotificationToast notification={notification} closeToast={closeToast} />
 }
 
-const checkForUpdate=()=> {
-
+const checkForUpdate = () => {
   if (window.updateAvailable && !updateMessageShown) {
     updateMessageShown = true
     toast.info(
@@ -118,13 +113,13 @@ const checkForUpdate=()=> {
       {
         position: toast.POSITION.BOTTOM_CENTER,
         autoClose: false,
-        closeButton:false
+        closeButton: false
       }
     )
   }
 }
 
-export function handleUpdate() {
+export function handleUpdate () {
   window.updateAvailable = false
   // eslint-disable-next-line no-self-assign
   window.location.href = window.location.href

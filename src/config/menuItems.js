@@ -77,7 +77,7 @@ const getMenuItems = props => {
       primaryText: intl.formatMessage({ id: 'workspace' }),
       primaryTogglesNestedList: false,
       leftIcon: <SettingsSystemDaydreamIcon />,
-      value: '/',
+      value: '/'
     },
     {
       visible: isAuthorised,

@@ -13,7 +13,7 @@ export default function isGranted (state, grant) {
   }
 
   if (userGrants !== undefined) {
-    for (let userGrant of userGrants) {
+    for (const userGrant of userGrants) {
       if (userGrant.key === grant) {
         return userGrant.val === true
       }
@@ -25,7 +25,7 @@ export default function isGranted (state, grant) {
 
 export function isAnyGranted (state, grants) {
   if (grants !== undefined) {
-    for (let grant of grants) {
+    for (const grant of grants) {
       if (isGranted(state, grant) === true) {
         return true
       }
@@ -40,7 +40,7 @@ const localStorageAuthKey = 'greenfield:isAuthorised'
 export function saveAuthorisation (user) {
   if (typeof Storage !== 'undefined') {
     try {
-      localStorage.setItem(localStorageAuthKey, Boolean(user))
+      window.localStorage.setItem(localStorageAuthKey, Boolean(user))
     } catch (ex) {
       console.log(ex)
     }
@@ -52,7 +52,7 @@ export function saveAuthorisation (user) {
 export function isAuthorised () {
   if (typeof Storage !== 'undefined') {
     try {
-      return localStorage.getItem(localStorageAuthKey) === 'true'
+      return window.localStorage.getItem(localStorageAuthKey) === 'true'
     } catch (ex) {
       return false
     }

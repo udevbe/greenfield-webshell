@@ -100,7 +100,6 @@ const Activity = ({
     headerTitle = pageTitle
   }
 
-  //const smDown = width === 'sm' || width === 'xs'
   const smDown = isWidthDown('sm', width)
 
   return (
@@ -159,12 +158,12 @@ const Activity = ({
             display: 'flex',
             justifyContent: 'center',
             width: '100%',
-            height: 15,
-            backgroundColor: theme.palette.secondary.main
+            height: 17,
+            backgroundColor: theme.palette.error.light
           }}
         >
-          <Typography variant="caption" color="textSecondary" noWrap>
-            {intl.formatMessage({ id: 'offline' })}
+          <Typography variant="subtitle2" color='textPrimary' noWrap>
+            ⛈ {intl.formatMessage({ id: 'offline' })} ⛈
           </Typography>
         </div>
       )}

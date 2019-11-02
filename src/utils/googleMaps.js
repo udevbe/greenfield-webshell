@@ -1,5 +1,5 @@
-export function geocodeAddress(address, onSuccess, onError) {
-  let geocoder = new window.google.maps.Geocoder()
+export function geocodeAddress (address, onSuccess, onError) {
+  const geocoder = new window.google.maps.Geocoder()
   geocoder.geocode({ address }, (results, status) => {
     if (status === 'OK' && onSuccess && onSuccess instanceof Function) {
       onSuccess(

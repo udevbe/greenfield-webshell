@@ -1,4 +1,3 @@
-import React from 'react'
 import configureStore from '../store'
 import getMenuItems from './menuItems'
 import grants from './grants'
@@ -27,9 +26,9 @@ const config = {
     appId: '1:211084657743:web:e80abeba6a9f180bfe163a',
     measurementId: 'G-DYE7DFCBW6'
   },
-  firebase_providers: ['google.com', 'password', 'github', 'phone', 'anonymous'],
+  firebase_providers: ['password', 'google.com', 'phone', 'anonymous'],
   initial_state: {
-    theme: 'dark',
+    theme: 'light',
     locale: 'en'
   },
   drawer_width: 240,
@@ -49,7 +48,7 @@ const config = {
       chat: {
         path: 'chats',
         autoClose: 5000,
-        //getNotification: () => <div>YOUR CUSTOM NOTIFICATION COMPONENT</div>,
+        // getNotification: () => <div>YOUR CUSTOM NOTIFICATION COMPONENT</div>,
         onClick: () => {
           history.push('/chats')
         },

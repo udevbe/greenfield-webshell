@@ -15,7 +15,7 @@ export const themes = [
           'white': 'rgba(240, 240, 240, 1)'
         },
         'background': {
-          'paper': 'rgba(240, 240, 240, 1)',
+          'paper': 'rgba(220, 220, 220, 1)',
           'default': 'rgba(240, 240, 240, 1)'
         },
         'primary': {

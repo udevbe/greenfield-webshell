@@ -6,12 +6,10 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/es/storage' // default: localStorage if web, AsyncStorage if react-native
 import initState from './init'
 
-export default function configureStore() {
-  let store
-
+export default function configureStore () {
   const logger = createLogger({})
 
-  let middlewares = [thunk]
+  const middlewares = [thunk]
 
   if (process.env.NODE_ENV !== 'production') {
     middlewares.push(logger) // DEV middlewares
@@ -34,7 +32,7 @@ export default function configureStore() {
 
   const reducer = persistReducer(persistorConfig, reducers)
 
-  store = createStore(reducer, initState, enhancer)
+  const store = createStore(reducer, initState, enhancer)
 
   try {
     persistStore(store)

@@ -1,18 +1,21 @@
 import * as firebaseui from 'firebaseui'
-import Activity from '../../containers/Activity'
 import AuthUI from '../../containers/AuthUI/AuthUI'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import { injectIntl } from 'react-intl'
+import React from 'react'
+import * as PropTypes from 'prop-types'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { withFirebase } from 'firekit-provider'
 import { withStyles } from '@material-ui/core'
 import Logo from '../../components/Logo'
+import Typography from '@material-ui/core/Typography'
+import { bindActionCreators } from 'redux'
+import drawerActions from '../../store/drawer/actions'
+import { useDispatch } from 'react-redux'
 
-const styles = theme => ({
+const styles = _ => ({
   wrap: {
     display: 'flex',
-    height: '100%'
+    flexDirection: 'column',
+    height: '100vh'
   },
   text: {
     margin: 'auto',
@@ -23,33 +26,37 @@ const styles = theme => ({
   }
 })
 
-export class SignIn extends Component {
-  render () {
-    const { intl, firebaseApp, appConfig, classes } = this.props
-
-    const uiConfig = {
-      signInSuccessUrl: '/',
-      signInFlow: 'popup',
-      callbacks: { signInSuccessWithAuthResult: () => false },
-      signInOptions: appConfig.firebase_providers,
-      credentialHelper: firebaseui.auth.CredentialHelper.NONE
-    }
-
-    return (
-      <Activity title={intl.formatMessage({ id: 'sign_in' })}>
-        <div className={classes.wrap}>
-            <div className={classes.text}>
-              <Logo />
-               <AuthUI firebaseApp={firebaseApp} uiConfig={uiConfig} />
-            </div>
-        </div>
-      </Activity>
-    )
+const SignIn = ({ firebaseApp, appConfig, classes }) => {
+  const uiConfig = {
+    signInSuccessUrl: '/workspace',
+    signInFlow: 'popup',
+    callbacks: { signInSuccessWithAuthResult: () => false },
+    signInOptions: appConfig.firebase_providers,
+    credentialHelper: firebaseui.auth.CredentialHelper.NONE
   }
+
+  const { setDrawerMobileOpen, setDrawerOpen, setDrawerUseMinified } = bindActionCreators({ ...drawerActions }, useDispatch())
+  setDrawerOpen(false)
+  setDrawerMobileOpen(false)
+  setDrawerUseMinified(false)
+
+  return (
+    <div className={classes.wrap}>
+      <div className={classes.text}>
+        <Logo />
+        <Typography variant='h6' color='textSecondary' noWrap>
+              The Cloud Desktop
+        </Typography>
+        <AuthUI firebaseApp={firebaseApp} uiConfig={uiConfig} />
+      </div>
+    </div>
+  )
 }
 
 SignIn.propTypes = {
-  intl: PropTypes.object.isRequired
+  classes: PropTypes.object,
+  firebaseApp: PropTypes.object,
+  appConfig: PropTypes.object
 }
 
-export default injectIntl(withStyles(styles, { withTheme: true })(withFirebase(withAppConfigs(SignIn))))
+export default withStyles(styles, { withTheme: true })(withFirebase(withAppConfigs(SignIn)))

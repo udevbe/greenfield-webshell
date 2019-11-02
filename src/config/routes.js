@@ -10,9 +10,9 @@ const AsyncAbout = MyLoadable({ loader: () => import('../pages/About') })
 const AsyncWorkspace = MyLoadable({ loader: () => import('../pages/Workspace') })
 
 const routes = [
-  <RestrictedRoute type="private" path="/" exact component={AsyncWorkspace} />,
-  <RestrictedRoute type="private" path="/workspace" exact component={AsyncWorkspace} />,
-  <RestrictedRoute type="private" path="/about" exact component={AsyncAbout} />,
+  <RestrictedRoute type='private' path='/' exact component={AsyncWorkspace} />,
+  <RestrictedRoute type='private' path='/workspace' exact component={AsyncWorkspace} />,
+  <RestrictedRoute type='private' path='/about' exact component={AsyncAbout} />
 ]
 
 export default routes

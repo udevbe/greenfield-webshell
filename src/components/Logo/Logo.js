@@ -17,7 +17,7 @@ const styles = {
 
 export default withStyles(styles)(React.memo(
   (props) => {
-    const fontSize = props.fontSize ? props.fontSize : '5rem'
+    const fontSize = props.fontSize ? props.fontSize : '4rem'
     const fontWeight = props.fontWeight ? props.fontWeight : '200'
 
     return (

@@ -15,7 +15,7 @@ import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { getList } from 'firekit'
-import { getLocation } from 'firekit/lib/store/lists/actions'
+import { getLocation } from 'firekit/es/store/lists/actions'
 import { injectIntl } from 'react-intl'
 import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
