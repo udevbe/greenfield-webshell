@@ -7,10 +7,12 @@ const MyLoadable = (opts, preloadComponents) =>
   makeLoadable({ ...opts, firebase: () => import('./firebase') }, preloadComponents)
 
 const AsyncWorkspace = MyLoadable({ loader: () => import('../pages/Workspace') })
+const AsyncWebstore = MyLoadable({ loader: () => import('../pages/Webstore') })
 
 const routes = [
   <RestrictedRoute type='private' path='/' exact component={AsyncWorkspace} />,
   <RestrictedRoute type='private' path='/workspace' exact component={AsyncWorkspace} />,
+  <RestrictedRoute type='private' path='/webstore' exact component={AsyncWebstore} />
 ]
 
 export default routes

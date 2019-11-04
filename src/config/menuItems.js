@@ -1,5 +1,6 @@
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
+import PublicIcon from '@material-ui/icons/Public'
 import GroupIcon from '@material-ui/icons/Group'
 import LanguageIcon from '@material-ui/icons/Language'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
@@ -75,7 +76,14 @@ const getMenuItems = props => {
       primaryText: intl.formatMessage({ id: 'workspace' }),
       primaryTogglesNestedList: false,
       leftIcon: <SettingsSystemDaydreamIcon />,
-      value: '/'
+      value: '/workspace'
+    },
+    {
+      visible: isAuthorised,
+      primaryText: intl.formatMessage({ id: 'webstore' }),
+      primaryTogglesNestedList: false,
+      leftIcon: <PublicIcon />,
+      value: '/webstore'
     },
     {
       visible: isAuthorised, // In prod: isGranted('administration'),

@@ -4,6 +4,7 @@ const messages = defineMessages({
   current_locale: 'en-US',
   blue: 'blue',
   workspace: 'Workspace',
+  webstore: 'Webstore',
   app_name: 'Greenfield',
   dashboard: 'Dashboard',
   about: 'About',
