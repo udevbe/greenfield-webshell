@@ -1,5 +1,4 @@
 import React from 'react'
-import SvgIcon from '@material-ui/core/SvgIcon'
 
 const GreenfieldIcon = props => {
   return (

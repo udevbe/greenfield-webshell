@@ -24,7 +24,7 @@ import classNames from 'classnames'
 import requestNotificationPermission from '../../utils/messaging'
 import { GoogleIcon } from '../../components/Icons'
 import { ImageCropDialog } from '../../containers/ImageCropDialog'
-import { change, submit, formValueSelector } from 'redux-form'
+import { change, formValueSelector, submit } from 'redux-form'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { getList, getPath } from 'firekit'
@@ -35,7 +35,7 @@ import { setSimpleValue } from '../../store/simpleValues/actions'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withStyles, withTheme } from '@material-ui/core/styles'
 
 const form_name = 'my_account'
 
@@ -74,10 +74,10 @@ export class MyAccount extends Component {
 
   getProviderIcon = p => {
     switch (p) {
-    case 'google.com':
-      return <GoogleIcon />
-    default:
-      return undefined
+      case 'google.com':
+        return <GoogleIcon />
+      default:
+        return undefined
     }
   }
 
@@ -279,7 +279,7 @@ export class MyAccount extends Component {
                 firebaseApp
                   .auth()
                   .signOut()
-                  .then(function() {
+                  .then(function () {
                     setTimeout(() => {
                       alert('Please sign in again to change your email.')
                     }, 1)
@@ -417,7 +417,7 @@ export class MyAccount extends Component {
     return false
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { auth, watchList, watchPath } = this.props
     const { displayName, email, photoURL } = auth
 
@@ -469,7 +469,7 @@ export class MyAccount extends Component {
       .set(e.target.checked)
   }
 
-  render() {
+  render () {
     const {
       intl,
       setSimpleValue,

@@ -80,7 +80,7 @@ class ResponsiveDrawer extends React.Component {
     setDrawerOpen(false)
   }
 
-  render() {
+  render () {
     const { classes, theme, children, drawer, width } = this.props
 
     const smDown = isWidthDown('sm', width)

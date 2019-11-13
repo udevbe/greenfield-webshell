@@ -4,14 +4,14 @@ import LoadingComponent from '../../components/LoadingComponent/LoadingComponent
 import FirebaseProvider from 'firekit-provider'
 import { ReactReduxContext } from 'react-redux'
 
-export default function makeLoadable(opts, preloadComponents) {
+export default function makeLoadable (opts, preloadComponents) {
   return Loadable.Map({
     loader: {
       Component: opts.loader,
       firebase: opts.firebase
     },
     loading: LoadingComponent,
-    render(loaded, props) {
+    render (loaded, props) {
       if (preloadComponents !== undefined && preloadComponents instanceof Array) {
         preloadComponents.map(component => component.preload())
       }

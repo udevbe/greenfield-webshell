@@ -11,7 +11,7 @@ import SearchField from '../../components/SearchField'
 import Tooltip from '@material-ui/core/Tooltip'
 import isGranted from '../../utils/auth'
 import { Fab } from '@material-ui/core'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { getList } from 'firekit'
@@ -26,7 +26,7 @@ class ListActivity extends Component {
     watchList(path || name)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { unwatchList, path, name } = this.props
     unwatchList(path || name)
   }

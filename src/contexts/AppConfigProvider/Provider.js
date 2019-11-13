@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import Context from './Context'
 
 class Provider extends Component {
-  render() {
+  render () {
     const { appConfig, children } = this.props
 
     return <Context.Provider value={{ appConfig }}>{children}</Context.Provider>

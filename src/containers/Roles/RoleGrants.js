@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactList from 'react-list'
 import Switch from '@material-ui/core/Switch'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
 import { connect } from 'react-redux'
 import { getList } from 'firekit'
 import { injectIntl } from 'react-intl'
@@ -58,7 +58,7 @@ export class RoleGrants extends Component {
     return (
       <div key={key}>
         <ListItem key={i} id={i}>
-          <AltIconAvatar icon={<Check />}/>
+          <AltIconAvatar icon={<Check />} />
           <ListItemText primary={intl.formatMessage({ id: `grant_${val}` })} secondary={val} />
           <Switch
             checked={userGrants[val] === true}
@@ -72,7 +72,7 @@ export class RoleGrants extends Component {
     )
   }
 
-  render() {
+  render () {
     const { intl, filters, appConfig } = this.props
 
     let grantList = []
@@ -114,7 +114,7 @@ export class RoleGrants extends Component {
 }
 
 RoleGrants.propTypes = {
-  
+
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 }

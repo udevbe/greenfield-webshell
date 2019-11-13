@@ -25,14 +25,14 @@ import Tabs from '@material-ui/core/Tabs'
 import classNames from 'classnames'
 import { change, submit } from 'redux-form'
 import { connect } from 'react-redux'
-import { filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, filterSelectors } from 'material-ui-filter'
 import { injectIntl } from 'react-intl'
 import { isLoading } from 'firekit'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withStyles, withTheme } from '@material-ui/core/styles'
 
 const path = '/roles'
 
@@ -102,7 +102,7 @@ export class Role extends Component {
     })
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { watchList, firebaseApp, uid } = this.props
     watchList('grants')
     watchList('role_grants')
@@ -160,7 +160,7 @@ export class Role extends Component {
     return true
   }
 
-  render() {
+  render () {
     const {
       history,
       intl,

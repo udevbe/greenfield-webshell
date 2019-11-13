@@ -10,9 +10,9 @@ import classNames from 'classnames'
 import drawerActions from '../../store/drawer/actions'
 import withWidth, { isWidthDown } from '@material-ui/core/withWidth'
 import { Helmet } from 'react-helmet'
-import { compose, bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 import { injectIntl } from 'react-intl'
-import { shallowEqual, useSelector, useDispatch } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
 const drawerWidth = 240
@@ -42,7 +42,8 @@ const styles = theme => ({
   },
   content: {
     flex: 1,
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
+    overflow: 'auto'
   },
 
   appBarShift: {
@@ -71,7 +72,8 @@ const Activity = ({
   pageTitle,
   appBarContent,
   isLoading,
-  onBackClick
+  onBackClick,
+  mainRef
 }) => {
   const drawer = useSelector(state => state.drawer, shallowEqual)
   const isOffline = useSelector(({ connection }) => (connection ? !connection.isConnected : false), shallowEqual)
@@ -163,11 +165,11 @@ const Activity = ({
           }}
         >
           <Typography variant="subtitle2" color='textPrimary' noWrap>
-            ⛈ {intl.formatMessage({ id: 'offline' })} ⛈
+            {intl.formatMessage({ id: 'offline' })}
           </Typography>
         </div>
       )}
-      <main className={classes.content}>{children}</main>
+      <main className={classes.content} ref={mainRef}>{children}</main>
     </div>
   )
 }

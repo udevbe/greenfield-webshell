@@ -11,7 +11,7 @@ import SearchField from '../../components/SearchField'
 import Tooltip from '@material-ui/core/Tooltip'
 import isGranted from '../../utils/auth'
 import { Fab } from '@material-ui/core'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { getCol } from 'firekit'
@@ -20,18 +20,18 @@ import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
 
 class CollectionActivity extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { path, name, watchCol } = this.props
 
     watchCol(path || name)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { unwatchCol, path, name } = this.props
     unwatchCol(path || name)
   }
 
-  render() {
+  render () {
     const {
       createGrant,
       filterFields,

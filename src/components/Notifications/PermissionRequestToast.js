@@ -8,9 +8,8 @@ import Paper from '@material-ui/core/Paper'
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import moment from 'moment'
-import { ThemeProvider } from '@material-ui/styles'
+import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
-import { useTheme } from '@material-ui/styles'
 
 export const PermissionRequestToast = props => {
   const {

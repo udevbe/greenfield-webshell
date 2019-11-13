@@ -8,7 +8,7 @@ import getThemeSource from '../../config/themes'
 import locales, { getLocaleMessages } from '../../config/locales'
 import { IntlProvider } from 'react-intl'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
-import { Router, Route, Switch } from 'react-router-dom'
+import { Route, Router, Switch } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/styles'
 import { bindActionCreators } from 'redux'
 import { createBrowserHistory } from 'history'
@@ -16,8 +16,8 @@ import { createMuiTheme } from '@material-ui/core/styles'
 import { initializeMessaging } from '../../utils/messaging'
 import { saveAuthorisation } from '../../utils/auth'
 import { setPersistentValue } from '../../store/persistentValues/actions'
-import { useSelector, shallowEqual, useDispatch } from 'react-redux'
-import { watchAuth, clearInitialization, initConnection, watchList, initMessaging, watchPath } from 'firekit'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import { clearInitialization, initConnection, initMessaging, watchAuth, watchList, watchPath } from 'firekit'
 import { withA2HS } from 'a2hs'
 
 const history = createBrowserHistory()
@@ -49,7 +49,7 @@ const Root = props => {
   const messages = { ...getLocaleMessages(locale, locales), ...getLocaleMessages(locale, appConfig.locales) }
   const source = getThemeSource(themeSource, appConfig.themes)
   const theme = createMuiTheme(source)
-  let showInstallPrompt = auth.isAuthorised && isAppInstallable && !isAppInstalled
+  const showInstallPrompt = auth.isAuthorised && isAppInstallable && !isAppInstalled
 
   const handleInstallPrompt = () => {
     if (!installPromptShowed && showInstallPrompt) {
@@ -59,12 +59,12 @@ const Root = props => {
   }
 
   const handlePresence = (user, firebaseApp) => {
-    let myConnectionsRef = firebaseApp.database().ref(`users/${user.uid}/connections`)
+    const myConnectionsRef = firebaseApp.database().ref(`users/${user.uid}/connections`)
 
-    let lastOnlineRef = firebaseApp.database().ref(`users/${user.uid}/lastOnline`)
+    const lastOnlineRef = firebaseApp.database().ref(`users/${user.uid}/lastOnline`)
     lastOnlineRef.onDisconnect().set(new Date())
 
-    let con = myConnectionsRef.push(true)
+    const con = myConnectionsRef.push(true)
     con.onDisconnect().remove()
   }
 
@@ -88,7 +88,7 @@ const Root = props => {
         providerData: user.providerData
       }
 
-      let publicProviderData = []
+      const publicProviderData = []
 
       user.providerData.forEach(provider => {
         publicProviderData.push({
@@ -138,12 +138,12 @@ const Root = props => {
   return (
     <div onClick={!installPromptShowed && showInstallPrompt ? handleInstallPrompt : undefined}>
       <Helmet>
-        <link rel="stylesheet" type="text/css" href="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css" />
+        <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
       </Helmet>
       <AppConfigProvider appConfig={appConfig}>
         <MuiPickersUtilsProvider utils={Utils}>
           <ThemeProvider theme={theme}>
-            <React.Fragment>
+            <>
               <CssBaseline />
               <IntlProvider locale={locale} key={locale} messages={messages}>
                 <Router history={history}>
@@ -152,7 +152,7 @@ const Root = props => {
                   </Switch>
                 </Router>
               </IntlProvider>
-            </React.Fragment>
+            </>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
       </AppConfigProvider>

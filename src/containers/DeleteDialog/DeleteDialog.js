@@ -13,7 +13,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 
-function Transition(props) {
+function Transition (props) {
   return <Slide direction="up" {...props} />
 }
 
@@ -23,10 +23,10 @@ class DeleteDialog extends Component {
     setSimpleValue(deleteKey, undefined)
   }
 
-  render() {
+  render () {
     const { intl, isDialogOpen, handleDelete, name, fullScreen, deleteUid } = this.props
 
-    if(!isDialogOpen){
+    if (!isDialogOpen) {
       return null
     }
 
@@ -81,7 +81,7 @@ const mapStateToProps = (state, ownProps) => {
 DeleteDialog.propTypes = {
   name: PropTypes.string.isRequired,
   handleDelete: PropTypes.func.isRequired,
-  
+
 }
 
 export default compose(

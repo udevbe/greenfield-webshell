@@ -13,7 +13,6 @@ import React from 'react'
 import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
 
-
 export const NotificationToast = props => {
   const { notification, closeToast } = props
 
@@ -27,15 +26,14 @@ export const NotificationToast = props => {
     }
   })
 
-  const { icon, title, body, autoClose}= notification
-
+  const { icon, title, body, autoClose } = notification
 
   return (
     <ThemeProvider theme={innerTheme}>
-      <Paper style={{ margin: -8, marginBottom:-8 }}>
+      <Paper style={{ margin: -8, marginBottom: -8 }}>
         <List component='div'>
           <ListItem
-          
+
             onClick={() => {
               notification.onClick()
             }}
@@ -52,7 +50,7 @@ export const NotificationToast = props => {
           
           </ListItem>
         </List>
-        {autoClose && <LinearProgress color="secondary" variant='determinate' value={0}/>}
+        {autoClose && <LinearProgress color="secondary" variant='determinate' value={0} />}
       </Paper>
     </ThemeProvider>
   )

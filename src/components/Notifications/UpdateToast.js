@@ -13,9 +13,8 @@ import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { injectIntl } from 'react-intl'
 
-
 export const UpdateToast = props => {
-  const {handleUpdate, closeToast, intl } = props
+  const { handleUpdate, closeToast, intl } = props
 
   const theme = useTheme()
 
@@ -38,7 +37,7 @@ export const UpdateToast = props => {
             onClick={handleUpdate}
           >
             <ListItemIcon>
-              <AltIconAvatar  icon={<UpdateIcon fontSize='large' />} />
+              <AltIconAvatar icon={<UpdateIcon fontSize='large' />} />
             </ListItemIcon>
             <ListItemText primary={title} secondary={message} />
             <ListItemSecondaryAction onClick={closeToast}>

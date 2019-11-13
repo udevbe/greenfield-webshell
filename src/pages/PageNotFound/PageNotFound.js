@@ -1,5 +1,4 @@
 import Activity from '../../containers/Activity'
-import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
 import Home from '@material-ui/icons/Home'
 import Paper from '@material-ui/core/Paper'

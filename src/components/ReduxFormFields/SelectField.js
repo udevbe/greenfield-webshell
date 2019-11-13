@@ -9,13 +9,13 @@ import { mapError } from '../../utils/mapError'
  * @param mapProps A mapping of props provided by redux-form to the props the Material UI
  * component needs
  */
-function createComponent(MaterialUIComponent, mapProps) {
+function createComponent (MaterialUIComponent, mapProps) {
   class InputComponent extends Component {
-    getRenderedComponent() {
+    getRenderedComponent () {
       return this.refs.component
     }
 
-    render() {
+    render () {
       const { input, ...rest } = this.props
       const { value, ...inputRest } = input
 
@@ -37,6 +37,7 @@ function createComponent(MaterialUIComponent, mapProps) {
       })
     }
   }
+
   InputComponent.displayName = `ReduxFormMaterialUI${MaterialUIComponent.name}`
   return InputComponent
 }

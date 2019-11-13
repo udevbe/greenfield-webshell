@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React from 'react'
 
-export default function IconMenu({ icon, options = [], buttonStyle }) {
+export default function IconMenu ({ icon, options = [], buttonStyle }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
 

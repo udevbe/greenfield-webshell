@@ -72,7 +72,7 @@ class FireForm extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { path, uid, name, firebaseApp, initialize, useFirestore } = this.props
 
     if (uid) {
@@ -108,7 +108,7 @@ class FireForm extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { path, uid, firebaseApp } = this.props
     firebaseApp
       .database()
@@ -120,7 +120,7 @@ class FireForm extends Component {
     }
   }
 
-  render() {
+  render () {
     return React.Children.only(
       React.cloneElement(this.props.children, {
         onSubmit: this.handleSubmit,

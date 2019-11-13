@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactList from 'react-list'
 import Switch from '@material-ui/core/Switch'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
@@ -18,7 +18,7 @@ import { withRouter } from 'react-router-dom'
 import { withTheme } from '@material-ui/core/styles'
 
 class UsersToggle extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { watchList, path, setSearch } = this.props
 
     setSearch('users_toggle', '')
@@ -35,7 +35,7 @@ class UsersToggle extends Component {
     return (
       <div key={i}>
         <ListItem key={userUid} id={userUid} onClick={onClick ? () => onClick(userUid, user) : undefined}>
-          <AltIconAvatar alt="person" src={user.photoURL} icon={<Person/>} />
+          <AltIconAvatar alt="person" src={user.photoURL} icon={<Person />} />
           <ListItemText
             primary={<div style={{ fontFamily: 'Roboto' }}>{user.displayName}</div>}
             secondaryText={<div style={{ fontFamily: 'Roboto' }}>{user.email}</div>}
@@ -49,7 +49,7 @@ class UsersToggle extends Component {
     )
   }
 
-  render() {
+  render () {
     const { intl, list } = this.props
 
     const filterFields = [
@@ -84,7 +84,7 @@ class UsersToggle extends Component {
 }
 
 UsersToggle.propTypes = {
-  
+
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 }

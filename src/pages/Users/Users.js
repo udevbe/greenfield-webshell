@@ -15,8 +15,8 @@ import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
 import SearchField from '../../components/SearchField'
 import Toolbar from '@material-ui/core/Toolbar'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
-import { GoogleIcon, FacebookIcon, GitHubIcon, TwitterIcon } from '../../components/Icons'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
+import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
 import { connect } from 'react-redux'
 import { getList, isLoading } from 'firekit'
 import { injectIntl } from 'react-intl'
@@ -28,7 +28,7 @@ import Person from '@material-ui/icons/Person'
 const path = 'users'
 
 export class Users extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { watchList } = this.props
 
     watchList(path)
@@ -38,20 +38,20 @@ export class Users extends Component {
     const color = 'primary'
 
     switch (provider.providerId) {
-    case 'google.com':
-      return <GoogleIcon color={color} />
-    case 'facebook.com':
-      return <FacebookIcon color={color} />
-    case 'twitter.com':
-      return <TwitterIcon color={color} />
-    case 'github.com':
-      return <GitHubIcon color={color} />
-    case 'phone':
-      return <Phone color={color} />
-    case 'password':
-      return <Email color={color} />
-    default:
-      return undefined
+      case 'google.com':
+        return <GoogleIcon color={color} />
+      case 'facebook.com':
+        return <FacebookIcon color={color} />
+      case 'twitter.com':
+        return <TwitterIcon color={color} />
+      case 'github.com':
+        return <GitHubIcon color={color} />
+      case 'phone':
+        return <Phone color={color} />
+      case 'password':
+        return <Email color={color} />
+      default:
+        return undefined
     }
   }
 
@@ -73,7 +73,7 @@ export class Users extends Component {
           }}
           id={key}
         >
-          <AltIconAvatar src={user.photoURL}  icon={<Person/>}/>
+          <AltIconAvatar src={user.photoURL} icon={<Person />} />
 
           <ListItemText
             primary={user.displayName}
@@ -86,9 +86,9 @@ export class Users extends Component {
 
           <Toolbar>
             {user.providerData &&
-              user.providerData.map((p, i) => {
-                return <div key={i}>{this.getProviderIcon(p)}</div>
-              })}
+            user.providerData.map((p, i) => {
+              return <div key={i}>{this.getProviderIcon(p)}</div>
+            })}
           </Toolbar>
           <OfflinePin color={user.connections ? 'primary' : 'disabled'} />
         </ListItem>
@@ -97,7 +97,7 @@ export class Users extends Component {
     )
   }
 
-  render() {
+  render () {
     const { list, theme, intl, setFilterIsOpen, hasFilters, isLoading } = this.props
 
     const filterFields = [
@@ -150,7 +150,7 @@ export class Users extends Component {
 
 Users.propTypes = {
   users: PropTypes.array,
-  
+
   theme: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 }

@@ -1,7 +1,7 @@
 import Activity from '../Activity'
 import InputBase from '@material-ui/core/InputBase'
 import List from '@material-ui/core/List'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Scrollbar from '../../components/Scrollbar'
 import SearchIcon from '@material-ui/icons/Search'
 import algoliasearch from 'algoliasearch/lite'
@@ -10,7 +10,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator'
 import { injectIntl } from 'react-intl'
 import { withStyles } from '@material-ui/core/styles'
 import { setSimpleValue } from '../../store/simpleValues/actions'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 const getActions = dispatch => bindActionCreators({ setSimpleValue }, dispatch)

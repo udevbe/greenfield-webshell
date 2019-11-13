@@ -18,7 +18,7 @@ import { withRouter } from 'react-router-dom'
 import { withTheme } from '@material-ui/core/styles'
 
 export class UserRoles extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { watchList, userRolesPath } = this.props
 
     watchList(userRolesPath)
@@ -73,7 +73,7 @@ export class UserRoles extends Component {
     )
   }
 
-  render() {
+  render () {
     const { roles } = this.props
 
     return (
@@ -91,7 +91,7 @@ export class UserRoles extends Component {
 }
 
 UserRoles.propTypes = {
-  
+
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 }

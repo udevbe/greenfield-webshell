@@ -2,7 +2,6 @@ import AccountBox from '@material-ui/icons/AccountBox'
 import Activity from '../../containers/Activity'
 import Add from '@material-ui/icons/Add'
 import AltIconAvatar from '../../components/AltIconAvatar'
-import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -20,7 +19,7 @@ import { withRouter } from 'react-router-dom'
 const path = 'roles'
 
 export class Roles extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { watchList } = this.props
 
     watchList(path)
@@ -62,7 +61,7 @@ export class Roles extends Component {
     )
   }
 
-  render() {
+  render () {
     const { intl, list, isLoading } = this.props
 
     return (
@@ -90,9 +89,7 @@ export class Roles extends Component {
   }
 }
 
-Roles.propTypes = {
-  
-}
+Roles.propTypes = {}
 
 const mapStateToProps = state => {
   return {

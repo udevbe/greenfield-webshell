@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { injectIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
@@ -11,6 +11,8 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux'
+import InfiniteScroll from 'react-infinite-scroller'
+import { withFirebase } from 'firekit-provider'
 
 const styles = theme => ({
   icon: {
@@ -44,47 +46,91 @@ const styles = theme => ({
   }
 })
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+const cards = [
+  {
+    key: 1,
+    val: {
+      media: `https://source.unsplash.com/random?sig=${Math.random()}`,
+      name: 'Super Awesome App',
+      description: {
+        default: 'WebApp intro. Describes what it does and how and why you should use it.',
+        en: 'WebApp intro. Describes what it does and how and why you should use it.'
+      }
+    }
+  }, { key: 2, val: null }, { key: 3, val: null }, { key: 4, val: null }, { key: 5, val: null },
+  { key: 6, val: null }, { key: 7, val: null }, { key: 8, val: null }, { key: 9, val: null }, { key: 10, val: null },
+  { key: 11, val: null }, { key: 12, val: null }, { key: 13, val: null }, { key: 14, val: null },
+  { key: 15, val: null }, { key: 16, val: null }, { key: 17, val: null }, { key: 18, val: null },
+  { key: 19, val: null }, { key: 20, val: null }
+]
 
-const Webstore = ({ intl, classes }) => {
+const Webstore = ({ intl, classes, watchList, list }) => {
+  list = cards
+
+  const path = 'apps'
+  const appsListBatchSize = 18
+
+  useEffect(() => {
+    watchList(path)
+  }, [])
+  const [scrollPos, setScrollPos] = useState(appsListBatchSize)
+  const appsList = cards.slice(0, Math.min(list.length, scrollPos)).map(({ key, val }) => {
+    return (
+      <Grid item key={key} xs={12} sm={6} md={4} lg={3} xl={2}>
+        <Card className={classes.card}>
+          <CardMedia
+            className={classes.cardMedia}
+            image={`https://source.unsplash.com/random?sig=${key}`}
+            title='Image title'
+          />
+          <CardContent className={classes.cardContent}>
+            <Typography gutterBottom variant='h5' component='h2'>
+                      Heading
+            </Typography>
+            <Typography>
+              WebApp intro. Describes what it does and how and why you should use it.
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size='small' color='primary'>
+                      Launch
+            </Button>
+            <Button size='small' color='primary'>
+                      Add
+            </Button>
+            <Button size='small' color='primary'>
+                      More
+            </Button>
+          </CardActions>
+        </Card>
+      </Grid>
+    )
+  })
+
+  const mainRef = useRef(null)
+
   return (
     <Activity
       title={intl.formatMessage({ id: 'webstore' })}
+      style={{ maxHeight: '100%' }}
+      mainRef={mainRef}
     >
       <Container
         className={classes.cardGrid}
-        maxWidth='false'
+        maxWidth={false}
       >
-        {/* End hero unit */}
-        <Grid container spacing={4}>
-          {cards.map(card => (
-            <Grid item key={card} xs={12} sm={6} md={4} lg={2} xl={1}>
-              <Card className={classes.card}>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image='https://source.unsplash.com/random'
-                  title='Image title'
-                />
-                <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom variant='h5' component='h2'>
-                      Heading
-                  </Typography>
-                  <Typography>
-                      This is a media card. You can use this section to describe the content.
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size='small' color='primary'>
-                      View
-                  </Button>
-                  <Button size='small' color='primary'>
-                      Edit
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <InfiniteScroll
+          useWindow={false}
+          getScrollParent={() => mainRef.current}
+          pageStart={0}
+          loadMore={() => { setScrollPos(scrollPos + appsListBatchSize) }}
+          hasMore={list ? (list.length > scrollPos) : false}
+          loader={<div className='loader' key={0}>Loading ...</div>}
+        >
+          <Grid container spacing={4}>
+            {appsList}
+          </Grid>
+        </InfiniteScroll>
       </Container>
     </Activity>
   )
@@ -94,5 +140,6 @@ Webstore.propTypes = {}
 
 export default compose(
   injectIntl,
-  withStyles(styles, { withTheme: true })
+  withStyles(styles, { withTheme: true }),
+  withFirebase
 )(Webstore)

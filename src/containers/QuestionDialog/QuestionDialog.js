@@ -14,7 +14,7 @@ import { injectIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import getSimpleValue from '../../store/simpleValues/selectors'
 
-function Transition(props) {
+function Transition (props) {
   return <Slide direction="up" {...props} />
 }
 
@@ -24,7 +24,7 @@ class QuestionDialog extends Component {
     setSimpleValue(name, undefined)
   }
 
-  render() {
+  render () {
     const { intl, isDialogOpen, handleAction, fullScreen, title = '', message = '', action = '' } = this.props
 
     if (!isDialogOpen) {

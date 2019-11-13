@@ -14,16 +14,15 @@ import Tabs from '@material-ui/core/Tabs'
 import UserForm from '../../components/Forms/UserForm'
 import UserGrants from '../../containers/Users/UserGrants'
 import UserRoles from '../../containers/Users/UserRoles'
-import { change, submit } from 'redux-form'
+import { change, formValueSelector, submit } from 'redux-form'
 import { connect } from 'react-redux'
-import { filterSelectors, filterActions } from 'material-ui-filter'
-import { formValueSelector } from 'redux-form'
-import { getList, isLoading, getPath } from 'firekit'
+import { filterActions, filterSelectors } from 'material-ui-filter'
+import { getList, getPath, isLoading } from 'firekit'
 import { injectIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withStyles, withTheme } from '@material-ui/core/styles'
 
 const path = '/users'
 
@@ -49,7 +48,7 @@ export class User extends Component {
     values: {}
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { watchList, uid, firebaseApp } = this.props
     watchList('admins')
     watchList('user_grants')
@@ -62,7 +61,7 @@ export class User extends Component {
       })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { firebaseApp, uid } = this.props
 
     firebaseApp
@@ -98,7 +97,7 @@ export class User extends Component {
     }
   }
 
-  render() {
+  render () {
     const {
       history,
       intl,
@@ -181,7 +180,7 @@ export class User extends Component {
 
 User.propTypes = {
   history: PropTypes.object,
-  
+
   //submit: PropTypes.func.isRequired,
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,

@@ -47,7 +47,7 @@ const RoleForm = ({ handleSubmit, intl, initialized }) => {
 RoleForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   renderGrantItem: PropTypes.func.isRequired,
-  
+
   initialized: PropTypes.bool.isRequired,
   uid: PropTypes.string
 }

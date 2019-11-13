@@ -38,7 +38,7 @@ class EditDocumentActivity extends Component {
     history.push(`/${path}`)
   }
 
-  render() {
+  render () {
     const {
       history,
       setSimpleValue,
@@ -121,7 +121,7 @@ class EditDocumentActivity extends Component {
 EditDocumentActivity.propTypes = {
   history: PropTypes.object,
   setSimpleValue: PropTypes.func.isRequired,
-  
+
   submit: PropTypes.func.isRequired,
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,

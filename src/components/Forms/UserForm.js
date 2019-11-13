@@ -7,7 +7,7 @@ import React, { Component } from 'react'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
-import { GoogleIcon, FacebookIcon, GitHubIcon, TwitterIcon } from '../../components/Icons'
+import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -52,24 +52,24 @@ class UserForm extends Component {
 
   getProviderIcon = p => {
     switch (p) {
-    case 'google.com':
-      return <GoogleIcon />
+      case 'google.com':
+        return <GoogleIcon />
 
-    case 'facebook.com':
-      return <FacebookIcon />
+      case 'facebook.com':
+        return <FacebookIcon />
 
-    case 'twitter.com':
-      return <TwitterIcon />
+      case 'twitter.com':
+        return <TwitterIcon />
 
-    case 'github.com':
-      return <GitHubIcon />
+      case 'github.com':
+        return <GitHubIcon />
 
-    default:
-      return undefined
+      default:
+        return undefined
     }
   }
 
-  render() {
+  render () {
     const { intl, handleAdminChange, isAdmin, classes, appConfig, values } = this.props
 
     return (

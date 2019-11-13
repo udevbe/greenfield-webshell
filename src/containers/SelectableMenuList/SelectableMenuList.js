@@ -9,7 +9,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withStyles, withTheme } from '@material-ui/core/styles'
 
 const styles = theme => ({
   root: {
@@ -52,7 +52,7 @@ class SelectableMenuList extends Component {
 
   getNestedItems = (hostItem, hostIndex) => {
     if (hostItem.nestedItems !== undefined) {
-      let items = hostItem.nestedItems.filter(function(item) {
+      let items = hostItem.nestedItems.filter(function (item) {
         return item.visible !== false
       })
 
@@ -125,7 +125,7 @@ class SelectableMenuList extends Component {
     return null
   }
 
-  render() {
+  render () {
     const { items, onIndexChange, index } = this.props
 
     const list = this.state.previousItems && this.state.previousItems.length > 0 ? this.state.items : items

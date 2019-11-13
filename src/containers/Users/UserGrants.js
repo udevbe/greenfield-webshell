@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactList from 'react-list'
 import Switch from '@material-ui/core/Switch'
-import { FilterDrawer, filterSelectors, filterActions } from 'material-ui-filter'
+import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
 import { connect } from 'react-redux'
 import { getList } from 'firekit'
 import { injectIntl } from 'react-intl'
@@ -20,7 +20,7 @@ import { withRouter } from 'react-router-dom'
 import { withTheme } from '@material-ui/core/styles'
 
 export class UserGrants extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const { watchList, userGrantsPath } = this.props
 
     watchList(userGrantsPath)
@@ -74,7 +74,7 @@ export class UserGrants extends Component {
     )
   }
 
-  render() {
+  render () {
     const { intl, filters, appConfig } = this.props
 
     const grantList = appConfig.grants.map((grant, index) => {
@@ -115,7 +115,7 @@ export class UserGrants extends Component {
 }
 
 UserGrants.propTypes = {
-  
+
   theme: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 }
