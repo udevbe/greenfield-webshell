@@ -1,0 +1,3 @@
+const namespace = 'APPLICATIONS'
+
+export const ON_APPLICATION_RUNNING_CHANGED = `${namespace}@ON_APPLICATION_RUNNING_CHANGED`

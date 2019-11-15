@@ -1,21 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { render } from 'react-dom'
 import configureStore from './store'
 import * as serviceWorker from './utils/serviceWorker'
 import App from './containers/App'
 import config from './config/config'
-import A2HSProvider from 'a2hs'
 
-class Demo extends Component {
-  render () {
-    return (
-      <A2HSProvider>
-        <App appConfig={{ configureStore, ...config }} />
-      </A2HSProvider>
-    )
-  }
-}
+const GreenfieldWebShell = () => <App appConfig={{ configureStore, ...config }} />
 
-render(<Demo />, document.querySelector('#root'))
+render(<GreenfieldWebShell />, document.querySelector('#root'))
 
 serviceWorker.register()

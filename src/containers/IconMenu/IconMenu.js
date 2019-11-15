@@ -31,16 +31,16 @@ export default function IconMenu ({ icon, options = [], buttonStyle }) {
   return (
     <div>
       <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
+        aria-label='more'
+        aria-controls='long-menu'
+        aria-haspopup='true'
         onClick={handleClick}
         style={buttonStyle}
       >
-        {icon ? icon : <MoreVertIcon />}
+        {icon || <MoreVertIcon />}
       </IconButton>
       {open && (
-        <Menu id="icon-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
+        <Menu id='icon-menu' anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
           {options
             .filter(o => !o.hidden)
             .map((option, i) => (

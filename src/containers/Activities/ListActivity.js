@@ -67,8 +67,8 @@ class ListActivity extends Component {
             <SearchField filterName={name} />
             <Tooltip title={intl.formatMessage({ id: 'open_filter' })}>
               <IconButton
-                color="inherit"
-                aria-label="open drawer"
+                color='inherit'
+                aria-label='open drawer'
                 onClick={() => {
                   setFilterIsOpen(name, true)
                 }}
@@ -86,7 +86,7 @@ class ListActivity extends Component {
               <ReactList
                 itemRenderer={i => renderItem(list[i].key, list[i].val)}
                 length={list ? list.length : 0}
-                type="simple"
+                type='simple'
               />
             </List>
           </Scrollbar>
@@ -101,7 +101,7 @@ class ListActivity extends Component {
                   }
               }
               style={{ position: 'fixed', bottom: 15, right: 20, zIndex: 99 }}
-              color={'secondary'}
+              color='secondary'
             >
               <Add />
             </Fab>
