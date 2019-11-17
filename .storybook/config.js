@@ -9,6 +9,7 @@ import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
 import 'firebase/messaging'
+import { IntlProvider } from 'react-intl'
 
 const firebase_config_dev = {
   apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',
@@ -23,15 +24,18 @@ const firebase_config_dev = {
 const firebaseApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebase_config_dev)
 
 addDecorator(storyFn => (
-  <Provider store={configureStore()}>
+  <IntlProvider locale='en'>
+    <Provider store={configureStore()}>
       <FirebaseProvider firebaseApp={firebaseApp} context={ReactReduxContext}>
         {storyFn()}
       </FirebaseProvider>
     </Provider>
+  </IntlProvider>
 ))
 
 // automatically import all files ending in *.stories.js
 configure([
   require.context('../src/components', true, /\.stories\.js$/),
-  require.context('../src/containers', true, /\.stories\.js$/)
+  require.context('../src/containers', true, /\.stories\.js$/),
+  require.context('../src/pages', true, /\.stories\.js$/)
 ], module)

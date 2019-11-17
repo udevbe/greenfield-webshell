@@ -1,4 +1,4 @@
-import { CircularProgress, Container, Grid, IconButton, makeStyles, Menu, Typography } from '@material-ui/core'
+import { Box, CircularProgress, Container, Grid, IconButton, makeStyles, Menu, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
@@ -9,12 +9,14 @@ import { ApplicationLauncher } from '../../components/ApplicationLauncher'
 
 const dataPath = 'userApps'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   container: {
-    minHeight: 640,
-    width: 480,
+    minHeight: 300,
+    [theme.breakpoints.down('sm')]: {
+      width: '90vw'
+    }
   }
-})
+}))
 
 const applicationLauncherRenderer = ({ val }) => {
   return (
@@ -25,16 +27,6 @@ const applicationLauncherRenderer = ({ val }) => {
 }
 
 const UserApplications = ({ watchList, unwatchList, list, isLoading }) => {
-  list = [
-    {
-      val: {
-        appIconURL: 'https://source.unsplash.com/random',
-        appTitle: 'Test Application',
-        appId: 'abc'
-      }
-    }
-  ]
-
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
   useEffect(() => {
@@ -57,12 +49,16 @@ const UserApplications = ({ watchList, unwatchList, list, isLoading }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Container className={classes.container}>
+        <Container className={classes.container} maxWidth='md'>
           {isLoading
             ? <CircularProgress />
             : list.length === 0
-              ? <Typography>Looks like there are no applications linked to your account. Visit the WebStore and add some!</Typography>
-              : <Grid container>{list.map(applicationLauncherRenderer)}</Grid>}
+              ? (
+                <Box width='100%' height='100%'>
+                  <Typography className={classes.emptyText} align='center'>No applications linked to your account. Visit the WebStore and add some!</Typography>
+                </Box>
+              )
+              : <Grid container spacing={2}>{list.map(applicationLauncherRenderer)}</Grid>}
         </Container>
       </Menu>
     </>

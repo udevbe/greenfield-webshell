@@ -30,7 +30,7 @@ export const ApplicationLauncher = ({ application: { appIconURL, appTitle, appId
         <CardContent>
           <Typography
             align='center'
-            variant='caption'
+            variant='subtitle2'
             noWrap
           >
             {appTitle}

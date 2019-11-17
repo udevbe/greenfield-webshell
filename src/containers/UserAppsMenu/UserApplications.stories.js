@@ -5,4 +5,4 @@ export default {
   title: 'UserApplication'
 }
 
-export const userApplications = () => (<UserApplications />)
+export const noApps = () => (<UserApplications />)

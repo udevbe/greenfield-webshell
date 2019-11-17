@@ -1,24 +1,21 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { injectIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
+import UserApplications from '../../containers/UserAppsMenu/UserApplications'
 
-class Workspace extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      text: ''
-    }
-  }
+const Workspace = (props) => {
+  const { intl } = props
 
-  render () {
-    const { intl } = this.props
-
-    return (
-      <Activity
-        title={intl.formatMessage({ id: 'workspace' })}>
-      </Activity>
-    )
-  }
+  return (
+    <Activity
+      title={intl.formatMessage({ id: 'workspace' })}
+      appBarContent={
+        <>
+          <UserApplications />
+        </>
+      }
+    />
+  )
 }
 
 Workspace.propTypes = {}
