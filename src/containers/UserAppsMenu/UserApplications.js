@@ -1,9 +1,7 @@
 import { Box, CircularProgress, Container, Grid, IconButton, makeStyles, Menu, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { withFirebase } from 'firekit-provider'
-import { getList, isLoading } from 'firekit'
 import { Apps as AppsIcon } from '@material-ui/icons'
 import { ApplicationLauncher } from '../../components/ApplicationLauncher'
 
@@ -26,13 +24,13 @@ const applicationLauncherRenderer = ({ val }) => {
   )
 }
 
-const UserApplications = ({ watchList, unwatchList, list, isLoading }) => {
+const UserApplications = ({ watchCol, unwatchCol, list, isLoading }) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
-  useEffect(() => {
-    watchList(dataPath)
-    // return () => unwatchList(dataPath)
-  })
+  // useEffect(() => {
+  //   watchCol(dataPath)
+  //   return () => unwatchCol(dataPath)
+  // })
 
   const handleClick = event => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
@@ -52,7 +50,7 @@ const UserApplications = ({ watchList, unwatchList, list, isLoading }) => {
         <Container className={classes.container} maxWidth='md'>
           {isLoading
             ? <CircularProgress />
-            : list.length === 0
+            : 0 === 0
               ? (
                 <Box width='100%' height='100%'>
                   <Typography className={classes.emptyText} align='center'>No applications linked to your account. Visit the WebStore and add some!</Typography>
@@ -66,13 +64,12 @@ const UserApplications = ({ watchList, unwatchList, list, isLoading }) => {
 }
 
 const mapStateToProps = (state, _) => ({
-  isLoading: isLoading(state, dataPath),
-  list: getList(state, dataPath)
+//  isLoading: isLoading(state, dataPath),
+//   list: getCol(state, dataPath)
 })
 
 export default compose(
   connect(
     mapStateToProps
   ),
-  withFirebase
 )(UserApplications)

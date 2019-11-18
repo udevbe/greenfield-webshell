@@ -22,6 +22,12 @@ const firebase_config_dev = {
   measurementId: 'G-84RFF1PNSR'
 }
 const firebaseApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebase_config_dev)
+if (process.env.NODE_ENV === 'development') {
+  firebaseApp.firestore().settings({
+    host: 'localhost:8080',
+    ssl: false
+  })
+}
 
 addDecorator(storyFn => (
   <IntlProvider locale='en'>

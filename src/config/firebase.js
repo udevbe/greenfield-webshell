@@ -10,3 +10,10 @@ import 'firebase/messaging'
 export const firebaseApp = firebase.initializeApp(
   process.env.NODE_ENV !== 'production' ? config.firebase_config_dev : config.firebase_config
 )
+
+if (process.env.NODE_ENV === 'development') {
+  firebaseApp.firestore().settings({
+    host: 'localhost:8080',
+    ssl: false
+  })
+}
