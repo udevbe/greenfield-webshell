@@ -28,8 +28,6 @@
     "downshift": "^3.4.1",
     "firebase": "^7.3.0",
     "firebaseui": "^4.2.0",
-    "firekit": "^1.0.30",
-    "firekit-provider": "^1.0.2",
     "history": "^4.10.1",
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.8.0",

@@ -4,48 +4,47 @@ import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import ReactList from 'react-list'
 import Switch from '@material-ui/core/Switch'
-import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
+import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { getList } from 'firekit'
 import { injectIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme } from '@material-ui/core/styles'
+import { useFirebase } from 'react-redux-firebase'
 
-export class RoleGrants extends Component {
-  handleGrantToggleChange = (e, isInputChecked, key) => {
-    const { firebaseApp, match } = this.props
-    const uid = match.params.uid
+export const RoleGrants = ({
+  uid,
+  intl,
+  roleGrants,
+  appConfig
+}) => {
+  const firebase = useFirebase()
+  const firebaseApp = firebase.app
 
+  const handleGrantToggleChange = (e, isInputChecked, key) => {
     if (isInputChecked) {
-      firebaseApp
-        .database()
-        .ref(`/role_grants/${uid}/${key}`)
-        .set(true)
+      firebaseApp.database().ref(`/role_grants/${uid}/${key}`).set(true)
     } else {
-      firebaseApp
-        .database()
-        .ref(`/role_grants/${uid}/${key}`)
-        .remove()
+      firebaseApp.database().ref(`/role_grants/${uid}/${key}`).remove()
     }
   }
 
-  renderGrantItem = (list, i, k) => {
-    const { user_grants, match, intl, appConfig } = this.props
+  const grantList = []
+  appConfig.grants.forEach((grant, index) => grantList.push({
+    key: index,
+    val: { name: intl.formatMessage({ id: `grant_${grant}` }), value: grant }
+  }))
 
-    const uid = match.params.uid
-    const key = list[i].key
-    const val = appConfig.grants[list[i].key]
+  const renderGrantItem = (i, k) => {
+    const key = grantList[i].key
+    const val = appConfig.grants[grantList[i].key]
     let userGrants = []
 
-    if (user_grants !== undefined) {
-      user_grants.map(role => {
+    if (roleGrants !== undefined) {
+      roleGrants.map(role => {
         if (role.key === uid) {
           if (role.val !== undefined) {
             userGrants = role.val
@@ -62,9 +61,7 @@ export class RoleGrants extends Component {
           <ListItemText primary={intl.formatMessage({ id: `grant_${val}` })} secondary={val} />
           <Switch
             checked={userGrants[val] === true}
-            onChange={(e, isInputChecked) => {
-              this.handleGrantToggleChange(e, isInputChecked, val)
-            }}
+            onChange={(e, isInputChecked) => handleGrantToggleChange(e, isInputChecked, val)}
           />
         </ListItem>
         <Divider variant='inset' />
@@ -72,69 +69,33 @@ export class RoleGrants extends Component {
     )
   }
 
-  render () {
-    const { intl, filters, appConfig } = this.props
-
-    let grantList = []
-    appConfig.grants.forEach((grant, index) => {
-      grantList.push({ key: index, val: { name: intl.formatMessage({ id: `grant_${grant}` }), value: grant } })
-    })
-
-    const list = filterSelectors.getFilteredList('role_grants', filters, grantList, fieldValue => fieldValue.val)
-
-    const filterFields = [
-      {
-        name: 'name',
-        label: intl.formatMessage({ id: 'name_label' })
-      },
-      {
-        name: 'value',
-        label: intl.formatMessage({ id: 'value_label' })
-      }
-    ]
-
-    return (
-      <div style={{ height: '100%' }}>
-        <List
-          style={{ height: '100%' }}
-          ref={field => {
-            this.list = field
-          }}
-        >
-          <ReactList
-            itemRenderer={(i, k) => this.renderGrantItem(list, i, k)}
-            length={list ? list.length : 0}
-            type="simple"
-          />
-        </List>
-        <FilterDrawer name={'role_grants'} fields={filterFields} formatMessage={intl.formatMessage} />
-      </div>
-    )
-  }
+  return (
+    <div style={{ height: '100%' }}>
+      <List style={{ height: '100%' }}>
+        <ReactList
+          itemRenderer={renderGrantItem}
+          length={grantList.length}
+          type='simple'
+        />
+      </List>
+    </div>
+  )
 }
 
-RoleGrants.propTypes = {
-
-  theme: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired
-}
+RoleGrants.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl, lists, filters } = state
-  const { match } = ownProps
-
-  const uid = match.params.uid
-
-  return {
-    filters,
-    auth,
-    uid,
-    intl,
-    user_grants: getList(state, 'role_grants')
-  }
+  const { auth, intl } = state
+  const { match: { params: { uid } }, roleGrants } = ownProps
+  return { auth, uid, intl, roleGrants }
 }
 
-export default connect(
-  mapStateToProps,
-  { setSimpleValue, ...filterActions }
-)(injectIntl(withRouter(withFirebase(withAppConfigs(withTheme(RoleGrants))))))
+export default compose(
+  connect(
+    mapStateToProps,
+    { setSimpleValue }
+  ),
+  injectIntl,
+  withRouter,
+  withAppConfigs
+)(RoleGrants)

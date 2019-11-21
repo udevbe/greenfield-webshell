@@ -17,7 +17,6 @@ import { initializeMessaging } from '../../utils/messaging'
 import { saveAuthorisation } from '../../utils/auth'
 import { setPersistentValue } from '../../store/persistentValues/actions'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { clearInitialization, initConnection, initMessaging, watchAuth, watchList, watchPath } from 'firekit'
 import { withA2HS } from 'a2hs'
 
 const history = createBrowserHistory()
@@ -25,12 +24,6 @@ const history = createBrowserHistory()
 const getActions = dispatch => {
   return bindActionCreators(
     {
-      watchAuth,
-      clearInitialization,
-      watchConnection: initConnection,
-      watchList,
-      watchPath,
-      initMessaging,
       setPersistentValue
     },
     dispatch

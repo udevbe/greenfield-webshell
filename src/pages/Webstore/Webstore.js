@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { injectIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
@@ -9,12 +9,13 @@ import Card from '@material-ui/core/Card'
 import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { compose } from 'redux'
 import InfiniteScroll from 'react-infinite-scroller'
-import { withFirebase } from 'firekit-provider'
+import { useFirebaseConnect } from 'react-redux-firebase'
+import { useSelector } from 'react-redux'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   icon: {
     marginRight: theme.spacing(2)
   },
@@ -44,7 +45,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6)
   }
-})
+}))
 
 const cards = [
   {
@@ -64,17 +65,16 @@ const cards = [
   { key: 19, val: null }, { key: 20, val: null }
 ]
 
-const Webstore = ({ intl, classes, watchList, list }) => {
-  list = cards
+const appsListBatchSize = 18
 
-  const path = 'apps'
-  const appsListBatchSize = 18
-
-  useEffect(() => {
-    watchList(path)
-  }, [])
+const Webstore = ({ intl }) => {
   const [scrollPos, setScrollPos] = useState(appsListBatchSize)
-  const appsList = cards.slice(0, Math.min(list.length, scrollPos)).map(({ key, val }) => {
+
+  useFirebaseConnect([{ path: 'apps', storeAs: 'apps' }])
+  const apps = useSelector(state => state.firebase.ordered.apps)
+
+  const classes = useStyles()
+  const appsList = cards.slice(0, Math.min(apps.length, scrollPos)).map(({ key, val }) => {
     return (
       <Grid item key={key} xs={12} sm={6} md={4} lg={3} xl={2}>
         <Card className={classes.card}>
@@ -108,7 +108,6 @@ const Webstore = ({ intl, classes, watchList, list }) => {
   })
 
   const mainRef = useRef(null)
-
   return (
     <Activity
       title={intl.formatMessage({ id: 'webstore' })}
@@ -124,7 +123,7 @@ const Webstore = ({ intl, classes, watchList, list }) => {
           getScrollParent={() => mainRef.current}
           pageStart={0}
           loadMore={() => { setScrollPos(scrollPos + appsListBatchSize) }}
-          hasMore={list ? (list.length > scrollPos) : false}
+          hasMore={apps ? (apps.length > scrollPos) : false}
           loader={<div className='loader' key={0}>Loading ...</div>}
         >
           <Grid container spacing={4}>
@@ -139,7 +138,5 @@ const Webstore = ({ intl, classes, watchList, list }) => {
 Webstore.propTypes = {}
 
 export default compose(
-  injectIntl,
-  withStyles(styles, { withTheme: true }),
-  withFirebase
+  injectIntl
 )(Webstore)

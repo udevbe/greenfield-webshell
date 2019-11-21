@@ -3,7 +3,6 @@ import Loadable from 'react-loadable'
 import LoadingComponent from '../../components/LoadingComponent'
 import React from 'react'
 import config from '../../config'
-import configureStore from '../../store'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
@@ -15,7 +14,7 @@ export const RootAsync = Loadable({
 })
 
 const App = ({ appConfig }) => {
-  const store = appConfig && appConfig.configureStore ? appConfig.configureStore() : configureStore()
+  const store = appConfig.configureStore()
   const configs = { ...config, ...appConfig }
   const { landingPage: LandingPage = false } = configs
 

@@ -1,17 +1,16 @@
 import * as firebaseui from 'firebaseui'
 import AuthUI from '../../containers/AuthUI/AuthUI'
 import React from 'react'
-import * as PropTypes from 'prop-types'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withFirebase } from 'firekit-provider'
-import { withStyles } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
+import { bindActionCreators, compose } from 'redux'
 import Logo from '../../components/Logo'
-import Typography from '@material-ui/core/Typography'
-import { bindActionCreators } from 'redux'
 import drawerActions from '../../store/drawer/actions'
 import { useDispatch } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
+import { useFirebase } from 'react-redux-firebase'
 
-const styles = _ => ({
+const useStyles = makeStyles({
   wrap: {
     display: 'flex',
     flexDirection: 'column',
@@ -26,7 +25,9 @@ const styles = _ => ({
   }
 })
 
-const SignIn = ({ firebaseApp, appConfig, classes }) => {
+const SignIn = ({ appConfig }) => {
+  const firebaseApp = useFirebase().app
+
   const uiConfig = {
     signInSuccessUrl: '/workspace',
     signInFlow: 'popup',
@@ -39,6 +40,8 @@ const SignIn = ({ firebaseApp, appConfig, classes }) => {
   setDrawerOpen(false)
   setDrawerMobileOpen(false)
   setDrawerUseMinified(false)
+
+  const classes = useStyles()
 
   return (
     <div className={classes.wrap}>
@@ -53,10 +56,8 @@ const SignIn = ({ firebaseApp, appConfig, classes }) => {
   )
 }
 
-SignIn.propTypes = {
-  classes: PropTypes.object,
-  firebaseApp: PropTypes.object,
-  appConfig: PropTypes.object
-}
+SignIn.propTypes = {}
 
-export default withStyles(styles, { withTheme: true })(withFirebase(withAppConfigs(SignIn)))
+export default compose(
+  withAppConfigs
+)(SignIn)

@@ -1,56 +1,38 @@
-import AccountBox from '@material-ui/icons/AccountBox'
+import { AccountBox, Add } from '@material-ui/icons'
 import Activity from '../../containers/Activity'
-import Add from '@material-ui/icons/Add'
 import AltIconAvatar from '../../components/AltIconAvatar'
-import Divider from '@material-ui/core/Divider'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import React, { Component } from 'react'
+import { Divider, Fab, List, ListItem, ListItemText } from '@material-ui/core'
+import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar/Scrollbar'
-import { Fab } from '@material-ui/core'
-import { connect } from 'react-redux'
-import { getList, isLoading } from 'firekit'
+import { compose } from 'redux'
+import { useSelector } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
+import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-const path = 'roles'
+export const Roles = ({ history, intl }) => {
+  const firebase = useFirebase()
+  const firebaseApp = firebase.app
 
-export class Roles extends Component {
-  componentDidMount () {
-    const { watchList } = this.props
+  useFirebaseConnect([{ path: '/roles' }])
 
-    watchList(path)
+  const roles = useSelector(state => state.firebase.ordered.roles)
+
+  const handleCreateClick = () => {
+    const newRole = firebaseApp.database().ref('/roles').push()
+    firebaseApp.database().ref('/roles').push().update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
   }
 
-  handleCreateClick = () => {
-    const { firebaseApp, history } = this.props
-
-    const newRole = firebaseApp
-      .database()
-      .ref(`/${path}`)
-      .push()
-
-    newRole.update({ name: 'New Role' }).then(() => {
-      history.push(`/${path}/edit/${newRole.key}/main`)
-    })
-  }
-
-  renderItem = i => {
-    const { list, history } = this.props
-
-    const key = list[i].key
-    const val = list[i].val
+  const renderItem = i => {
+    const key = roles[i].key
+    const val = roles[i].val
 
     return (
       <div key={key}>
         <ListItem
           key={i}
-          onClick={() => {
-            history.push(`/${path}/edit/${key}/main`)
-          }}
+          onClick={() => history.push(`/roles/edit/${key}/main`)}
           id={i}
         >
           <AltIconAvatar icon={<AccountBox />} />
@@ -61,41 +43,29 @@ export class Roles extends Component {
     )
   }
 
-  render () {
-    const { intl, list, isLoading } = this.props
+  return (
+    <Activity isLoading={!isLoaded(roles)} title={intl.formatMessage({ id: 'roles' })}>
+      <div style={{ height: '100%' }}>
+        <Scrollbar>
+          <List>
+            <ReactList itemRenderer={renderItem} length={roles.length} type='simple' />
+          </List>
+        </Scrollbar>
+        <div style={{ float: 'left', clear: 'both' }} />
 
-    return (
-      <Activity isLoading={isLoading} title={intl.formatMessage({ id: 'roles' })}>
-        <div style={{ height: '100%' }}>
-          <Scrollbar>
-            <List
-              ref={field => {
-                this.list = field
-              }}
-            >
-              <ReactList itemRenderer={this.renderItem} length={list.length} type="simple" />
-            </List>
-          </Scrollbar>
-          <div style={{ float: 'left', clear: 'both' }} />
-
-          <div style={{ position: 'fixed', right: 18, zIndex: 3, bottom: 18 }}>
-            <Fab color="secondary" onClick={this.handleCreateClick}>
-              <Add className="material-icons" />
-            </Fab>
-          </div>
+        <div style={{ position: 'fixed', right: 18, zIndex: 3, bottom: 18 }}>
+          <Fab color='secondary' onClick={handleCreateClick}>
+            <Add className='material-icons' />
+          </Fab>
         </div>
-      </Activity>
-    )
-  }
+      </div>
+    </Activity>
+  )
 }
 
 Roles.propTypes = {}
 
-const mapStateToProps = state => {
-  return {
-    list: getList(state, path),
-    isLoading: isLoading(state, path)
-  }
-}
-
-export default connect(mapStateToProps)(injectIntl(withFirebase(withRouter(Roles))))
+export default compose(
+  injectIntl,
+  withRouter
+)(Roles)

@@ -1,7 +1,5 @@
 import dialogs from './dialogs/reducer'
-import filterReducer from 'material-ui-filter/lib/store/reducer'
-import firekitReducers from 'firekit'
-import { reducer as formReducer } from 'redux-form'
+import { firebaseReducer } from 'react-redux-firebase'
 import initState from './init'
 import locale from './locale/reducer'
 import persistentValues from './persistentValues/reducer'
@@ -12,10 +10,8 @@ import drawer from './drawer/reducer'
 import { combineReducers } from 'redux'
 
 export const appReducers = {
-  ...firekitReducers,
+  firebaseReducer,
   dialogs,
-  filters: filterReducer,
-  form: formReducer,
   locale,
   persistentValues,
   simpleValues,

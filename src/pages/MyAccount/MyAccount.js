@@ -1,45 +1,34 @@
 import Activity from '../../containers/Activity'
-import Avatar from '@material-ui/core/Avatar'
-import Delete from '@material-ui/icons/Delete'
-import Error from '@material-ui/icons/Error'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormGroup from '@material-ui/core/FormGroup'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import IconButton from '@material-ui/core/IconButton'
-import Input from '@material-ui/core/Input'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import InputLabel from '@material-ui/core/InputLabel'
-import Person from '@material-ui/icons/Person'
-import PhotoCamera from '@material-ui/icons/PhotoCamera'
-import PropTypes from 'prop-types'
 import QuestionDialog from '../../containers/QuestionDialog'
-import React, { Component } from 'react'
-import Save from '@material-ui/icons/Save'
-import Switch from '@material-ui/core/Switch'
-import VerifiedUser from '@material-ui/icons/VerifiedUser'
-import Visibility from '@material-ui/icons/Visibility'
-import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import { ImageCropDialog } from '../../containers/ImageCropDialog'
+import { Delete, Error, Person, PhotoCamera, Save, VerifiedUser, Visibility, VisibilityOff } from '@material-ui/icons'
+import {
+  Avatar,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  Switch
+} from '@material-ui/core'
+import React, { useState } from 'react'
 import classNames from 'classnames'
 import requestNotificationPermission from '../../utils/messaging'
 import { GoogleIcon } from '../../components/Icons'
-import { ImageCropDialog } from '../../containers/ImageCropDialog'
-import { change, formValueSelector, submit } from 'redux-form'
 import { compose } from 'redux'
-import { connect } from 'react-redux'
-import { getList, getPath } from 'firekit'
+import { connect, useSelector } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
-import { setPersistentValue } from '../../store/persistentValues/actions'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withStyles, withTheme } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
+import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-const form_name = 'my_account'
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   avatar: {
     margin: 10
   },
@@ -52,323 +41,186 @@ const styles = theme => ({
   },
   withoutLabel: {
     marginTop: theme.spacing(1) * 3
-  },
-  textField: {
-    //flexBasis: 200,
   }
-})
+}))
 
-export class MyAccount extends Component {
-  state = {
-    values: {
-      displayName: '',
-      email: '',
-      photoURL: '',
-      password: '',
-      newPassword: '',
-      confirmPassword: ''
-    },
-    errors: {},
-    isPhotoDialogOpen: false
-  }
+const MyAccount = (props) => {
+  const { auth, authError, authStateChanged, setSimpleValue, setDialogIsOpen, intl, appConfig, new_user_photo } = props
 
-  getProviderIcon = p => {
-    switch (p) {
-      case 'google.com':
-        return <GoogleIcon />
-      default:
-        return undefined
-    }
-  }
+  useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
+  useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
+  const notificationTokens = useSelector(state => state.firebase.ordered.notificationTokens)
+  const emailNotifications = useSelector(state => state.firebase.ordered.emailNotifications)
 
-  handleEmailVerificationsSend = () => {
-    const { firebaseApp } = this.props
-    firebaseApp
-      .auth()
-      .currentUser.sendEmailVerification()
-      .then(() => {
-        alert('Verification E-Mail send')
-      })
-  }
+  const [values, setValues] = useState({
+    displayName: '',
+    email: '',
+    photoURL: '',
+    password: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [showConfirmPassword, setShowConfirmPassword] = useState(true)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
+  const firebase = useFirebase()
+  const firebaseApp = firebase.app
 
-  handlePhotoUploadSuccess = snapshot => {
+  const getProviderIcon = p => { if (p === 'google.com') { return <GoogleIcon /> } else { return undefined } }
+  const handleEmailVerificationsSend = () => firebaseApp.auth().currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
+  const handlePhotoUploadSuccess = snapshot => {
     snapshot.ref.getDownloadURL().then(downloadURL => {
-      this.setState({ values: { ...this.state.values, photoURL: downloadURL } }, () => {
-        this.setState({ isPhotoDialogOpen: false })
-      })
+      setValues({ ...values, photoURL: downloadURL })
+      setIsPhotoDialogOpen(false)
     })
   }
-
-  handleValueChange = (name, value) => {
-    return this.setState({ values: { ...this.state.values, [name]: value } }, () => {
-      this.validate()
-    })
+  const handleValueChange = (name, value) => {
+    setValues({ ...values, [name]: value })
+    validate()
   }
-
-  getProvider = (firebase, provider) => {
-    if (provider.indexOf('facebook') > -1) {
-      return new firebase.auth.FacebookAuthProvider()
+  const getProvider = provider => {
+    if (provider.indexOf('email') > -1) {
+      return new firebase.auth.EmailAuthProvider()
     }
-    if (provider.indexOf('github') > -1) {
-      return new firebase.auth.GithubAuthProvider()
+    if (provider.indexOf('anonymous') > -1) {
+      return new firebase.auth.AnonymousAuthProvider()
     }
     if (provider.indexOf('google') > -1) {
       return new firebase.auth.GoogleAuthProvider()
     }
-    if (provider.indexOf('twitter') > -1) {
-      return new firebase.auth.TwitterAuthProvider()
-    }
-    if (provider.indexOf('phone') > -1) {
-      return new firebase.auth.PhoneAuthProvider()
-    }
 
     throw new Error('Provider is not supported!')
   }
-
-  reauthenticateUser = (values, onSuccess) => {
-    const { auth, firebaseApp, authError } = this.props
-
-    import('firebase').then(firebase => {
-      if (this.isLinkedWithProvider('password') && !values) {
-        if (onSuccess && onSuccess instanceof Function) {
-          onSuccess()
-        }
-      } else if (this.isLinkedWithProvider('password') && values) {
-        const credential = firebase.auth.EmailAuthProvider.credential(auth.email, values.password)
-        firebaseApp
-          .auth()
-          .currentUser.reauthenticateWithCredential(credential)
-          .then(
-            () => {
-              if (onSuccess && onSuccess instanceof Function) {
-                onSuccess()
-              }
-            },
-            e => {
-              authError(e)
-            }
-          )
-      } else {
-        firebaseApp
-          .auth()
-          .currentUser.reauthenticateWithPopup(this.getProvider(firebase, auth.providerData[0].providerId))
-          .then(
-            () => {
-              if (onSuccess && onSuccess instanceof Function) {
-                onSuccess()
-              }
-            },
-            e => {
-              authError(e)
-            }
-          )
-      }
-    })
+  const reauthenticateUser = (values, onSuccess) => {
+    if (isLinkedWithProvider('password') && !values) {
+      if (onSuccess && onSuccess instanceof Function) { onSuccess() }
+    } else if (isLinkedWithProvider('password') && values) {
+      const credential = firebase.auth.EmailAuthProvider.credential(auth.email, values.password)
+      firebaseApp.auth().currentUser.reauthenticateWithCredential(credential)
+        .then(
+          () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
+          e => authError(e)
+        )
+    } else {
+      firebaseApp.auth().currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
+        .then(
+          () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
+          e => authError(e)
+        )
+    }
   }
-
-  isLinkedWithProvider = provider => {
-    const { auth } = this.props
-
+  const isLinkedWithProvider = provider => {
     try {
       return (
         auth &&
         auth.providerData &&
-        auth.providerData.find(p => {
-          return p.providerId === provider
-        }) !== undefined
+        auth.providerData.find(p => p.providerId === provider) !== undefined
       )
     } catch (e) {
       return false
     }
   }
-
-  linkUserWithPopup = p => {
-    const { firebaseApp, authError, authStateChanged } = this.props
-
-    import('firebase').then(firebase => {
-      const provider = this.getProvider(firebase, p)
-
-      firebaseApp
-        .auth()
-        .currentUser.linkWithPopup(provider)
-        .then(
-          () => {
-            authStateChanged(firebaseApp.auth().currentUser)
-          },
-          e => {
-            authError(e)
-          }
-        )
-    })
+  const linkUserWithPopup = p => {
+    const provider = getProvider(p)
+    firebaseApp.auth().currentUser.linkWithPopup(provider)
+      .then(
+        () => authStateChanged(firebaseApp.auth().currentUser),
+        e => authError(e)
+      )
   }
-
-  handleCreateValues = () => {
-    return false
-  }
-
-  clean = obj => {
+  const handleCreateValues = () => false
+  const clean = obj => {
     Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
     return obj
   }
-
-  submit = () => {
-    const { auth, firebaseApp, authStateChanged, authError } = this.props
-
-    const values = this.state.values
-
+  const submit = () => {
     const simpleChange =
       (values.displayName && values.displayName.localeCompare(auth.displayName)) ||
       (values.photoURL && values.photoURL.localeCompare(auth.photoURL))
 
-    let simpleValues = {
+    const simpleValues = {
       displayName: values.displayName,
       photoURL: values.photoURL
     }
 
-    //Change simple data
+    // Change simple data
     if (simpleChange) {
-      firebaseApp
-        .auth()
-        .currentUser.updateProfile(simpleValues)
-        .then(
-          () => {
-            firebaseApp
-              .database()
-              .ref(`users/${auth.uid}`)
-              .update(this.clean(simpleValues))
-              .then(
-                () => {
-                  authStateChanged(values)
-                },
-                e => {
-                  authError(e)
-                }
-              )
-          },
-          e => {
-            authError(e)
-          }
-        )
+      firebaseApp.auth().currentUser.updateProfile(simpleValues).then(
+        () => {
+          firebaseApp.database().ref(`users/${auth.uid}`).update(clean(simpleValues))
+            .then(
+              () => authStateChanged(values),
+              e => authError(e)
+            )
+        },
+        e => authError(e)
+      )
     }
 
-    //Change email
+    // Change email
     if (values.email && values.email.localeCompare(auth.email)) {
-      this.reauthenticateUser(values, () => {
-        firebaseApp
-          .auth()
-          .currentUser.updateEmail(values.email)
+      reauthenticateUser(values, () => {
+        firebaseApp.auth().currentUser.updateEmail(values.email)
           .then(
             () => {
-              firebaseApp
-                .database()
-                .ref(`users/${auth.uid}`)
-                .update({ email: values.email })
+              firebaseApp.database().ref(`users/${auth.uid}`).update({ email: values.email })
                 .then(
-                  () => {
-                    authStateChanged({ email: values.email })
-                  },
-                  e => {
-                    authError(e)
-                  }
+                  () => authStateChanged({ email: values.email }),
+                  e => authError(e)
                 )
             },
             e => {
               authError(e)
-
               if (e.code === 'auth/requires-recent-login') {
-                firebaseApp
-                  .auth()
-                  .signOut()
-                  .then(function () {
-                    setTimeout(() => {
-                      alert('Please sign in again to change your email.')
-                    }, 1)
-                  })
+                firebaseApp.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your email.'), 1))
               }
             }
           )
       })
     }
-
-    //Change password
+    // Change password
     if (values.newPassword) {
-      this.reauthenticateUser(values, () => {
-        firebaseApp
-          .auth()
-          .currentUser.updatePassword(values.newPassword)
+      reauthenticateUser(values, () => {
+        firebaseApp.auth().currentUser.updatePassword(values.newPassword)
           .then(
-            () => {
-              firebaseApp.auth().signOut()
-            },
+            () => firebaseApp.auth().signOut(),
             e => {
               authError(e)
-
               if (e.code === 'auth/requires-recent-login') {
-                firebaseApp
-                  .auth()
-                  .signOut()
-                  .then(() => {
-                    setTimeout(() => {
-                      alert('Please sign in again to change your password.')
-                    }, 1)
-                  })
+                firebaseApp.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your password.'), 1))
               }
             }
           )
       })
     }
-
-    //setSimpleValue('new_user_photo', undefined);
-
     // We manage the data saving above
     return false
   }
-
-  handleClose = () => {
-    const { setSimpleValue, setDialogIsOpen } = this.props
+  const handleClose = () => {
     setSimpleValue('delete_user', false)
     setDialogIsOpen('auth_menu', false)
   }
-
-  handleNotificationsClose = () => {
-    const { setSimpleValue } = this.props
-    setSimpleValue('disable_notifications', false)
-  }
-
-  handleDelete = () => {
-    const { firebaseApp, authError } = this.props
-
-    this.reauthenticateUser(false, () => {
-      firebaseApp
-        .auth()
-        .currentUser.delete()
+  const handleDelete = () => {
+    reauthenticateUser(false, () => {
+      firebaseApp.auth().currentUser.delete()
         .then(
-          () => {
-            this.handleClose()
-          },
+          () => handleClose(),
           e => {
             authError(e)
-
             if (e.code === 'auth/requires-recent-login') {
-              firebaseApp
-                .auth()
-                .signOut()
-                .then(() => {
-                  setTimeout(() => {
-                    alert('Please sign in again to delete your account.')
-                  }, 1)
-                })
+              firebaseApp.auth().signOut().then(() => {
+                setTimeout(() => alert('Please sign in again to delete your account.'), 1)
+              })
             }
           }
         )
     })
   }
-
-  validate = () => {
-    const { auth } = this.props
+  const validate = () => {
     const providerId = auth.providerData[0].providerId
     const errors = {}
-    const values = this.state.values
 
     if (!values.displayName) {
       errors.displayName = 'Required'
@@ -395,419 +247,341 @@ export class MyAccount extends Component {
       }
     }
 
-    this.setState({ errors })
+    setErrors(errors)
   }
 
-  canSave = () => {
-    const { auth } = this.props
-    const values = this.state.values
+  const canSave = () => {
+    if (Object.keys(errors).length) { return false }
 
-    if (Object.keys(this.state.errors).length) {
-      return false
-    }
-
-    if (values.displayName !== auth.displayName || values.email !== auth.email || values.photoURL !== auth.photoURL) {
+    if (values.displayName !== auth.displayName ||
+      values.email !== auth.email ||
+      values.photoURL !== auth.photoURL) {
       return true
     }
 
-    if (values.newPassword) {
-      return true
-    }
-
-    return false
+    return !!values.newPassword
   }
 
-  componentDidMount () {
+  componentDidMount()
+  {
     const { auth, watchList, watchPath } = this.props
     const { displayName, email, photoURL } = auth
 
     watchList(`notification_tokens/${auth.uid}`)
     watchPath(`email_notifications/${auth.uid}`)
-    this.setState({ values: { ...this.state.values, displayName, email, photoURL } })
+    setValues({ ...values, displayName, email, photoURL })
   }
 
-  handleDisableNotifications = () => {
-    const { firebaseApp, auth, setSimpleValue } = this.props
-
-    firebaseApp
-      .database()
-      .ref(`disable_notifications/${auth.uid}`)
-      .set(true)
+  const handleDisableNotifications = () => {
+    firebaseApp.database().ref(`disable_notifications/${auth.uid}`).set(true)
       .then(() => {
-        firebaseApp
-          .database()
-          .ref(`notification_tokens/${auth.uid}`)
-          .remove()
-          .then(() => {
-            setSimpleValue('disable_notifications', false)
-          })
+        firebaseApp.database().ref(`notification_tokens/${auth.uid}`).remove()
+          .then(() => setSimpleValue('disable_notifications', false))
       })
   }
 
-  handleEnableNotificationsChange = e => {
-    const { firebaseApp, auth, setSimpleValue } = this.props
-
+  const handleEnableNotificationsChange = e => {
     if (!e.target.checked) {
       setSimpleValue('disable_notifications', true)
     } else {
-      firebaseApp
-        .database()
-        .ref(`disable_notifications/${auth.uid}`)
-        .remove(() => {
-          requestNotificationPermission(this.props)
-          // eslint-disable-next-line no-self-assign
-          window.location.href = window.location.href
-        })
+      firebaseApp.database().ref(`disable_notifications/${auth.uid}`).remove(() => {
+        requestNotificationPermission(props)
+        // eslint-disable-next-line no-self-assign
+        window.location.href = window.location.href
+      })
     }
   }
 
-  handleEmailNotification = async e => {
-    const { firebaseApp, auth } = this.props
-    await firebaseApp
-      .database()
-      .ref(`email_notifications/${auth.uid}`)
-      .set(e.target.checked)
-  }
+  const handleEmailNotification = e => firebaseApp.database().ref(`email_notifications/${auth.uid}`).set(e.target.checked)
 
-  render () {
-    const {
-      intl,
-      setSimpleValue,
-      auth,
-      appConfig,
-      classes,
-      new_user_photo,
-      notificationTokens,
-      emailNotifications = false
-    } = this.props
+  const classes = useStyles()
+  const showPasswords = isLinkedWithProvider('password')
 
-    const showPasswords = this.isLinkedWithProvider('password')
-
-    return (
-      <Activity
-        iconStyleRight={{ width: '50%' }}
-        appBarContent={
-          <div style={{ display: 'flex' }}>
-            {auth.uid && (
-              <IconButton
-                color="inherit"
-                disabled={!this.canSave()}
-                aria-label="open drawer"
-                onClick={() => {
-                  this.submit()
-                }}
-              >
-                <Save className="material-icons" />
-              </IconButton>
-            )}
-
-            {auth.uid && (
-              <IconButton color="inherit" aria-label="open drawer" onClick={() => setSimpleValue('delete_user', true)}>
-                <Delete className="material-icons" />
-              </IconButton>
-            )}
-          </div>
-        }
-        title={intl.formatMessage({ id: 'my_account' })}
-      >
-        <div>
+  return (
+    <Activity
+      isLoading={!isLoaded(notificationTokens) || !isLoaded(emailNotifications)}
+      iconStyleRight={{ width: '50%' }}
+      appBarContent={
+        <div style={{ display: 'flex' }}>
           {auth.uid && (
-            <div style={{ margin: 15, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {this.state.values.photoURL && (
-                  <Avatar
-                    alt={auth.displayName}
-                    src={this.state.values.photoURL}
-                    className={classNames(classes.avatar, classes.bigAvatar)}
-                  />
-                )}
-                {!this.state.values.photoURL && (
-                  <Avatar className={classNames(classes.avatar, classes.bigAvatar)}>
-                    <Person style={{ fontSize: 60 }} />{' '}
-                  </Avatar>
-                )}
-
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    this.setState({ isPhotoDialogOpen: true })
-                  }}
-                >
-                  <PhotoCamera />
-                </IconButton>
-
-                <div>
-                  {appConfig.firebase_providers.map((p, i) => {
-                    if (p !== 'email' && p !== 'password' && p !== 'phone') {
-                      return (
-                        <IconButton
-                          key={i}
-                          disabled={this.isLinkedWithProvider(p)}
-                          color="primary"
-                          onClick={() => {
-                            this.linkUserWithPopup(p)
-                          }}
-                        >
-                          {this.getProviderIcon(p)}
-                        </IconButton>
-                      )
-                    } else {
-                      return <div key={i} />
-                    }
-                  })}
-                </div>
-
-                <div>
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={notificationTokens.length > 0}
-                          onChange={this.handleEnableNotificationsChange}
-                          value="pushNotifiction"
-                        />
-                      }
-                      label={intl.formatMessage({ id: 'notifications' })}
-                    />
-                  </FormGroup>
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={emailNotifications === true}
-                          onChange={this.handleEmailNotification}
-                          value="emailNotifications"
-                        />
-                      }
-                      label={intl.formatMessage({ id: 'email_notifications' })}
-                    />
-                  </FormGroup>
-                </div>
-              </div>
-
-              <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                  error={!!this.state.errors.displayName}
-                >
-                  <InputLabel htmlFor="adornment-password">{intl.formatMessage({ id: 'name_label' })}</InputLabel>
-                  <Input
-                    id="displayName"
-                    fullWidth
-                    value={this.state.values.displayName}
-                    placeholder={intl.formatMessage({ id: 'name_hint' })}
-                    onChange={e => {
-                      this.handleValueChange('displayName', e.target.value)
-                    }}
-                  />
-                  {this.state.errors.displayName && (
-                    <FormHelperText id="name-helper-text">{this.state.errors.displayName}</FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                  error={!!this.state.errors.email}
-                >
-                  <InputLabel htmlFor="adornment-password">{intl.formatMessage({ id: 'email' })}</InputLabel>
-                  <Input
-                    //id="email"
-                    label="Email"
-                    autoComplete="off"
-                    placeholder={intl.formatMessage({ id: 'email' })}
-                    fullWidth
-                    onChange={e => {
-                      this.handleValueChange('email', e.target.value)
-                    }}
-                    value={this.state.values.email}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="Toggle password visibility"
-                          onClick={auth.emailVerified === true ? undefined : this.handleEmailVerificationsSend}
-                          //onMouseDown={this.handleMouseDownPassword}
-                        >
-                          {auth.emailVerified && <VerifiedUser color="primary" />}
-                          {!auth.emailVerified && <Error color="secondary" />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                  {this.state.errors.email && (
-                    <FormHelperText id="name-helper-text">{this.state.errors.email}</FormHelperText>
-                  )}
-                </FormControl>
-
-                {showPasswords && (
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <FormControl
-                      className={classNames(classes.margin, classes.textField)}
-                      error={!!this.state.errors.password}
-                    >
-                      <InputLabel htmlFor="adornment-password">Password</InputLabel>
-                      <Input
-                        autoComplete="off"
-                        type={this.state.showPassword ? 'text' : 'password'}
-                        value={this.state.values.password}
-                        onChange={e => {
-                          this.handleValueChange('password', e.target.value)
-                        }}
-                        endAdornment={
-                          <InputAdornment position="end">
-                            <IconButton
-                              color="primary"
-                              aria-label="Toggle password visibility"
-                              onClick={() => this.setState({ showPassword: !this.state.showPassword })}
-                            >
-                              {this.state.showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                      {this.state.errors.password && (
-                        <FormHelperText id="name-helper-text">{this.state.errors.password}</FormHelperText>
-                      )}
-                    </FormControl>
-                    <FormControl
-                      className={classNames(classes.margin, classes.textField)}
-                      error={!!this.state.errors.newPassword}
-                    >
-                      <InputLabel htmlFor="adornment-password">{intl.formatMessage({ id: 'new_password' })}</InputLabel>
-                      <Input
-                        autoComplete="off"
-                        type={this.state.showNewPassword ? 'text' : 'password'}
-                        value={this.state.values.newPassword}
-                        onChange={e => {
-                          this.handleValueChange('newPassword', e.target.value)
-                        }}
-                        endAdornment={
-                          <InputAdornment position="end">
-                            <IconButton
-                              color="primary"
-                              aria-label="Toggle password visibility"
-                              onClick={() => this.setState({ showNewPassword: !this.state.showNewPassword })}
-                            >
-                              {this.state.showNewPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                      {this.state.errors.newPassword && (
-                        <FormHelperText id="name-helper-text">{this.state.errors.newPassword}</FormHelperText>
-                      )}
-                    </FormControl>
-                    <FormControl
-                      className={classNames(classes.margin, classes.textField)}
-                      error={!!this.state.errors.confirmPassword}
-                    >
-                      <InputLabel htmlFor="adornment-password">
-                        {intl.formatMessage({ id: 'confirm_password' })}
-                      </InputLabel>
-                      <Input
-                        autoComplete="off"
-                        type={this.state.showConfirmPassword ? 'text' : 'password'}
-                        value={this.state.values.confirmPassword}
-                        onChange={e => {
-                          this.handleValueChange('confirmPassword', e.target.value)
-                        }}
-                        endAdornment={
-                          <InputAdornment position="end">
-                            <IconButton
-                              color="primary"
-                              aria-label="Toggle password visibility"
-                              onClick={() => this.setState({ showConfirmPassword: !this.state.showConfirmPassword })}
-                            >
-                              {this.state.showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                      {this.state.errors.confirmPassword && (
-                        <FormHelperText id="name-helper-text">{this.state.errors.confirmPassword}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </div>
-                )}
-              </div>
-            </div>
+            <IconButton
+              color='inherit'
+              disabled={!canSave()}
+              aria-label='open drawer'
+              onClick={() => submit()}
+            >
+              <Save className='material-icons' />
+            </IconButton>
           )}
 
-          <QuestionDialog
-            name="delete_user"
-            handleAction={this.handleDelete}
-            title={intl.formatMessage({ id: 'delete_account_dialog_title' })}
-            message={intl.formatMessage({ id: 'delete_account_dialog_message' })}
-            action={intl.formatMessage({ id: 'delete' })}
-          />
-
-          <QuestionDialog
-            name="disable_notifications"
-            handleAction={this.handleDisableNotifications}
-            title={intl.formatMessage({ id: 'disable_notifications_dialog_title' })}
-            message={intl.formatMessage({ id: 'disable_notifications_dialog_message' })}
-            action={intl.formatMessage({ id: 'disable' })}
-          />
-
-          <ImageCropDialog
-            path={`users/${auth.uid}`}
-            fileName={'photoURL'}
-            onUploadSuccess={s => {
-              this.handlePhotoUploadSuccess(s)
-            }}
-            open={this.state.isPhotoDialogOpen}
-            src={new_user_photo}
-            handleClose={() => {
-              this.setState({ isPhotoDialogOpen: false })
-            }}
-            title={intl.formatMessage({ id: 'change_photo' })}
-          />
+          {auth.uid && (
+            <IconButton color='inherit' aria-label='open drawer' onClick={() => setSimpleValue('delete_user', true)}>
+              <Delete className='material-icons' />
+            </IconButton>
+          )}
         </div>
-      </Activity>
-    )
-  }
+      }
+      title={intl.formatMessage({ id: 'my_account' })}
+    >
+      <div>
+        {auth.uid && (
+          <div style={{ margin: 15, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {values.photoURL && (
+                <Avatar
+                  alt={auth.displayName}
+                  src={values.photoURL}
+                  className={classNames(classes.avatar, classes.bigAvatar)}
+                />
+              )}
+              {!values.photoURL && (
+                <Avatar className={classNames(classes.avatar, classes.bigAvatar)}>
+                  <Person style={{ fontSize: 60 }} />{' '}
+                </Avatar>
+              )}
+
+              <IconButton
+                color='primary'
+                onClick={() => setIsPhotoDialogOpen(true)}
+              >
+                <PhotoCamera />
+              </IconButton>
+
+              <div>
+                {appConfig.firebase_providers.map((p, i) => {
+                  if (p !== 'email' && p !== 'password' && p !== 'phone') {
+                    return (
+                      <IconButton
+                        key={i}
+                        disabled={isLinkedWithProvider(p)}
+                        color='primary'
+                        onClick={() => {
+                          linkUserWithPopup(p)
+                        }}
+                      >
+                        {getProviderIcon(p)}
+                      </IconButton>
+                    )
+                  } else {
+                    return <div key={i} />
+                  }
+                })}
+              </div>
+
+              <div>
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={notificationTokens.length > 0}
+                        onChange={handleEnableNotificationsChange}
+                        value='pushNotifiction'
+                      />
+                    }
+                    label={intl.formatMessage({ id: 'notifications' })}
+                  />
+                </FormGroup>
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={emailNotifications === true}
+                        onChange={handleEmailNotification}
+                        value='emailNotifications'
+                      />
+                    }
+                    label={intl.formatMessage({ id: 'email_notifications' })}
+                  />
+                </FormGroup>
+              </div>
+            </div>
+
+            <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
+              <FormControl
+                className={classNames(classes.margin, classes.textField)}
+                error={!!errors.displayName}
+              >
+                <InputLabel htmlFor='adornment-password'>{intl.formatMessage({ id: 'name_label' })}</InputLabel>
+                <Input
+                  id='displayName'
+                  fullWidth
+                  value={values.displayName}
+                  placeholder={intl.formatMessage({ id: 'name_hint' })}
+                  onChange={e => {
+                    handleValueChange('displayName', e.target.value)
+                  }}
+                />
+                {errors.displayName && (
+                  <FormHelperText id='name-helper-text'>{errors.displayName}</FormHelperText>
+                )}
+              </FormControl>
+              <FormControl
+                className={classNames(classes.margin, classes.textField)}
+                error={!!errors.email}
+              >
+                <InputLabel htmlFor='adornment-password'>{intl.formatMessage({ id: 'email' })}</InputLabel>
+                <Input
+                  // id="email"
+                  label='Email'
+                  autoComplete='off'
+                  placeholder={intl.formatMessage({ id: 'email' })}
+                  fullWidth
+                  onChange={e => handleValueChange('email', e.target.value)}
+                  value={values.email}
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='Toggle password visibility'
+                        onClick={auth.emailVerified === true ? undefined : handleEmailVerificationsSend}
+                      >
+                        {auth.emailVerified && <VerifiedUser color='primary' />}
+                        {!auth.emailVerified && <Error color='secondary' />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+                {errors.email && (
+                  <FormHelperText id='name-helper-text'>{errors.email}</FormHelperText>
+                )}
+              </FormControl>
+
+              {showPasswords && (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <FormControl
+                    className={classNames(classes.margin, classes.textField)}
+                    error={!!errors.password}
+                  >
+                    <InputLabel htmlFor='adornment-password'>Password</InputLabel>
+                    <Input
+                      autoComplete='off'
+                      type={showPassword ? 'text' : 'password'}
+                      value={values.password}
+                      onChange={e => handleValueChange('password', e.target.value)}
+                      endAdornment={
+                        <InputAdornment position='end'>
+                          <IconButton
+                            color='primary'
+                            aria-label='Toggle password visibility'
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                    {errors.password && (
+                      <FormHelperText id='name-helper-text'>{errors.password}</FormHelperText>
+                    )}
+                  </FormControl>
+                  <FormControl
+                    className={classNames(classes.margin, classes.textField)}
+                    error={!!errors.newPassword}
+                  >
+                    <InputLabel htmlFor='adornment-password'>{intl.formatMessage({ id: 'new_password' })}</InputLabel>
+                    <Input
+                      autoComplete='off'
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={values.newPassword}
+                      onChange={e => handleValueChange('newPassword', e.target.value)}
+                      endAdornment={
+                        <InputAdornment position='end'>
+                          <IconButton
+                            color='primary'
+                            aria-label='Toggle password visibility'
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                          >
+                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                    {errors.newPassword && (
+                      <FormHelperText id='name-helper-text'>{errors.newPassword}</FormHelperText>
+                    )}
+                  </FormControl>
+                  <FormControl
+                    className={classNames(classes.margin, classes.textField)}
+                    error={!!errors.confirmPassword}
+                  >
+                    <InputLabel htmlFor='adornment-password'>
+                      {intl.formatMessage({ id: 'confirm_password' })}
+                    </InputLabel>
+                    <Input
+                      autoComplete='off'
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={values.confirmPassword}
+                      onChange={e => handleValueChange('confirmPassword', e.target.value)}
+                      endAdornment={
+                        <InputAdornment position='end'>
+                          <IconButton
+                            color='primary'
+                            aria-label='Toggle password visibility'
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                    {errors.confirmPassword && (
+                      <FormHelperText id='name-helper-text'>{errors.confirmPassword}</FormHelperText>
+                    )}
+                  </FormControl>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <QuestionDialog
+          name='delete_user'
+          handleAction={handleDelete}
+          title={intl.formatMessage({ id: 'delete_account_dialog_title' })}
+          message={intl.formatMessage({ id: 'delete_account_dialog_message' })}
+          action={intl.formatMessage({ id: 'delete' })}
+        />
+
+        <QuestionDialog
+          name='disable_notifications'
+          handleAction={handleDisableNotifications}
+          title={intl.formatMessage({ id: 'disable_notifications_dialog_title' })}
+          message={intl.formatMessage({ id: 'disable_notifications_dialog_message' })}
+          action={intl.formatMessage({ id: 'disable' })}
+        />
+
+        <ImageCropDialog
+          path={`users/${auth.uid}`}
+          fileName='photoURL'
+          onUploadSuccess={s => handlePhotoUploadSuccess(s)}
+          open={isPhotoDialogOpen}
+          src={new_user_photo}
+          handleClose={() => setIsPhotoDialogOpen(false)}
+          title={intl.formatMessage({ id: 'change_photo' })}
+        />
+      </div>
+    </Activity>
+  )
 }
 
-MyAccount.propTypes = {
-  history: PropTypes.object,
-  setSimpleValue: PropTypes.func.isRequired,
-
-  isGranted: PropTypes.func,
-  auth: PropTypes.object.isRequired,
-  vehicle_types: PropTypes.array
-}
-
-const selector = formValueSelector(form_name)
+MyAccount.propTypes = {}
 
 const mapStateToProps = state => {
-  const { intl, simpleValues, auth, messaging } = state
-
-  const delete_user = simpleValues.delete_user
-  const disable_notifications = simpleValues.disable_notifications
-  const new_user_photo = simpleValues.new_user_photo
+  const { intl, simpleValues: { new_user_photo }, auth, messaging } = state
 
   return {
     new_user_photo,
     intl,
-    delete_user,
-    disable_notifications,
     auth,
-    messaging,
-    photoURL: selector(state, 'photoURL'),
-    old_password: selector(state, 'old_password'),
-    notificationTokens: getList(state, `notification_tokens/${auth.uid}`),
-    emailNotifications: getPath(state, `email_notifications/${auth.uid}`),
-    simpleValues
+    messaging
   }
 }
 
 export default compose(
   connect(
     mapStateToProps,
-    { setSimpleValue, change, submit, setDialogIsOpen, setPersistentValue }
+    { setSimpleValue, setDialogIsOpen }
   ),
   injectIntl,
   withRouter,
-  withTheme,
-  withFirebase,
-  withAppConfigs,
-  withStyles(styles, { withTheme: true })
+  withAppConfigs
 )(MyAccount)

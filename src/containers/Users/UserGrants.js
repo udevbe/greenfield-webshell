@@ -1,35 +1,22 @@
 import AltIconAvatar from '../../components/AltIconAvatar'
-import Check from '@material-ui/icons/Check'
-import Divider from '@material-ui/core/Divider'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import { Check } from '@material-ui/icons'
+import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
+import { compose } from 'redux'
+import React from 'react'
 import ReactList from 'react-list'
-import Switch from '@material-ui/core/Switch'
-import { filterActions, FilterDrawer, filterSelectors } from 'material-ui-filter'
-import { connect } from 'react-redux'
-import { getList } from 'firekit'
+import { connect, useSelector } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { setSimpleValue } from '../../store/simpleValues/actions'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme } from '@material-ui/core/styles'
+import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-export class UserGrants extends Component {
-  componentDidMount () {
-    const { watchList, userGrantsPath } = this.props
+const UserGrants = ({ appConfig, intl, userGrantsPath }) => {
+  useFirebaseConnect([{ path: userGrantsPath, storeAs: 'user_grants' }])
+  const user_grants = useSelector(state => state.firebase.ordered.user_grants)
+  const firebaseApp = useFirebase().app
 
-    watchList(userGrantsPath)
-  }
-
-  handleGrantToggleChange = (e, isInputChecked, key) => {
-    const { firebaseApp, userGrantsPath } = this.props
+  const handleGrantToggleChange = (e, isInputChecked, key) => {
     const ref = firebaseApp.database().ref(`${userGrantsPath}/${key}`)
-
     if (isInputChecked) {
       ref.set(true)
     } else {
@@ -37,12 +24,10 @@ export class UserGrants extends Component {
     }
   }
 
-  renderGrantItem = (list, i) => {
-    const { user_grants, intl, appConfig } = this.props
-
+  const renderGrantItem = (list, i) => {
     const key = list[i].val ? list[i].val.value : ''
     const val = appConfig.grants[list[i].key]
-    let userGrants = []
+    const userGrants = []
 
     if (user_grants !== undefined) {
       user_grants.map(role => {
@@ -63,9 +48,7 @@ export class UserGrants extends Component {
           <ListItemSecondaryAction>
             <Switch
               checked={userGrants[key] === true}
-              onChange={(e, isInputChecked) => {
-                this.handleGrantToggleChange(e, isInputChecked, key)
-              }}
+              onChange={(e, isInputChecked) => handleGrantToggleChange(e, isInputChecked, key)}
             />
           </ListItemSecondaryAction>
         </ListItem>
@@ -74,72 +57,42 @@ export class UserGrants extends Component {
     )
   }
 
-  render () {
-    const { intl, filters, appConfig } = this.props
+  const grantList = appConfig.grants.map((grant, index) => ({
+    key: index,
+    val: { name: intl.formatMessage({ id: `grant_${grant}` }), value: grant }
+  }))
 
-    const grantList = appConfig.grants.map((grant, index) => {
-      return { key: index, val: { name: intl.formatMessage({ id: `grant_${grant}` }), value: grant } }
-    })
-
-    const list = filterSelectors.getFilteredList('user_grants', filters, grantList, fieldValue => fieldValue.val)
-
-    const filterFields = [
-      {
-        name: 'name',
-        label: intl.formatMessage({ id: 'name_label' })
-      },
-      {
-        name: 'value',
-        label: intl.formatMessage({ id: 'value_label' })
-      }
-    ]
-
-    return (
-      <div style={{ height: '100%' }}>
-        <List
-          style={{ height: '100%' }}
-          ref={field => {
-            this.list = field
-          }}
-        >
-          <ReactList
-            itemRenderer={(i, k) => this.renderGrantItem(list, i, k)}
-            length={list ? list.length : 0}
-            type="simple"
-          />
-        </List>
-        <FilterDrawer name={'user_grants'} fields={filterFields} />
-      </div>
-    )
-  }
+  return (
+    <div style={{ height: '100%' }}>
+      <List style={{ height: '100%' }}>
+        <ReactList
+          itemRenderer={(i, k) => renderGrantItem(grantList, i, k)}
+          length={grantList ? grantList.length : 0}
+          type='simple'
+        />
+      </List>
+    </div>
+  )
 }
 
-UserGrants.propTypes = {
-
-  theme: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired
-}
+UserGrants.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl, filters } = state
-  const { match } = ownProps
-
-  const uid = match.params.uid
-  const rootPath = match.params.rootPath
-  const rootUid = match.params.rootUid
+  const { auth, intl } = state
+  const { match: { params: { uid, rootPath, rootUid } } } = ownProps
   const userGrantsPath = rootPath ? `/${rootPath}_user_grants/${uid}/${rootUid}` : `/user_grants/${uid}`
 
   return {
-    filters,
     auth,
     uid,
     intl,
-    userGrantsPath,
-    user_grants: getList(state, userGrantsPath)
+    userGrantsPath
   }
 }
 
-export default connect(
-  mapStateToProps,
-  { setSimpleValue, ...filterActions }
-)(injectIntl(withRouter(withFirebase(withAppConfigs(withTheme(UserGrants))))))
+export default compose(
+  connect(mapStateToProps),
+  injectIntl,
+  withRouter,
+  withAppConfigs
+)(UserGrants)

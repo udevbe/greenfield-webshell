@@ -1,34 +1,23 @@
-import AccountBox from '@material-ui/icons/AccountBox'
+import { AccountBox } from '@material-ui/icons'
 import AltIconAvatar from '../../components/AltIconAvatar'
-import Divider from '@material-ui/core/Divider'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
+import React from 'react'
 import ReactList from 'react-list'
-import Switch from '@material-ui/core/Switch'
-import { connect } from 'react-redux'
-import { getList } from 'firekit'
+import { compose } from 'redux'
+import { connect, useSelector } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { setSimpleValue } from '../../store/simpleValues/actions'
-import { withFirebase } from 'firekit-provider'
 import { withRouter } from 'react-router-dom'
-import { withTheme } from '@material-ui/core/styles'
+import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-export class UserRoles extends Component {
-  componentDidMount () {
-    const { watchList, userRolesPath } = this.props
+const UserRoles = ({ userRolesPath }) => {
+  useFirebaseConnect([{ path: '/roles' }])
+  useFirebaseConnect([{ path: userRolesPath, storeAs: 'user_roles' }])
+  const roles = useSelector(state => state.firebase.ordered.roles)
+  const user_roles = useSelector(state => state.firebase.ordered.user_roles)
+  const firebaseApp = useFirebase().app
 
-    watchList(userRolesPath)
-    watchList('roles')
-  }
-
-  handleRoleToggleChange = (e, isInputChecked, key) => {
-    const { firebaseApp, userRolesPath } = this.props
+  const handleRoleToggleChange = (e, isInputChecked, key) => {
     const ref = firebaseApp.database().ref(`${userRolesPath}/${key}`)
-
     if (isInputChecked) {
       ref.set(true)
     } else {
@@ -36,12 +25,10 @@ export class UserRoles extends Component {
     }
   }
 
-  renderRoleItem = i => {
-    const { roles, user_roles } = this.props
-
+  const renderRoleItem = i => {
     const key = roles[i].key
     const val = roles[i].val
-    let userRoles = []
+    const userRoles = []
 
     if (user_roles !== undefined) {
       user_roles.map(role => {
@@ -62,9 +49,7 @@ export class UserRoles extends Component {
           <ListItemSecondaryAction>
             <Switch
               checked={userRoles[key] === true}
-              onChange={(e, isInputChecked) => {
-                this.handleRoleToggleChange(e, isInputChecked, key)
-              }}
+              onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, key)}
             />
           </ListItemSecondaryAction>
         </ListItem>
@@ -73,50 +58,37 @@ export class UserRoles extends Component {
     )
   }
 
-  render () {
-    const { roles } = this.props
-
-    return (
-      <div style={{ height: '100%' }}>
-        <List style={{ height: '100%' }}>
-          <ReactList
-            itemRenderer={(i, k) => this.renderRoleItem(i, k)}
-            length={roles ? roles.length : 0}
-            type="simple"
-          />
-        </List>
-      </div>
-    )
-  }
+  return (
+    <div style={{ height: '100%' }}>
+      <List style={{ height: '100%' }}>
+        <ReactList
+          itemRenderer={renderRoleItem}
+          length={roles ? roles.length : 0}
+          type='simple'
+        />
+      </List>
+    </div>
+  )
 }
 
-UserRoles.propTypes = {
-
-  theme: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired
-}
+UserRoles.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl, filters } = state
-  const { match } = ownProps
+  const { auth, intl } = state
+  const { match: { params: { uid, rootPath, rootUid } } } = ownProps
 
-  const uid = match.params.uid
-  const rootPath = match.params.rootPath
-  const rootUid = match.params.rootUid
   const userRolesPath = rootPath ? `/${rootPath}_user_roles/${uid}/${rootUid}` : `/user_roles/${uid}`
 
   return {
-    filters,
     auth,
     uid,
     intl,
-    userRolesPath,
-    user_roles: getList(state, userRolesPath),
-    roles: getList(state, 'roles')
+    userRolesPath
   }
 }
 
-export default connect(
-  mapStateToProps,
-  { setSimpleValue }
-)(injectIntl(withRouter(withFirebase(withTheme(UserRoles)))))
+export default compose(
+  connect(mapStateToProps),
+  injectIntl,
+  withRouter
+)(UserRoles)

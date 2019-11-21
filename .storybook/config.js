@@ -1,7 +1,6 @@
 import { addDecorator, configure } from '@storybook/react'
 import React from 'react'
-import { Provider, ReactReduxContext } from 'react-redux'
-import FirebaseProvider from 'firekit-provider'
+import { Provider } from 'react-redux'
 import configureStore from '../src/store'
 
 import firebase from 'firebase/app'
@@ -10,6 +9,7 @@ import 'firebase/database'
 import 'firebase/firestore'
 import 'firebase/messaging'
 import { IntlProvider } from 'react-intl'
+import { ReactReduxFirebaseProvider } from 'react-redux-firebase'
 
 const firebase_config_dev = {
   apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',
@@ -29,15 +29,22 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-addDecorator(storyFn => (
-  <IntlProvider locale='en'>
-    <Provider store={configureStore()}>
-      <FirebaseProvider firebaseApp={firebaseApp} context={ReactReduxContext}>
-        {storyFn()}
-      </FirebaseProvider>
-    </Provider>
-  </IntlProvider>
-))
+addDecorator(storyFn => {
+  const store = configureStore()
+  return (
+    <IntlProvider locale='en'>
+      <Provider store={store}>
+        <ReactReduxFirebaseProvider
+          firebase={firebase}
+          config={{ userProfile: 'users' }}
+          dispatch={store.dispatch}
+        >
+          {storyFn()}
+        </ReactReduxFirebaseProvider>
+      </Provider>
+    </IntlProvider>
+  )
+})
 
 // automatically import all files ending in *.stories.js
 configure([
