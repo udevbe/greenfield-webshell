@@ -89,12 +89,8 @@ const Users = ({ intl, history, isSelecting }) => {
 Users.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth } = state
   const { match: { params: { select } } } = ownProps
-  return {
-    isSelecting: select || false,
-    auth
-  }
+  return { isSelecting: select || false }
 }
 
 export default compose(

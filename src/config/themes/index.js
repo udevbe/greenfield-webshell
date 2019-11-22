@@ -70,7 +70,7 @@ export const themes = [
 const getThemeSource = (t, ts) => {
   if (ts) {
     for (let i = 0; i < ts.length; i++) {
-      if (ts[i]['id'] === t.source) {
+      if (ts[i]['id'] === t.themeId) {
         const source = ts[i]['source']
         const palette = source != null ? source.palette : {}
 

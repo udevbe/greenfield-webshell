@@ -14,19 +14,22 @@ import {
   InputLabel,
   Switch
 } from '@material-ui/core'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
-import requestNotificationPermission from '../../utils/messaging'
+import { initializeMessaging } from '../../utils/messaging'
 import { GoogleIcon } from '../../components/Icons'
-import { compose } from 'redux'
-import { connect, useSelector } from 'react-redux'
-import { injectIntl } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
 import { setSimpleValue } from '../../store/simpleValues/actions'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withRouter } from 'react-router-dom'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
+import moment from 'moment'
+import { toast } from 'react-toastify'
+import PermissionRequestToast from '../../components/Notifications/PermissionRequestToast'
+import getSimpleValue from '../../store/simpleValues/selectors'
+import getPersistentValue from '../../store/persistentValues/selectors'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -44,13 +47,20 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const MyAccount = (props) => {
-  const { auth, authError, authStateChanged, setSimpleValue, setDialogIsOpen, intl, appConfig, new_user_photo } = props
-
-  useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
-  useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
+const MyAccount = () => {
+  const appConfig = useAppConfig()
+  const intl = useIntl()
+  const dispatch = useDispatch()
+  const firebase = useFirebase()
+  const auth = useSelector(({ firebase: { auth } }) => auth)
+  const database = useSelector(({ firebase: { database } }) => database)
+  useFirebaseConnect({ path: '', storeAs: 'notificationTokens' })
   const notificationTokens = useSelector(state => state.firebase.ordered.notificationTokens)
+  useFirebaseConnect({ path: '', storeAs: 'emailNotifications' })
   const emailNotifications = useSelector(state => state.firebase.ordered.emailNotifications)
+  const newUserPhoto = useSelector(state => getSimpleValue(state, 'new_user_photo', false))
+  const notificationPermissionRequested = useSelector(state => getPersistentValue(state, 'notificationPermissionRequested', false))
+  const notificationPermissionShown = useSelector(state => getSimpleValue(state, 'notificationPermissionShown', false))
 
   const [values, setValues] = useState({
     displayName: '',
@@ -65,11 +75,17 @@ const MyAccount = (props) => {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
-  const firebase = useFirebase()
-  const firebaseApp = firebase.app
+
+  useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
+  useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
+
+  useEffect(() => {
+    const { displayName, email, photoURL } = auth
+    setValues({ ...values, displayName, email, photoURL })
+  })
 
   const getProviderIcon = p => { if (p === 'google.com') { return <GoogleIcon /> } else { return undefined } }
-  const handleEmailVerificationsSend = () => firebaseApp.auth().currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
+  const handleEmailVerificationsSend = () => auth.currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
   const handlePhotoUploadSuccess = snapshot => {
     snapshot.ref.getDownloadURL().then(downloadURL => {
       setValues({ ...values, photoURL: downloadURL })
@@ -82,13 +98,13 @@ const MyAccount = (props) => {
   }
   const getProvider = provider => {
     if (provider.indexOf('email') > -1) {
-      return new firebase.auth.EmailAuthProvider()
+      return new auth.EmailAuthProvider()
     }
     if (provider.indexOf('anonymous') > -1) {
-      return new firebase.auth.AnonymousAuthProvider()
+      return new auth.AnonymousAuthProvider()
     }
     if (provider.indexOf('google') > -1) {
-      return new firebase.auth.GoogleAuthProvider()
+      return new auth.GoogleAuthProvider()
     }
 
     throw new Error('Provider is not supported!')
@@ -97,17 +113,17 @@ const MyAccount = (props) => {
     if (isLinkedWithProvider('password') && !values) {
       if (onSuccess && onSuccess instanceof Function) { onSuccess() }
     } else if (isLinkedWithProvider('password') && values) {
-      const credential = firebase.auth.EmailAuthProvider.credential(auth.email, values.password)
-      firebaseApp.auth().currentUser.reauthenticateWithCredential(credential)
+      const credential = auth.EmailAuthProvider.credential(auth.email, values.password)
+      auth.currentUser.reauthenticateWithCredential(credential)
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
-          e => authError(e)
+          e => { /* TODO notify user of error */ }
         )
     } else {
-      firebaseApp.auth().currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
+      auth.currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
-          e => authError(e)
+          e => { /* TODO notify user of error */ }
         )
     }
   }
@@ -122,15 +138,15 @@ const MyAccount = (props) => {
       return false
     }
   }
+
   const linkUserWithPopup = p => {
     const provider = getProvider(p)
-    firebaseApp.auth().currentUser.linkWithPopup(provider)
+    auth.currentUser.linkWithPopup(provider)
       .then(
-        () => authStateChanged(firebaseApp.auth().currentUser),
-        e => authError(e)
+        () => firebase.updateAuth(auth.currentUser),
+        e => { /* TODO notify user of error */ }
       )
   }
-  const handleCreateValues = () => false
   const clean = obj => {
     Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
     return obj
@@ -147,34 +163,34 @@ const MyAccount = (props) => {
 
     // Change simple data
     if (simpleChange) {
-      firebaseApp.auth().currentUser.updateProfile(simpleValues).then(
+      auth.currentUser.updateProfile(simpleValues).then(
         () => {
-          firebaseApp.database().ref(`users/${auth.uid}`).update(clean(simpleValues))
+          database.ref(`users/${auth.uid}`).update(clean(simpleValues))
             .then(
-              () => authStateChanged(values),
-              e => authError(e)
+              () => firebase.updateAuth(values),
+              e => { /* TODO notify user of error */ }
             )
         },
-        e => authError(e)
+        e => { /* TODO notify user of error */ }
       )
     }
 
     // Change email
     if (values.email && values.email.localeCompare(auth.email)) {
       reauthenticateUser(values, () => {
-        firebaseApp.auth().currentUser.updateEmail(values.email)
+        auth.currentUser.updateEmail(values.email)
           .then(
             () => {
-              firebaseApp.database().ref(`users/${auth.uid}`).update({ email: values.email })
+              database.ref(`users/${auth.uid}`).update({ email: values.email })
                 .then(
-                  () => authStateChanged({ email: values.email }),
-                  e => authError(e)
+                  () => firebase.updateEmail(values.email),
+                  e => { /* TODO notify user of error */ }
                 )
             },
             e => {
-              authError(e)
+              /* TODO notify user of error */
               if (e.code === 'auth/requires-recent-login') {
-                firebaseApp.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your email.'), 1))
+                auth.signOut().then(() => setTimeout(() => alert('Please sign in again to change your email.'), 1))
               }
             }
           )
@@ -183,13 +199,13 @@ const MyAccount = (props) => {
     // Change password
     if (values.newPassword) {
       reauthenticateUser(values, () => {
-        firebaseApp.auth().currentUser.updatePassword(values.newPassword)
+        auth.currentUser.updatePassword(values.newPassword)
           .then(
-            () => firebaseApp.auth().signOut(),
+            () => auth.signOut(),
             e => {
-              authError(e)
+              /* TODO notify user of error */
               if (e.code === 'auth/requires-recent-login') {
-                firebaseApp.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your password.'), 1))
+                auth.signOut().then(() => setTimeout(() => alert('Please sign in again to change your password.'), 1))
               }
             }
           )
@@ -199,20 +215,18 @@ const MyAccount = (props) => {
     return false
   }
   const handleClose = () => {
-    setSimpleValue('delete_user', false)
-    setDialogIsOpen('auth_menu', false)
+    dispatch(setSimpleValue('delete_user', false))
+    dispatch(setDialogIsOpen('auth_menu', false))
   }
   const handleDelete = () => {
     reauthenticateUser(false, () => {
-      firebaseApp.auth().currentUser.delete()
+      auth.currentUser.delete()
         .then(
           () => handleClose(),
           e => {
-            authError(e)
+            /* TODO notify user of error */
             if (e.code === 'auth/requires-recent-login') {
-              firebaseApp.auth().signOut().then(() => {
-                setTimeout(() => alert('Please sign in again to delete your account.'), 1)
-              })
+              auth.signOut().then(() => setTimeout(() => alert('Please sign in again to delete your account.'), 1))
             }
           }
         )
@@ -262,37 +276,60 @@ const MyAccount = (props) => {
     return !!values.newPassword
   }
 
-  componentDidMount()
-  {
-    const { auth, watchList, watchPath } = this.props
-    const { displayName, email, photoURL } = auth
-
-    watchList(`notification_tokens/${auth.uid}`)
-    watchPath(`email_notifications/${auth.uid}`)
-    setValues({ ...values, displayName, email, photoURL })
+  const handleDisableNotifications = () => {
+    database.ref(`disable_notifications/${auth.uid}`).set(true)
+      .then(() => {
+        database.ref(`notification_tokens/${auth.uid}`).remove()
+          .then(() => dispatch(setSimpleValue('disable_notifications', false)))
+      })
   }
 
-  const handleDisableNotifications = () => {
-    firebaseApp.database().ref(`disable_notifications/${auth.uid}`).set(true)
-      .then(() => {
-        firebaseApp.database().ref(`notification_tokens/${auth.uid}`).remove()
-          .then(() => setSimpleValue('disable_notifications', false))
-      })
+  const requestNotificationPermission = () => {
+    const reengagingHours = appConfig.notificationsReengagingHours ? appConfig.notificationsReengagingHours : 48
+    const requestNotificationPermission = notificationPermissionRequested
+      ? moment().diff(notificationPermissionRequested, 'hours') > reengagingHours
+      : true
+
+    if (
+      'Notification' in window &&
+      window.Notification.permission !== 'granted' &&
+      auth.uid &&
+      requestNotificationPermission &&
+      !notificationPermissionShown
+    ) {
+      dispatch(setSimpleValue('notificationPermissionShown', true))
+      toast.info(
+        ({ closeToast }) => (
+          <PermissionRequestToast
+            {...{
+              closeToast,
+              initializeMessaging
+            }} closeToast={closeToast} initializeMessaging={initializeMessaging}
+          />
+        ),
+        {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: false,
+          closeButton: false,
+          closeOnClick: false
+        }
+      )
+    }
   }
 
   const handleEnableNotificationsChange = e => {
     if (!e.target.checked) {
-      setSimpleValue('disable_notifications', true)
+      dispatch(setSimpleValue('disable_notifications', true))
     } else {
-      firebaseApp.database().ref(`disable_notifications/${auth.uid}`).remove(() => {
-        requestNotificationPermission(props)
+      database.ref(`disable_notifications/${auth.uid}`).remove(() => {
+        requestNotificationPermission()
         // eslint-disable-next-line no-self-assign
         window.location.href = window.location.href
       })
     }
   }
 
-  const handleEmailNotification = e => firebaseApp.database().ref(`email_notifications/${auth.uid}`).set(e.target.checked)
+  const handleEmailNotification = e => database.ref(`email_notifications/${auth.uid}`).set(e.target.checked)
 
   const classes = useStyles()
   const showPasswords = isLinkedWithProvider('password')
@@ -315,7 +352,10 @@ const MyAccount = (props) => {
           )}
 
           {auth.uid && (
-            <IconButton color='inherit' aria-label='open drawer' onClick={() => setSimpleValue('delete_user', true)}>
+            <IconButton
+              color='inherit' aria-label='open drawer'
+              onClick={() => dispatch(setSimpleValue('delete_user', true))}
+            >
               <Delete className='material-icons' />
             </IconButton>
           )}
@@ -355,9 +395,7 @@ const MyAccount = (props) => {
                         key={i}
                         disabled={isLinkedWithProvider(p)}
                         color='primary'
-                        onClick={() => {
-                          linkUserWithPopup(p)
-                        }}
+                        onClick={() => linkUserWithPopup(p)}
                       >
                         {getProviderIcon(p)}
                       </IconButton>
@@ -554,7 +592,7 @@ const MyAccount = (props) => {
           fileName='photoURL'
           onUploadSuccess={s => handlePhotoUploadSuccess(s)}
           open={isPhotoDialogOpen}
-          src={new_user_photo}
+          src={newUserPhoto}
           handleClose={() => setIsPhotoDialogOpen(false)}
           title={intl.formatMessage({ id: 'change_photo' })}
         />
@@ -565,23 +603,4 @@ const MyAccount = (props) => {
 
 MyAccount.propTypes = {}
 
-const mapStateToProps = state => {
-  const { intl, simpleValues: { new_user_photo }, auth, messaging } = state
-
-  return {
-    new_user_photo,
-    intl,
-    auth,
-    messaging
-  }
-}
-
-export default compose(
-  connect(
-    mapStateToProps,
-    { setSimpleValue, setDialogIsOpen }
-  ),
-  injectIntl,
-  withRouter,
-  withAppConfigs
-)(MyAccount)
+export default MyAccount

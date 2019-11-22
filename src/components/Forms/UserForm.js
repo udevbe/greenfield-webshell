@@ -2,14 +2,15 @@ import Avatar from '@material-ui/core/Avatar'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import IconButton from '@material-ui/core/IconButton'
 import Person from '@material-ui/icons/Person'
-import PropTypes from 'prop-types'
 import React from 'react'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
+import { compose } from 'redux'
 import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
 import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
+import { useFirebase } from 'react-redux-firebase'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -33,7 +34,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const UserForm = ({ intl, handleAdminChange, isAdmin, appConfig, values, auth }) => {
+const UserForm = ({ intl, handleAdminChange, isAdmin, appConfig, values }) => {
+  const auth = useFirebase().auth
   const isLinkedWithProvider = provider => {
     try {
       return (
@@ -108,13 +110,8 @@ const UserForm = ({ intl, handleAdminChange, isAdmin, appConfig, values, auth })
   )
 }
 
-UserForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
-  handleAdminChange: PropTypes.func.isRequired,
-  isAdmin: PropTypes.bool.isRequired,
+UserForm.propTypes = {}
 
-  initialized: PropTypes.bool.isRequired,
-  uid: PropTypes.string.isRequired
-}
-
-export default withAppConfigs(UserForm)
+export default compose(
+  withAppConfigs
+)(UserForm)

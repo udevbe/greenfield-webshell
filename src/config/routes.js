@@ -4,7 +4,7 @@ import RestrictedRoute from '../containers/RestrictedRoute'
 import makeLoadable from '../containers/MyLoadable'
 
 const MyLoadable = (opts, preloadComponents) =>
-  makeLoadable({ ...opts, firebase: () => import('./firebase') }, preloadComponents)
+  makeLoadable({ ...opts, firebase: () => import('./firebaseInit') }, preloadComponents)
 
 const AsyncWorkspace = MyLoadable({ loader: () => import('../pages/Workspace') })
 const AsyncWebstore = MyLoadable({ loader: () => import('../pages/Webstore') })

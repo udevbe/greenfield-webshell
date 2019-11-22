@@ -120,13 +120,12 @@ export const User = (props) => {
 User.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl } = state
+  const { intl } = state
   const { match: { params: { uid, editType, rootPath, rootUid } } } = ownProps
 
   return {
     rootPath,
     rootUid,
-    auth,
     uid,
     editType: editType || 'data',
     intl

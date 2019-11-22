@@ -74,13 +74,12 @@ const UserRoles = ({ userRolesPath }) => {
 UserRoles.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl } = state
+  const { intl } = state
   const { match: { params: { uid, rootPath, rootUid } } } = ownProps
 
   const userRolesPath = rootPath ? `/${rootPath}_user_roles/${uid}/${rootUid}` : `/user_roles/${uid}`
 
   return {
-    auth,
     uid,
     intl,
     userRolesPath

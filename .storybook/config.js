@@ -1,15 +1,16 @@
 import { addDecorator, configure } from '@storybook/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import configureStore from '../src/store'
 
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
 import 'firebase/messaging'
-import { IntlProvider } from 'react-intl'
-import { ReactReduxFirebaseProvider } from 'react-redux-firebase'
+import StoreProvider from '../src/containers/App/StoreProvider'
+import config from '../src/config'
+import AppProviders from '../src/containers/App/AppProviders'
+import { BrowserRouter } from 'react-router-dom'
+import { FirebaseProvider } from '../src/containers/App/FirebaseProvider'
 
 const firebase_config_dev = {
   apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',
@@ -30,19 +31,18 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 addDecorator(storyFn => {
-  const store = configureStore()
   return (
-    <IntlProvider locale='en'>
-      <Provider store={store}>
-        <ReactReduxFirebaseProvider
-          firebase={firebase}
-          config={{ userProfile: 'users' }}
-          dispatch={store.dispatch}
-        >
-          {storyFn()}
-        </ReactReduxFirebaseProvider>
-      </Provider>
-    </IntlProvider>
+    <StoreProvider appConfig={config}>
+      <AppProviders appConfig={config}>
+        <BrowserRouter>
+          <div>
+            <FirebaseProvider firebase={firebase}>
+              {storyFn()}
+            </FirebaseProvider>
+          </div>
+        </BrowserRouter>
+      </AppProviders>
+    </StoreProvider>
   )
 })
 

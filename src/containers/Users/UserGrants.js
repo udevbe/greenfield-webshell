@@ -78,12 +78,11 @@ const UserGrants = ({ appConfig, intl, userGrantsPath }) => {
 UserGrants.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl } = state
+  const { intl } = state
   const { match: { params: { uid, rootPath, rootUid } } } = ownProps
   const userGrantsPath = rootPath ? `/${rootPath}_user_grants/${uid}/${rootUid}` : `/user_grants/${uid}`
 
   return {
-    auth,
     uid,
     intl,
     userGrantsPath

@@ -35,9 +35,7 @@ const getMenuItems = props => {
       value: undefined,
       visible: true,
       primaryText: intl.formatMessage({ id: t.id }),
-      onClick: () => {
-        updateTheme(t.id)
-      },
+      onClick: () => updateTheme(t.id),
       leftIcon: <StyleIcon style={{ color: t.color }} />
     }
   })
@@ -47,9 +45,7 @@ const getMenuItems = props => {
       value: undefined,
       visible: true,
       primaryText: intl.formatMessage({ id: l.locale }),
-      onClick: () => {
-        updateLocale(l.locale)
-      },
+      onClick: () => updateLocale(l.locale),
       leftIcon: <LanguageIcon />
     }
   })

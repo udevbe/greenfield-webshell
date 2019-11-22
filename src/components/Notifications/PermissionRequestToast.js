@@ -10,30 +10,18 @@ import Typography from '@material-ui/core/Typography'
 import moment from 'moment'
 import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
+import { useIntl } from 'react-intl'
+import { useDispatch } from 'react-redux'
+import { setPersistentValue } from '../../store/persistentValues/actions'
 
-export const PermissionRequestToast = props => {
-  const {
-    auth,
-    notificationPermissionRequested,
-    setPersistentValue,
-    simpleValues,
-    setSimpleValue,
-    messaging,
-    intl,
-    appConfig,
-    closeToast,
-    initializeMessaging
-  } = props
-
+export const PermissionRequestToast = ({ closeToast, initializeMessaging }) => {
+  const intl = useIntl()
+  const dispatch = useDispatch()
   const theme = useTheme()
 
   const type = theme.palette.type === 'light' ? 'dark' : 'light'
 
-  const innerTheme = createMuiTheme({
-    palette: {
-      type
-    }
-  })
+  const innerTheme = createMuiTheme({ palette: { type } })
 
   return (
     <ThemeProvider theme={innerTheme}>
@@ -49,8 +37,8 @@ export const PermissionRequestToast = props => {
           <DialogActions>
             <Button
               onClick={() => {
-                setPersistentValue('notificationPermissionRequested', moment())
-                initializeMessaging(props)
+                dispatch(setPersistentValue('notificationPermissionRequested', moment()))
+                initializeMessaging()
                 closeToast()
               }}
             >
@@ -59,7 +47,7 @@ export const PermissionRequestToast = props => {
             <Button
               color="secondary"
               onClick={() => {
-                setPersistentValue('notificationPermissionRequested', moment())
+                dispatch(setPersistentValue('notificationPermissionRequested', moment()))
                 closeToast()
               }}
             >

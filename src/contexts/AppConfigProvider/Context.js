@@ -1,5 +1,5 @@
 import React from 'react'
 
-export const AppConfigContext = React.createContext(null)
-
+const AppConfigContext = React.createContext(null)
+AppConfigContext.displayName = 'AppConfig'
 export default AppConfigContext

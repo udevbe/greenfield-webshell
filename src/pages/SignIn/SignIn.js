@@ -1,14 +1,10 @@
-import * as firebaseui from 'firebaseui'
 import AuthUI from '../../containers/AuthUI/AuthUI'
 import React from 'react'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
 import { Typography } from '@material-ui/core'
-import { bindActionCreators, compose } from 'redux'
 import Logo from '../../components/Logo'
-import drawerActions from '../../store/drawer/actions'
-import { useDispatch } from 'react-redux'
+import { setDrawerMobileOpen, setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
 import { makeStyles } from '@material-ui/core/styles'
-import { useFirebase } from 'react-redux-firebase'
+import { useDispatch } from 'react-redux'
 
 const useStyles = makeStyles({
   wrap: {
@@ -25,24 +21,13 @@ const useStyles = makeStyles({
   }
 })
 
-const SignIn = ({ appConfig }) => {
-  const firebaseApp = useFirebase().app
-
-  const uiConfig = {
-    signInSuccessUrl: '/workspace',
-    signInFlow: 'popup',
-    callbacks: { signInSuccessWithAuthResult: () => false },
-    signInOptions: appConfig.firebase_providers,
-    credentialHelper: firebaseui.auth.CredentialHelper.NONE
-  }
-
-  const { setDrawerMobileOpen, setDrawerOpen, setDrawerUseMinified } = bindActionCreators({ ...drawerActions }, useDispatch())
-  setDrawerOpen(false)
-  setDrawerMobileOpen(false)
-  setDrawerUseMinified(false)
+const SignIn = () => {
+  const dispatch = useDispatch()
+  dispatch(setDrawerOpen(false))
+  dispatch(setDrawerMobileOpen(false))
+  dispatch(setDrawerUseMinified(false))
 
   const classes = useStyles()
-
   return (
     <div className={classes.wrap}>
       <div className={classes.text}>
@@ -50,7 +35,7 @@ const SignIn = ({ appConfig }) => {
         <Typography variant='h6' color='textSecondary' noWrap>
               The Cloud Desktop
         </Typography>
-        <AuthUI firebaseApp={firebaseApp} uiConfig={uiConfig} />
+        <AuthUI />
       </div>
     </div>
   )
@@ -58,6 +43,4 @@ const SignIn = ({ appConfig }) => {
 
 SignIn.propTypes = {}
 
-export default compose(
-  withAppConfigs
-)(SignIn)
+export default SignIn

@@ -1,8 +1,7 @@
 import React from 'react'
 import Loadable from 'react-loadable'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
-import { ReactReduxFirebaseProvider } from 'react-redux-firebase'
-import { ReactReduxContext } from 'react-redux'
+import { FirebaseProvider } from '../App/FirebaseProvider'
 
 export default (opts, preloadComponents) => Loadable.Map({
   loader: {
@@ -19,21 +18,11 @@ export default (opts, preloadComponents) => Loadable.Map({
     const firebase = loaded.firebase
 
     return (
-      <ReactReduxContext.Consumer>
-        {({ store }) => {
-          return (
-            <ReactReduxFirebaseProvider
-              firebase={firebase}
-              config={{ userProfile: 'users' }}
-              dispatch={store.dispatch}
-            >
-              <div>
-                <Component {...props} />
-              </div>
-            </ReactReduxFirebaseProvider>
-          )
-        }}
-      </ReactReduxContext.Consumer>
+      <div>
+        <FirebaseProvider firebase={firebase}>
+          <Component {...props} />
+        </FirebaseProvider>
+      </div>
     )
   }
 })

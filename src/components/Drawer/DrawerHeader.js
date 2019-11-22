@@ -1,26 +1,41 @@
-import ArroWDropDownIcon from '@material-ui/icons/ArrowDropDown'
-import ArroWDropUpIcon from '@material-ui/icons/ArrowDropUp'
-import Avatar from '@material-ui/core/Avatar'
-import ChevronLeft from '@material-ui/icons/ChevronLeft'
-import ChevronRight from '@material-ui/icons/ChevronRight'
-import ChromeReaderMode from '@material-ui/icons/ChromeReaderMode'
-import Hidden from '@material-ui/core/Hidden'
-import IconButton from '@material-ui/core/IconButton'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import Paper from '@material-ui/core/Paper'
-import PersonIcon from '@material-ui/icons/Person'
+import { ArrowDropDown, ArrowDropUp, ChevronLeft, ChevronRight, ChromeReaderMode, Person } from '@material-ui/icons'
+import {
+  Avatar,
+  Hidden,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
+  Paper,
+  useMediaQuery
+} from '@material-ui/core'
 import React from 'react'
-import withWidth from '@material-ui/core/withWidth'
-import { compose } from 'redux'
-import { injectIntl } from 'react-intl'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withStyles } from '@material-ui/core/styles'
+import { useIntl } from 'react-intl'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
 
-const styles = theme => ({
+import { useDispatch, useSelector } from 'react-redux'
+import { setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
+import { setDialogIsOpen } from '../../store/dialogs/actions'
+
+/**
+ * Be careful using this hook. It only works because the number of
+ * breakpoints in theme is static. It will break once you change the number of
+ * breakpoints. See https://reactjs.org/docs/hooks-rules.html#only-call-hooks-at-the-top-level
+ */
+function useWidth (theme) {
+  const keys = [...theme.breakpoints.keys].reverse()
+  return (
+    keys.reduce((output, key) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const matches = useMediaQuery(theme.breakpoints.up(key))
+      return !output && matches ? key : output
+    }, null) || 'xs'
+  )
+}
+
+const useStyles = makeStyles(theme => ({
   paper: {
     backgroundColor: theme.palette.primary.dark,
     margin: 0,
@@ -35,22 +50,15 @@ const styles = theme => ({
   button: {
     // width: 15
   }
-})
+}))
 
-export const DrawerHeader = props => {
-  const {
-    theme,
-    intl,
-    auth,
-    dialogs,
-    setDialogIsOpen,
-    classes,
-    drawer,
-    setDrawerOpen,
-    setDrawerUseMinified,
-    width
-  } = props
-
+export const DrawerHeader = ({ dialogs, drawer }) => {
+  const intl = useIntl()
+  const dispatch = useDispatch()
+  const auth = useSelector(({ firebase: { auth } }) => auth)
+  const theme = useTheme()
+  const width = useWidth(theme)
+  const classes = useStyles()
   return (
     <Paper className={classes.paper}>
       {auth.isAuthorised && (
@@ -59,31 +67,27 @@ export const DrawerHeader = props => {
             <ListItem>
               {auth.photoURL && (
                 <ListItemAvatar>
-                  <Avatar src={auth.photoURL} alt="user" />
+                  <Avatar src={auth.photoURL} alt='user' />
                 </ListItemAvatar>
               )}
               {!auth.photoURL && (
                 <ListItemAvatar>
                   <Avatar>
                     {' '}
-                    <PersonIcon />{' '}
+                    <Person />{' '}
                   </Avatar>
                 </ListItemAvatar>
               )}
-              <Hidden smDown implementation="css">
+              <Hidden smDown implementation='css'>
                 <ListItemSecondaryAction>
                   <IconButton
-                    onClick={() => {
-                      setDrawerOpen(false)
-                    }}
+                    onClick={() => dispatch(setDrawerOpen(false))}
                   >
                     <ChromeReaderMode classes={{ root: classes.icon }} />
                   </IconButton>
                   <IconButton
                     className={classes.button}
-                    onClick={() => {
-                      setDrawerUseMinified(false)
-                    }}
+                    onClick={() => dispatch(setDrawerUseMinified(false))}
                   >
                     {theme.direction === 'rtl' && <ChevronRight classes={{ root: classes.icon }} />}
                     {theme.direction !== 'rtl' && <ChevronLeft classes={{ root: classes.icon }} />}
@@ -92,14 +96,10 @@ export const DrawerHeader = props => {
               </Hidden>
             </ListItem>
 
-            <ListItem
-              onClick={() => {
-                setDialogIsOpen('auth_menu', !dialogs.auth_menu)
-              }}
-            >
+            <ListItem onClick={() => dispatch(setDialogIsOpen('auth_menu', !dialogs.auth_menu))}>
               {!drawer.open && width !== 'sm' && width !== 'xs' && auth.photoURL && (
                 <ListItemAvatar>
-                  <Avatar src={auth.photoURL} alt="person" style={{ marginLeft: -7, marginTop: 3 }} />
+                  <Avatar src={auth.photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
                 </ListItemAvatar>
               )}
 
@@ -107,7 +107,7 @@ export const DrawerHeader = props => {
                 <ListItemAvatar>
                   <Avatar style={{ marginLeft: -7, marginTop: 3 }}>
                     {' '}
-                    <PersonIcon />{' '}
+                    <Person />{' '}
                   </Avatar>
                 </ListItemAvatar>
               )}
@@ -127,8 +127,8 @@ export const DrawerHeader = props => {
                   }}
                 >
                   <IconButton>
-                    {dialogs.auth_menu && <ArroWDropUpIcon classes={{ root: classes.icon }} />}
-                    {!dialogs.auth_menu && <ArroWDropDownIcon classes={{ root: classes.icon }} />}
+                    {dialogs.auth_menu && <ArrowDropUp classes={{ root: classes.icon }} />}
+                    {!dialogs.auth_menu && <ArrowDropDown classes={{ root: classes.icon }} />}
                   </IconButton>
                 </ListItemSecondaryAction>
               )}
@@ -141,7 +141,7 @@ export const DrawerHeader = props => {
         <List>
           <ListItem>
             <ListItemText classes={{ primary: classes.listItem }} primary={intl.formatMessage({ id: 'app_name' })} />
-            <Hidden smDown implementation="css">
+            <Hidden smDown implementation='css'>
               <ListItemSecondaryAction>
                 <IconButton
                   className={classes.button}
@@ -161,9 +161,4 @@ export const DrawerHeader = props => {
   )
 }
 
-export default compose(
-  injectIntl,
-  withAppConfigs,
-  withWidth(),
-  withStyles(styles, { withTheme: true })
-)(DrawerHeader)
+export default DrawerHeader

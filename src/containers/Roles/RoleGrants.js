@@ -85,9 +85,9 @@ export const RoleGrants = ({
 RoleGrants.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl } = state
+  const { intl } = state
   const { match: { params: { uid } }, roleGrants } = ownProps
-  return { auth, uid, intl, roleGrants }
+  return { uid, intl, roleGrants }
 }
 
 export default compose(

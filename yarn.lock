@@ -1487,10 +1487,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@material-ui/core@^4.6.1":
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.6.1.tgz#039f97443547a88c41d290deabfb4a044c6031ec"
-  integrity sha512-TljDMCJmi1zh7JhAFTp8qjIlbkVACiNftrcitzJJ+hAqpuP9PTO4euEkkAuYjISfUFZl3Z4kaOrBwN1HDrhIOQ==
+"@material-ui/core@^4.7.0":
+  version "4.7.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/core/-/core-4.7.0.tgz#84c02a6d1c99c7900e184538c5f9d87e30cf4c23"
+  integrity sha1-hMAqbRyZx5AOGEU4xfnYfjDPTCM=
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@material-ui/styles" "^4.6.0"
@@ -1513,10 +1513,10 @@
   dependencies:
     "@babel/runtime" "^7.4.4"
 
-"@material-ui/pickers@^3.2.7":
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/@material-ui/pickers/-/pickers-3.2.7.tgz#5ddcd768cdfc9d9bbdace209df75176cd98122e7"
-  integrity sha512-dDi8G8TOXssXZQsGCRM4zoDnWMY4O/vvqVCH4ViIHflvS4ek4v30IlFcSONI5jGzL0dmJhNKso2UEn7qS3iZ3g==
+"@material-ui/pickers@^3.2.8":
+  version "3.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/pickers/-/pickers-3.2.8.tgz#bef66fdd9f8c388c8bb0f2841cc8be1162b0d501"
+  integrity sha1-vvZv3Z+MOIyLsPKEHMi+EWKw1QE=
   dependencies:
     "@babel/runtime" "^7.6.0"
     "@types/styled-jsx" "^2.2.8"
@@ -6109,17 +6109,20 @@ firebase@^7.3.0:
     "@firebase/storage" "0.3.18"
     "@firebase/util" "0.2.32"
 
+firebaseui@^4.1.0:
+  version "4.3.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/firebaseui/-/firebaseui-4.3.0.tgz#3f2c162ff10147abc49e34269df818071869a7dc"
+  integrity sha1-PywWL/EBR6vEnjQmnfgYBxhpp9w=
+  dependencies:
+    dialog-polyfill "^0.4.7"
+    material-design-lite "^1.2.0"
+
 firebaseui@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-4.2.0.tgz#584c7210fe3536e5603f9e14ba122f541ae63fba"
   integrity sha512-+n8GVms0TlxU+AIdmuWhgQthqKmUpkjhfZBbsZIdWU19Ddkr5cn7hrSlNwC9faKkpCwGEpai6Nv+hYNqNM5JkQ==
   dependencies:
     dialog-polyfill "^0.4.7"
-
-firekit-provider@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/firekit-provider/-/firekit-provider-1.0.2.tgz#e047b84b5f8cddedade6d03f892bb4cdada60ca4"
-  integrity sha512-6CDqiSonQCj3S3r7MmxWl9aFyWmhBHrWXdUYY5x+R+HAdN6UgspDJA8a7oVgK6uziXMNEweg3yiD7rSyGXHL6g==
 
 flat-cache@^2.0.1:
   version "2.0.1"
@@ -6956,11 +6959,6 @@ immer@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
-
-immer@3.2.0:
-  version "3.2.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/immer/-/immer-3.2.0.tgz#53686471e9dd2b070e0fb5500c6fdecd3a99375f"
-  integrity sha1-U2hkcendKwcOD7VQDG/ezTqZN18=
 
 immutable@3.8.2:
   version "3.8.2"
@@ -8621,10 +8619,15 @@ material-colors@^1.2.1:
   resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
   integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
 
-material-ui-filter@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/material-ui-filter/-/material-ui-filter-3.1.0.tgz#af0292fe80b16f537bb05d688bf861105cc9002e"
-  integrity sha512-s5K9QbnovdpLpNG785RieNdyu65CU6wxa8t9N5EJ7vt1zhOHVzDW0EiXODVgQTHubHU/7TTZELJSirZnb2Nzhw==
+material-design-lite@^1.2.0:
+  version "1.3.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/material-design-lite/-/material-design-lite-1.3.0.tgz#d004ce3fee99a1eeb74a78b8a325134a5f1171d3"
+  integrity sha1-0ATOP+6Zoe63Sni4oyUTSl8RcdM=
+
+material-ui-filter@^3.1.1:
+  version "3.1.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/material-ui-filter/-/material-ui-filter-3.1.1.tgz#de28261974dcd9aa6bdf0292f4904eb7a6d630fe"
+  integrity sha1-3igmGXTc2apr3wKS9JBOt6bWMP4=
 
 material-ui-image@^3.2.2:
   version "3.2.2"
@@ -11036,6 +11039,13 @@ react-fast-compare@^2.0.2, react-fast-compare@^2.0.4:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
+react-firebaseui@^4.0.0:
+  version "4.0.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-firebaseui/-/react-firebaseui-4.0.0.tgz#6e1892831b2a0ee86d2dcae16c4b724cf299d566"
+  integrity sha1-bhiSgxsqDuhtLcrhbEtyTPKZ1WY=
+  dependencies:
+    firebaseui "^4.1.0"
+
 react-focus-lock@^1.18.3:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/react-focus-lock/-/react-focus-lock-1.19.1.tgz#2f3429793edaefe2d077121f973ce5a3c7a0651a"
@@ -11518,26 +11528,12 @@ recursive-readdir@2.2.2:
   dependencies:
     minimatch "3.0.4"
 
-reduce-reducers@^1.0.4:
-  version "1.0.4"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/reduce-reducers/-/reduce-reducers-1.0.4.tgz#fb77e751a9eb0201760ac5a605ca8c9c2d0537f8"
-  integrity sha1-+3fnUanrAgF2CsWmBcqMnC0FN/g=
-
 reduce@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/reduce/-/reduce-1.0.2.tgz#0cd680ad3ffe0b060e57a5c68bdfce37168d361b"
   integrity sha512-xX7Fxke/oHO5IfZSk77lvPa/7bjMh9BuCk4OOoX5XTXrM7s0Z+MkPfSDfz0q7r91BhhGSs8gii/VEN/7zhCPpQ==
   dependencies:
     object-keys "^1.1.0"
-
-redux-firestore@^0.10.0:
-  version "0.10.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/redux-firestore/-/redux-firestore-0.10.0.tgz#e8746511e0843a840d035ae22d92e5ad83d85f15"
-  integrity sha1-6HRlEeCEOoQNA1riLZLlrYPYXxU=
-  dependencies:
-    immer "3.2.0"
-    lodash "^4.17.15"
-    reduce-reducers "^1.0.4"
 
 redux-form@^8.2.6:
   version "8.2.6"

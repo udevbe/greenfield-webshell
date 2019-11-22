@@ -27,10 +27,6 @@ const config = {
     measurementId: 'G-84RFF1PNSR'
   },
   firebase_providers: ['google.com', 'password', 'anonymous'],
-  initial_state: {
-    theme: 'light',
-    locale: 'en'
-  },
   drawer_width: 240,
   appIcon: GreenfieldIcon,
   configureStore,
@@ -38,20 +34,16 @@ const config = {
   locales,
   themes,
   grants,
-  routes: routes,
-  onAuthStateChanged: undefined,
+  routes,
   notificationsReengagingHours: 48,
-  firebaseLoad: () => import('./firebase'),
-  getNotifications: (notification, props) => {
-    const { history } = props
+  firebaseLoad: () => import('./firebaseInit'),
+  getNotifications: (notification, history) => {
     return {
       chat: {
         path: 'chats',
         autoClose: 5000,
         // getNotification: () => <div>YOUR CUSTOM NOTIFICATION COMPONENT</div>,
-        onClick: () => {
-          history.push('/chats')
-        },
+        onClick: () => history.push('/chats'),
         ...notification
       }
     }

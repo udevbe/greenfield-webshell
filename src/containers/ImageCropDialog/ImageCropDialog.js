@@ -1,42 +1,32 @@
 import 'firebase/storage'
-import {
-  AppBar,
-  Button,
-  CircularProgress,
-  Dialog,
-  IconButton,
-  Slide,
-  Toolbar,
-  Typography
-} from '@material-ui/core/AppBar'
+import { AppBar, Button, CircularProgress, Dialog, IconButton, Slide, Toolbar, Typography } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import Dropzone from 'react-dropzone'
 import React, { useState } from 'react'
 import { Cropper } from 'react-image-cropper'
-import { compose } from 'redux'
-import { injectIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { useTheme } from '@material-ui/core/styles'
-import { useFirebase } from 'react-redux-firebase'
+import { useSelector } from 'react-redux'
 
 const Transition = props => <Slide direction='up' {...props} />
 
-const ImageCropDialog = ({ intl, open, title, cropperProps, path, fileName, onUploadSuccess, handleClose }) => {
+const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSuccess, handleClose }) => {
+  const intl = useIntl()
   const [src, setSrc] = useState(undefined)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [file, setFile] = useState(undefined)
   let cropper = null
-  const firebase = useFirebase()
-  const firebaseApp = firebase.app
+  const storage = useSelector(({ firebase: { storage } }) => storage)
 
-  const handlePhotoURLUpload = photo_url => {
+  const handlePhotoURLUpload = photoUrl => {
     setIsUploading(true)
     setUploadProgress(0)
 
-    const uploadTask = firebaseApp.storage().ref(`${path}/${fileName}`).putString(photo_url, 'data_url')
+    const uploadTask = storage.ref(`${path}/${fileName}`).putString(photoUrl, 'data_url')
 
     uploadTask.on(
-      firebase.storage.TaskEvent.STATE_CHANGED,
+      storage.TaskEvent.STATE_CHANGED,
       snapshot => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         setIsUploading(true)
@@ -148,6 +138,4 @@ const ImageCropDialog = ({ intl, open, title, cropperProps, path, fileName, onUp
   )
 }
 
-export default compose(
-  injectIntl
-)(ImageCropDialog)
+export default ImageCropDialog

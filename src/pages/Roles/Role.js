@@ -199,14 +199,13 @@ export const Role = (props) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { auth, intl, dialogs } = state
+  const { intl, dialogs } = state
 
   const { match } = ownProps
   const editType = match.params.editType ? match.params.editType : 'data'
   const uid = match.params.uid ? match.params.uid : ''
 
   return {
-    auth,
     intl,
     uid,
     dialogs,

@@ -1,9 +1,10 @@
 import React from 'react'
 import getAppRoutes from '../../components/AppRoutes'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { Switch, withRouter } from 'react-router-dom'
 
-export const Routes = ({ appConfig }) => {
+export const Routes = () => {
+  const appConfig = useAppConfig()
   const customRoutes = appConfig.routes ? appConfig.routes : []
   const appRoutes = getAppRoutes(appConfig.firebaseLoad)
 
@@ -21,4 +22,4 @@ export const Routes = ({ appConfig }) => {
   )
 }
 
-export default withRouter(withAppConfigs(Routes))
+export default withRouter(Routes)

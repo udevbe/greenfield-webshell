@@ -4,7 +4,6 @@ import thunk from 'redux-thunk'
 import reducers from './reducers'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/es/storage' // default: localStorage if web, AsyncStorage if react-native
-import initState from './init'
 
 export default function configureStore () {
   const logger = createLogger({})
@@ -32,7 +31,7 @@ export default function configureStore () {
 
   const reducer = persistReducer(persistorConfig, reducers)
 
-  const store = createStore(reducer, initState, enhancer)
+  const store = createStore(reducer, {}, enhancer)
 
   try {
     persistStore(store)
