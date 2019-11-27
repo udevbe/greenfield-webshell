@@ -3,10 +3,11 @@ import React from 'react'
 import { Typography } from '@material-ui/core'
 import Logo from '../../components/Logo'
 import { makeStyles } from '@material-ui/core/styles'
-import { useSelector } from 'react-redux'
+import { shallowEqual, useSelector } from 'react-redux'
 import { isEmpty, isLoaded, useFirebase } from 'react-redux-firebase'
 import { Redirect } from 'react-router'
 import { saveAuthorisation } from '../../utils/auth'
+import LoadingComponent from '../../components/LoadingComponent'
 
 const useStyles = makeStyles({
   wrap: {
@@ -55,17 +56,12 @@ function updateUserPublicData (firebase, auth) {
 const SignIn = () => {
   const firebase = useFirebase()
   const classes = useStyles()
-  const { isAuthorized, auth } = useSelector(({ firebase: { auth } }) => ({
-    isAuthorized: isLoaded(auth) && !isEmpty(auth),
-    auth
-  }))
-  if (isAuthorized) {
-    saveAuthorisation(true)
-    updateUserOnlineStatus(firebase, auth)
-    updateUserPublicData(firebase, auth)
-    // TODO redirect to wherever we came from based on redirect state we received
-    return <Redirect to='/' />
-  } else {
+  const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
+  if (!isLoaded(auth)) {
+    return <LoadingComponent />
+  }
+
+  if (isEmpty(auth)) {
     saveAuthorisation(false)
     return (
       <div className={classes.wrap}>
@@ -78,6 +74,12 @@ const SignIn = () => {
         </div>
       </div>
     )
+  } else {
+    saveAuthorisation(true)
+    updateUserOnlineStatus(firebase, auth)
+    updateUserPublicData(firebase, auth)
+    // TODO redirect to wherever we came from based on redirect state we received
+    return <Redirect to='/' />
   }
 }
 

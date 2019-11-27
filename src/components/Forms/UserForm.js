@@ -6,11 +6,11 @@ import React from 'react'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
-import { compose } from 'redux'
 import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
+import { useIntl } from 'react-intl'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -34,7 +34,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const UserForm = ({ intl, handleAdminChange, isAdmin, appConfig, values }) => {
+const UserForm = ({ handleAdminChange, isAdmin, values }) => {
+  const appConfig = useAppConfig()
+  const intl = useIntl()
   const auth = useFirebase().auth
   const isLinkedWithProvider = provider => {
     try {
@@ -112,6 +114,4 @@ const UserForm = ({ intl, handleAdminChange, isAdmin, appConfig, values }) => {
 
 UserForm.propTypes = {}
 
-export default compose(
-  withAppConfigs
-)(UserForm)
+export default UserForm

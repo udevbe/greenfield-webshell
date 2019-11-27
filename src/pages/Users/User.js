@@ -47,22 +47,21 @@ export const User = () => {
   const admins = useSelector(state => state.firebase.ordered.admins)
   const userRoles = useSelector(state => state.firebase.ordered.user_roles)
   const userGrants = useSelector(state => state.firebase.ordered.user_grants)
-  const database = useSelector(({ firebase: { database } }) => database)
 
   const dataLoaded = isLoaded(admins) && isLoaded(userRoles) && isLoaded(userGrants)
 
   useEffect(() => {
-    database.ref(`users/${uid}`).on('value', snap => setValues(snap.val()))
-    return () => firebase.database().ref(`users/${uid}`).off()
-  })
+    firebase.ref(`users/${uid}`).on('value', snap => setValues(snap.val()))
+    return () => firebase.ref(`users/${uid}`).off()
+  }, [firebase, uid, values])
 
   const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
 
   const handleAdminChange = (e, isInputChecked) => {
     if (isInputChecked) {
-      database.ref(`/admins/${uid}`).set(true)
+      firebase.ref(`/admins/${uid}`).set(true)
     } else {
-      database.ref(`/admins/${uid}`).remove()
+      firebase.ref(`/admins/${uid}`).remove()
     }
   }
 
@@ -84,7 +83,7 @@ export const User = () => {
       onBackClick={() => history.push('/users')}
       title={intl.formatMessage({ id: 'edit_user' })}
     >{dataLoaded &&
-      <Scrollbar style={{ height: '100%' }}>
+    <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
           <AppBar position='static'>
             <Tabs value={editType || 'data'} onChange={handleTabActive} fullWidth centered>

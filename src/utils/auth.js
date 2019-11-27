@@ -1,5 +1,5 @@
 import { useFirebaseConnect } from 'react-redux-firebase'
-import { useSelector, useStore } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 function isGranted (userGrants, grant) {
   if (userGrants !== undefined) {
@@ -26,7 +26,7 @@ const localStorageAuthKey = 'greenfield:isAuthorised'
 export function saveAuthorisation (hasAuth) {
   if (typeof Storage !== 'undefined') {
     try {
-      window.localStorage.setItem(localStorageAuthKey, hasAuth)
+      window.localStorage.setItem(localStorageAuthKey, hasAuth ? 'true' : 'false')
     } catch (ex) {
       console.log(ex)
     }

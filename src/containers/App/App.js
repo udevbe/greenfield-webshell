@@ -21,25 +21,27 @@ const SignInAsync = makeLoadable({
   firebase: config.firebaseLoader
 })
 
-const App = () => (
-  <StoreProvider appConfig={config}>
-    <AppProviders appConfig={config}>
-      <CssBaseline />
-      <Helmet>
-        <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
-      </Helmet>
-      <Router history={history}>
-        <Switch>
-          <Route path='/signin' exact strict>
-            <SignInAsync />
-          </Route>
-          <Route>
-            <RootAsync />
-          </Route>
-        </Switch>
-      </Router>
-    </AppProviders>
-  </StoreProvider>
-)
+const App = () => {
+  return (
+    <StoreProvider appConfig={config}>
+      <AppProviders appConfig={config}>
+        <CssBaseline />
+        <Helmet>
+          <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
+        </Helmet>
+        <Router history={history}>
+          <Switch>
+            <Route path='/signin' exact strict>
+              <SignInAsync />
+            </Route>
+            <Route>
+              <RootAsync />
+            </Route>
+          </Switch>
+        </Router>
+      </AppProviders>
+    </StoreProvider>
+  )
+}
 
 export default App

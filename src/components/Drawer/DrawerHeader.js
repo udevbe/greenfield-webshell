@@ -1,4 +1,9 @@
-import { ArrowDropDown, ArrowDropUp, ChevronLeft, ChevronRight, ChromeReaderMode, Person } from '@material-ui/icons'
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp'
+import ChevronLeft from '@material-ui/icons/ChevronLeft'
+import ChevronRight from '@material-ui/icons/ChevronRight'
+import ChromeReaderMode from '@material-ui/icons/ChromeReaderMode'
+
 import {
   Avatar,
   Hidden,
@@ -15,9 +20,10 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
+import { isEmpty } from 'react-redux-firebase'
 
 /**
  * Be careful using this hook. It only works because the number of
@@ -52,32 +58,25 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const DrawerHeader = ({ dialogs, drawer }) => {
+export const DrawerHeader = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
-  const auth = useSelector(({ firebase: { auth } }) => auth)
+  const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
+  const isAuthorized = !isEmpty(auth)
+  const isDrawerOpen = useSelector(({ drawer }) => drawer.open)
+  const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const theme = useTheme()
   const width = useWidth(theme)
   const classes = useStyles()
   return (
     <Paper className={classes.paper}>
-      {auth.isAuthorised && (
+      {isAuthorized && (
         <div>
           <List>
             <ListItem>
-              {auth.photoURL && (
-                <ListItemAvatar>
-                  <Avatar src={auth.photoURL} alt='user' />
-                </ListItemAvatar>
-              )}
-              {!auth.photoURL && (
-                <ListItemAvatar>
-                  <Avatar>
-                    {' '}
-                    <Person />{' '}
-                  </Avatar>
-                </ListItemAvatar>
-              )}
+              <ListItemAvatar>
+                <Avatar src={auth.photoURL} alt='user' />
+              </ListItemAvatar>
               <Hidden smDown implementation='css'>
                 <ListItemSecondaryAction>
                   <IconButton
@@ -96,39 +95,29 @@ export const DrawerHeader = ({ dialogs, drawer }) => {
               </Hidden>
             </ListItem>
 
-            <ListItem onClick={() => dispatch(setDialogIsOpen('auth_menu', !dialogs.auth_menu))}>
-              {!drawer.open && width !== 'sm' && width !== 'xs' && auth.photoURL && (
+            <ListItem>
+              {!isDrawerOpen && width !== 'sm' && width !== 'xs' && auth.photoURL && (
                 <ListItemAvatar>
                   <Avatar src={auth.photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
                 </ListItemAvatar>
               )}
-
-              {!drawer.open && width !== 'sm' && width !== 'xs' && !auth.photoURL && (
-                <ListItemAvatar>
-                  <Avatar style={{ marginLeft: -7, marginTop: 3 }}>
-                    {' '}
-                    <Person />{' '}
-                  </Avatar>
-                </ListItemAvatar>
-              )}
-
               <ListItemText
                 classes={{ primary: classes.listItem, secondary: classes.listItem }}
                 style={{
-                  marginLeft: !drawer.open && width !== 'sm' && width !== 'xs' && auth.photoURL ? 7 : undefined
+                  marginLeft: !isDrawerOpen && width !== 'sm' && width !== 'xs' && auth.photoURL ? 7 : undefined
                 }}
                 primary={auth.displayName}
                 secondary={auth.email}
               />
-              {drawer.open && (
+              {isDrawerOpen && (
                 <ListItemSecondaryAction
                   onClick={() => {
-                    setDialogIsOpen('auth_menu', !dialogs.auth_menu)
+                    dispatch(setDialogIsOpen('auth_menu', !isAuthMenu))
                   }}
                 >
                   <IconButton>
-                    {dialogs.auth_menu && <ArrowDropUp classes={{ root: classes.icon }} />}
-                    {!dialogs.auth_menu && <ArrowDropDown classes={{ root: classes.icon }} />}
+                    {isAuthMenu && <ArrowDropUp classes={{ root: classes.icon }} />}
+                    {!isAuthMenu && <ArrowDropDown classes={{ root: classes.icon }} />}
                   </IconButton>
                 </ListItemSecondaryAction>
               )}
@@ -137,7 +126,7 @@ export const DrawerHeader = ({ dialogs, drawer }) => {
         </div>
       )}
 
-      {!auth.isAuthorised && (
+      {!isAuthorized && (
         <List>
           <ListItem>
             <ListItemText classes={{ primary: classes.listItem }} primary={intl.formatMessage({ id: 'app_name' })} />

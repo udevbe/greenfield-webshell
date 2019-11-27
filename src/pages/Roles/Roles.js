@@ -5,28 +5,27 @@ import { Divider, Fab, List, ListItem, ListItemText } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar/Scrollbar'
-import { compose } from 'redux'
 import { useSelector } from 'react-redux'
-import { injectIntl } from 'react-intl'
-import { withRouter } from 'react-router-dom'
+import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-export const Roles = ({ history, intl }) => {
+export const Roles = () => {
+  const history = useHistory()
+  const intl = useIntl()
   const firebase = useFirebase()
-  const firebaseApp = firebase.app
 
   useFirebaseConnect([{ path: '/roles' }])
-
   const roles = useSelector(state => state.firebase.ordered.roles)
 
   const handleCreateClick = () => {
-    const newRole = firebaseApp.database().ref('/roles').push()
-    firebaseApp.database().ref('/roles').push().update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
+    const newRole = firebase.ref('/roles').push()
+    firebase.ref('/roles').push().update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
   }
 
   const renderItem = i => {
     const key = roles[i].key
-    const val = roles[i].val
+    const val = roles[i].value
 
     return (
       <div key={key}>
@@ -65,7 +64,4 @@ export const Roles = ({ history, intl }) => {
 
 Roles.propTypes = {}
 
-export default compose(
-  injectIntl,
-  withRouter
-)(Roles)
+export default Roles

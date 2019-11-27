@@ -27,7 +27,7 @@ const UserRoles = () => {
 
   const renderRoleItem = i => {
     const key = roles[i].key
-    const val = roles[i].val
+    const val = roles[i].value
     const userRoles = []
 
     if (user_roles !== undefined) {

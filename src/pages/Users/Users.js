@@ -42,7 +42,7 @@ const Users = () => {
 
   const renderItem = (index, key) => {
     const userEntry = users[index]
-    const user = userEntry.val
+    const user = userEntry.value
     const userKey = userEntry.key
     const handleRowClick = () => history.push(isSelecting ? `/${isSelecting}/${userKey}` : `/users/edit/${userKey}/profile`)
 

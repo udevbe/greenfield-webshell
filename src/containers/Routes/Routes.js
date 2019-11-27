@@ -6,7 +6,7 @@ import { Switch } from 'react-router-dom'
 export const Routes = () => {
   const appConfig = useAppConfig()
   const customRoutes = appConfig.routes ? appConfig.routes : []
-  const appRoutes = getAppRoutes(appConfig.firebaseLoad)
+  const appRoutes = getAppRoutes(appConfig.firebaseLoader)
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
