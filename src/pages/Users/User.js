@@ -10,10 +10,9 @@ import Tabs from '@material-ui/core/Tabs'
 import UserForm from '../../components/Forms/UserForm'
 import UserGrants from '../../containers/Users/UserGrants'
 import UserRoles from '../../containers/Users/UserRoles'
-import { connect, useSelector } from 'react-redux'
-import { compose } from 'redux'
-import { injectIntl } from 'react-intl'
-import { withRouter } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
+import { useHistory, useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
@@ -34,9 +33,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const User = (props) => {
-  const { uid, rootPath, history, rootUid, intl, editType } = props
+export const User = () => {
+  const { uid, editType } = useParams()
+  const history = useHistory()
+  const intl = useIntl()
   const [values, setValues] = useState({})
+  const firebase = useFirebase()
 
   useFirebaseConnect([{ path: 'admins' }])
   useFirebaseConnect([{ path: 'user_roles' }])
@@ -45,29 +47,22 @@ export const User = (props) => {
   const admins = useSelector(state => state.firebase.ordered.admins)
   const userRoles = useSelector(state => state.firebase.ordered.user_roles)
   const userGrants = useSelector(state => state.firebase.ordered.user_grants)
+  const database = useSelector(({ firebase: { database } }) => database)
 
   const dataLoaded = isLoaded(admins) && isLoaded(userRoles) && isLoaded(userGrants)
 
-  const firebase = useFirebase()
-  const firebaseApp = firebase.app
   useEffect(() => {
-    firebaseApp.database().ref(`users/${uid}`).on('value', snap => setValues(snap.val()))
-    return () => firebaseApp.database().ref(`users/${uid}`).off()
+    database.ref(`users/${uid}`).on('value', snap => setValues(snap.val()))
+    return () => firebase.database().ref(`users/${uid}`).off()
   })
 
-  const handleTabActive = (e, value) => {
-    if (rootPath) {
-      history.push(`/users/edit/${uid}/${value}/${rootPath}/${rootUid}`)
-    } else {
-      history.push(`/users/edit/${uid}/${value}`)
-    }
-  }
+  const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
 
   const handleAdminChange = (e, isInputChecked) => {
     if (isInputChecked) {
-      firebaseApp.database().ref(`/admins/${uid}`).set(true)
+      database.ref(`/admins/${uid}`).set(true)
     } else {
-      firebaseApp.database().ref(`/admins/${uid}`).remove()
+      database.ref(`/admins/${uid}`).remove()
     }
   }
 
@@ -92,7 +87,7 @@ export const User = (props) => {
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
           <AppBar position='static'>
-            <Tabs value={editType} onChange={handleTabActive} fullWidth centered>
+            <Tabs value={editType || 'data'} onChange={handleTabActive} fullWidth centered>
               <Tab value='profile' icon={<Person className='material-icons' />} />
               <Tab value='roles' icon={<AccountBox className='material-icons' />} />
               <Tab value='grants' icon={<Lock className='material-icons' />} />
@@ -105,12 +100,11 @@ export const User = (props) => {
                 handleAdminChange={handleAdminChange}
                 isAdmin={isAdmin}
                 values={values || {}}
-                {...props}
               />
             </div>
           )}
-          {editType === 'roles' && <UserRoles {...props} />}
-          {editType === 'grants' && <UserGrants {...props} />}
+          {editType === 'roles' && <UserRoles />}
+          {editType === 'grants' && <UserGrants />}
         </div>
       </Scrollbar>}
     </Activity>
@@ -119,21 +113,4 @@ export const User = (props) => {
 
 User.propTypes = {}
 
-const mapStateToProps = (state, ownProps) => {
-  const { intl } = state
-  const { match: { params: { uid, editType, rootPath, rootUid } } } = ownProps
-
-  return {
-    rootPath,
-    rootUid,
-    uid,
-    editType: editType || 'data',
-    intl
-  }
-}
-
-export default compose(
-  connect(mapStateToProps),
-  injectIntl,
-  withRouter
-)(User)
+export default User

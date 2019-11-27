@@ -2,7 +2,7 @@ import React from 'react'
 import SignIn from './SignIn'
 
 export default {
-  title: 'SignIn'
+  title: 'pages/SignIn'
 }
 
 export const NotAuth = () => <SignIn />

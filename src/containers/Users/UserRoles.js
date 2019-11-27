@@ -3,21 +3,21 @@ import AltIconAvatar from '../../components/AltIconAvatar'
 import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
-import { compose } from 'redux'
-import { connect, useSelector } from 'react-redux'
-import { injectIntl } from 'react-intl'
-import { withRouter } from 'react-router-dom'
-import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
+import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { useFirebaseConnect } from 'react-redux-firebase'
 
-const UserRoles = ({ userRolesPath }) => {
+const UserRoles = () => {
+  const { uid } = useParams()
+  const userRolesPath = `/user_roles/${uid}`
   useFirebaseConnect([{ path: '/roles' }])
   useFirebaseConnect([{ path: userRolesPath, storeAs: 'user_roles' }])
   const roles = useSelector(state => state.firebase.ordered.roles)
   const user_roles = useSelector(state => state.firebase.ordered.user_roles)
-  const firebaseApp = useFirebase().app
+  const database = useSelector(({ firebase: { database } }) => database)
 
   const handleRoleToggleChange = (e, isInputChecked, key) => {
-    const ref = firebaseApp.database().ref(`${userRolesPath}/${key}`)
+    const ref = database.ref(`${userRolesPath}/${key}`)
     if (isInputChecked) {
       ref.set(true)
     } else {
@@ -73,21 +73,4 @@ const UserRoles = ({ userRolesPath }) => {
 
 UserRoles.propTypes = {}
 
-const mapStateToProps = (state, ownProps) => {
-  const { intl } = state
-  const { match: { params: { uid, rootPath, rootUid } } } = ownProps
-
-  const userRolesPath = rootPath ? `/${rootPath}_user_roles/${uid}/${rootUid}` : `/user_roles/${uid}`
-
-  return {
-    uid,
-    intl,
-    userRolesPath
-  }
-}
-
-export default compose(
-  connect(mapStateToProps),
-  injectIntl,
-  withRouter
-)(UserRoles)
+export default UserRoles

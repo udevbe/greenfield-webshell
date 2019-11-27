@@ -7,7 +7,7 @@ import { Route } from 'react-router-dom'
 const getAppRoutes = firebaseLoader => {
   const MyLoadable = (opts, preloadComponents) => makeLoadable({ ...opts, firebase: firebaseLoader }, preloadComponents)
 
-  const AsyncSignIn = MyLoadable({ loader: () => import('../../pages/SignIn') })
+  // TODO groups
   const AsyncUser = MyLoadable({ loader: () => import('../../pages/Users/User') })
   const AsyncUsers = MyLoadable({ loader: () => import('../../pages/Users/Users') }, [AsyncUser])
   const AsyncMyAccount = MyLoadable({ loader: () => import('../../pages/MyAccount') })
@@ -17,14 +17,42 @@ const getAppRoutes = firebaseLoader => {
   const AsyncPageNotFound = MyLoadable({ loader: () => import('../../pages/PageNotFound') })
 
   return [
-    <RestrictedRoute type='public' path='/signin' component={AsyncSignIn} />,
-    <RestrictedRoute type='private' path='/users' exact component={AsyncUsers} />,
-    <RestrictedRoute type='private' path='/users/:select' exact component={AsyncUsers} />,
-    <RestrictedRoute type='private' path='/users/edit/:uid/:editType' exact component={AsyncUser} />,
-    <RestrictedRoute type='private' path='/users/edit/:uid/:editType/:rootPath/:rootUid' exact component={AsyncUser} />,
-    <RestrictedRoute type='private' path='/my_account' exact component={AsyncMyAccount} />,
-    <RestrictedRoute type='private' path='/roles' exact component={AsyncRoles} />,
-    <RestrictedRoute type='private' path='/roles/edit/:uid/:editType' exact component={AsyncRole} />,
+    <RestrictedRoute
+      type='private'
+      path='/users'
+      exact
+      component={AsyncUsers}
+    />,
+    <RestrictedRoute
+      type='private'
+      path='/users/:select'
+      exact
+      component={AsyncUsers}
+    />,
+    <RestrictedRoute
+      type='private'
+      path='/users/edit/:uid/:editType'
+      exact
+      component={AsyncUser}
+    />,
+    <RestrictedRoute
+      type='private'
+      path='/my_account'
+      exact
+      component={AsyncMyAccount}
+    />,
+    <RestrictedRoute
+      type='private'
+      path='/roles'
+      exact
+      component={AsyncRoles}
+    />,
+    <RestrictedRoute
+      type='private'
+      path='/roles/edit/:uid/:editType'
+      exact
+      component={AsyncRole}
+    />,
     <Route component={AsyncPageNotFound} />
   ]
 }

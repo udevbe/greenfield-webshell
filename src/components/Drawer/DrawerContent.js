@@ -1,53 +1,43 @@
 import React from 'react'
 import Scrollbar from '../../components/Scrollbar'
 import SelectableMenuList from '../../containers/SelectableMenuList'
-import { compose } from 'redux'
-import { injectIntl } from 'react-intl'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
+import { useHistory, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useFirebase } from 'react-redux-firebase'
+import { setDrawerMobileOpen } from '../../store/drawer/actions'
 import { withA2HS } from 'a2hs'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withRouter } from 'react-router-dom'
-import { withTheme } from '@material-ui/core/styles'
 
-export const DrawerContent = props => {
-  const { appConfig, dialogs, match, messaging, drawer } = props
+// TODO get rid of a2hs and replace it with something better
+export const DrawerContent = ({ deferredPrompt, isAppInstallable, isAppInstalled }) => {
+  const appConfig = useAppConfig()
+  const handleSignOut = async () => {
+    await database.ref(`users/${profile.uid}/connections`).remove()
+    // TODO get messaging working
+    // await database.ref(`users/${profile.uid}/notificationTokens/${messaging.token}`).remove()
+    // TODO use firebase' build in user meta data functionality
+    await database.ref(`users/${profile.uid}/lastOnline`).set(new Date())
+    await firebase.logout()
+    window.location.reload()
+  }
+
+  const menuItems = appConfig.useMenuItems(deferredPrompt, isAppInstallable, isAppInstalled, handleSignOut)
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const firebase = useFirebase()
+  const { database, profile } = useSelector(({ firebase: { database, profile } }) => ({ database, profile }))
+  const dialogs = useSelector(({ dialogs }) => dialogs)
+  const drawer = useSelector(({ drawer }) => drawer)
+  const params = useParams()
 
   const handleChange = (event, index) => {
-    const { history, setDrawerMobileOpen } = props
-
     if (index !== undefined) {
-      setDrawerMobileOpen(false)
+      dispatch(setDrawerMobileOpen(false))
     }
 
     if (index !== undefined && index !== Object(index)) {
       history.push(index)
     }
-  }
-
-  const handleSignOut = async () => {
-    const { userLogout, setDialogIsOpen, appConfig, setDrawerOpen } = props
-
-    await appConfig.firebaseLoad().then(async ({ firebaseApp }) => {
-      await firebaseApp
-        .database()
-        .ref(`users/${firebaseApp.auth().currentUser.uid}/connections`)
-        .remove()
-      await firebaseApp
-        .database()
-        .ref(`users/${firebaseApp.auth().currentUser.uid}/notificationTokens/${messaging.token}`)
-        .remove()
-      await firebaseApp
-        .database()
-        .ref(`users/${firebaseApp.auth().currentUser.uid}/lastOnline`)
-        .set(new Date())
-      await firebaseApp
-        .auth()
-        .signOut()
-        .then(() => {
-          userLogout()
-          setDrawerOpen(false)
-          setDialogIsOpen('auth_menu', false)
-        })
-    })
   }
 
   const isAuthMenu = !!dialogs.auth_menu
@@ -63,17 +53,17 @@ export const DrawerContent = props => {
       <Scrollbar>
         {isAuthMenu && (
           <SelectableMenuList
-            items={appConfig.getMenuItems({ ...props, isAuthMenu, handleSignOut })}
+            items={menuItems}
             onIndexChange={handleChange}
-            index={match ? match.path : '/'}
+            index={params ? params.path : '/'}
             useMinified={drawer.useMinified && !drawer.open}
           />
         )}
         {!isAuthMenu && (
           <SelectableMenuList
-            items={appConfig.getMenuItems({ ...props, isAuthMenu, handleSignOut })}
+            items={menuItems}
             onIndexChange={handleChange}
-            index={match ? match.path : '/'}
+            index={params ? params.path : '/'}
             useMinified={drawer.useMinified && !drawer.open}
           />
         )}
@@ -82,10 +72,4 @@ export const DrawerContent = props => {
   )
 }
 
-export default compose(
-  withA2HS,
-  injectIntl,
-  withRouter,
-  withAppConfigs,
-  withTheme
-)(DrawerContent)
+export default withA2HS(DrawerContent)

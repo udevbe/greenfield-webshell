@@ -1,17 +1,7 @@
-export default function isGranted (state, grant) {
-  const { auth, lists, paths } = state
+import { useFirebaseConnect } from 'react-redux-firebase'
+import { useSelector, useStore } from 'react-redux'
 
-  const userGrants = lists[`user_grants/${auth.uid}`]
-  const isAdmin = paths[`admins/${auth.uid}`]
-
-  if (auth.isAuthorised !== true) {
-    return false
-  }
-
-  if (isAdmin === true) {
-    return true
-  }
-
+function isGranted (userGrants, grant) {
   if (userGrants !== undefined) {
     for (const userGrant of userGrants) {
       if (userGrant.key === grant) {
@@ -23,24 +13,20 @@ export default function isGranted (state, grant) {
   return false
 }
 
-export function isAnyGranted (state, grants) {
-  if (grants !== undefined) {
-    for (const grant of grants) {
-      if (isGranted(state, grant) === true) {
-        return true
-      }
-    }
-  }
-
-  return false
+export function useIsGranted (...requestedGrants) {
+  // TODO useStore() instead?
+  const auth = useSelector(({ firebase: { auth } }) => auth)
+  useFirebaseConnect([{ path: `/user_grants/${auth.uid}`, storeAs: 'user_grants' }])
+  const userGrants = useSelector(state => state.firebase.ordered.user_grants)
+  return requestedGrants.map(requestedGrant => ({ requestedGrant: isGranted(userGrants, requestedGrant) }))
 }
 
 const localStorageAuthKey = 'greenfield:isAuthorised'
 
-export function saveAuthorisation (user) {
+export function saveAuthorisation (hasAuth) {
   if (typeof Storage !== 'undefined') {
     try {
-      window.localStorage.setItem(localStorageAuthKey, Boolean(user))
+      window.localStorage.setItem(localStorageAuthKey, hasAuth)
     } catch (ex) {
       console.log(ex)
     }

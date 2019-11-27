@@ -5,7 +5,7 @@ import UpdateToast from '../components/Notifications/UpdateToast'
 
 let updateMessageShown = false
 
-const initializeMessaging = (initMessagingCb, initMessaging, firebase, appConfig, skipIfNoPermission = false) => {
+const initializeMessaging = (location, initMessagingCb, firebase, appConfig, history, skipIfNoPermission = false) => {
   const firebaseApp = firebase.app
   const auth = firebase.auth
   firebaseApp.database().ref(`disable_notifications/${auth.uid}`)

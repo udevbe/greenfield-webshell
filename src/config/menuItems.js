@@ -11,31 +11,28 @@ import StyleIcon from '@material-ui/icons/Style'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import allLocales from './locales'
 import { themes } from './themes'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateTheme } from '../store/themeSource/actions'
+import { updateLocale } from '../store/locale/actions'
+import { useIntl } from 'react-intl'
+import { isAuthorised, useIsGranted } from '../utils/auth'
 
-const getMenuItems = props => {
-  const {
-    locale,
-    updateTheme,
-    updateLocale,
-    intl,
-    themeSource,
-    auth,
-    isGranted,
-    deferredPrompt,
-    isAppInstallable,
-    isAppInstalled,
-    isAuthMenu,
-    handleSignOut
-  } = props
-
-  const isAuthorised = auth.isAuthorised
+// TODO get all args from hooks
+export const useMenuItems = (deferredPrompt, isAppInstallable, isAppInstalled, handleSignOut) => {
+  const dispatch = useDispatch()
+  const intl = useIntl()
+  const authorised = isAuthorised()
+  const locale = useSelector(({ locale }) => locale)
+  const themeId = useSelector(({ themeSource: { themeId } }) => themeId)
+  const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
+  const isGranted = useIsGranted('administration', 'read_users', 'read_roles')
 
   const themeItems = themes.map(t => {
     return {
       value: undefined,
       visible: true,
       primaryText: intl.formatMessage({ id: t.id }),
-      onClick: () => updateTheme(t.id),
+      onClick: () => dispatch(updateTheme(t.id)),
       leftIcon: <StyleIcon style={{ color: t.color }} />
     }
   })
@@ -45,7 +42,7 @@ const getMenuItems = props => {
       value: undefined,
       visible: true,
       primaryText: intl.formatMessage({ id: l.locale }),
-      onClick: () => updateLocale(l.locale),
+      onClick: () => dispatch(updateLocale(l.locale)),
       leftIcon: <LanguageIcon />
     }
   })
@@ -68,34 +65,34 @@ const getMenuItems = props => {
 
   return [
     {
-      visible: isAuthorised,
+      visible: authorised,
       primaryText: intl.formatMessage({ id: 'workspace' }),
       primaryTogglesNestedList: false,
       leftIcon: <SettingsSystemDaydreamIcon />,
       value: '/workspace'
     },
     {
-      visible: isAuthorised,
+      visible: authorised,
       primaryText: intl.formatMessage({ id: 'webstore' }),
       primaryTogglesNestedList: false,
       leftIcon: <PublicIcon />,
       value: '/webstore'
     },
     {
-      visible: isAuthorised, // In prod: isGranted('administration'),
+      visible: authorised, // In prod: isGranted['administration'],
       primaryTogglesNestedList: true,
       primaryText: intl.formatMessage({ id: 'administration' }),
       leftIcon: <Security />,
       nestedItems: [
         {
           value: '/users',
-          visible: isAuthorised, // In prod: isGranted('read_users'),
+          visible: authorised, // In prod: isGranted['read_users'],
           primaryText: intl.formatMessage({ id: 'users' }),
           leftIcon: <GroupIcon />
         },
         {
           value: '/roles',
-          visible: isGranted('read_roles'),
+          visible: isGranted.read_roles,
           primaryText: intl.formatMessage({ id: 'roles' }),
           leftIcon: <AccountBoxIcon />
         }
@@ -103,17 +100,17 @@ const getMenuItems = props => {
     },
     {
       divider: true,
-      visible: isAuthorised
+      visible: authorised
     },
     {
-      visible: isAuthorised,
+      visible: authorised,
       primaryText: intl.formatMessage({ id: 'settings' }),
       primaryTogglesNestedList: true,
       leftIcon: <SettingsIcon />,
       nestedItems: [
         {
           primaryText: intl.formatMessage({ id: 'theme' }),
-          secondaryText: intl.formatMessage({ id: themeSource.source }),
+          secondaryText: intl.formatMessage({ id: themeId }),
           primaryTogglesNestedList: true,
           leftIcon: <StyleIcon />,
           nestedItems: themeItems
@@ -129,13 +126,9 @@ const getMenuItems = props => {
     },
     {
       visible: isAppInstallable && !isAppInstalled,
-      onClick: () => {
-        deferredPrompt.prompt()
-      },
+      onClick: () => deferredPrompt.prompt(),
       primaryText: intl.formatMessage({ id: 'install' }),
       leftIcon: <VerticalAlignBottomIcon />
     }
   ]
 }
-
-export default getMenuItems

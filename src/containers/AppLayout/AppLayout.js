@@ -27,9 +27,7 @@ const useStyles = makeStyles({
 })
 
 export const AppLayout = () => {
-  useEffect(() => {
-    checkForUpdate()
-  })
+  useEffect(() => checkForUpdate())
 
   const classes = useStyles()
 

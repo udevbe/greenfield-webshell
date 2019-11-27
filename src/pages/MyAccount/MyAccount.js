@@ -82,7 +82,7 @@ const MyAccount = () => {
   useEffect(() => {
     const { displayName, email, photoURL } = auth
     setValues({ ...values, displayName, email, photoURL })
-  })
+  }, [auth, values])
 
   const getProviderIcon = p => { if (p === 'google.com') { return <GoogleIcon /> } else { return undefined } }
   const handleEmailVerificationsSend = () => auth.currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
@@ -301,10 +301,8 @@ const MyAccount = () => {
       toast.info(
         ({ closeToast }) => (
           <PermissionRequestToast
-            {...{
-              closeToast,
-              initializeMessaging
-            }} closeToast={closeToast} initializeMessaging={initializeMessaging}
+            closeToast={closeToast}
+            initializeMessaging={initializeMessaging}
           />
         ),
         {

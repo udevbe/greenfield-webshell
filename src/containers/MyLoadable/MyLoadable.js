@@ -15,7 +15,7 @@ export default (opts, preloadComponents) => Loadable.Map({
     }
 
     const Component = loaded.Component.default
-    const firebase = loaded.firebase
+    const firebase = loaded.firebase.default
 
     return (
       <div>

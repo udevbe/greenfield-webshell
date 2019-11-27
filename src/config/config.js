@@ -1,5 +1,5 @@
 import configureStore from '../store'
-import getMenuItems from './menuItems'
+import { useMenuItems } from './menuItems'
 import grants from './grants'
 import locales from './locales'
 import { GreenfieldIcon } from '../components/Icons'
@@ -26,17 +26,21 @@ const config = {
     appId: '1:479563718289:web:ec8b3b518c27499943a930',
     measurementId: 'G-84RFF1PNSR'
   },
-  firebase_providers: ['google.com', 'password', 'anonymous'],
+  firebase_providers: [
+    'google.com',
+    'password',
+    'anonymous'
+  ],
   drawer_width: 240,
   appIcon: GreenfieldIcon,
   configureStore,
-  getMenuItems,
+  useMenuItems,
   locales,
   themes,
   grants,
   routes,
   notificationsReengagingHours: 48,
-  firebaseLoad: () => import('./firebaseInit'),
+  firebaseLoader: () => import('./firebaseInit'),
   getNotifications: (notification, history) => {
     return {
       chat: {

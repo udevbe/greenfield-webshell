@@ -1,38 +1,35 @@
 import React from 'react'
-import { Redirect, Route } from 'react-router'
-import { useFirebase } from 'react-redux-firebase'
+import { Redirect, Route, useLocation } from 'react-router'
+import { isEmpty, isLoaded } from 'react-redux-firebase'
+import { useSelector } from 'react-redux'
 
 export const RestrictedRoute = ({
   type,
   component: Component,
-  fallbackComponent: FallbackComponent = false,
+  componentProps,
   ...rest
 }) => {
-  // FIXME use selector & display loading state if required
-  const isAuthorised = useFirebase().auth.isAuthorised
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        if ((isAuthorised && type === 'private') || (!isAuthorised && type === 'public')) {
-          return <Component {...props} />
-        } else if (FallbackComponent) {
-          return <FallbackComponent {...props} />
-        } else {
-          return (
-            <Redirect
-              to={{
-                pathname:
-                  type === 'private' ? '/signin' : props.location.state ? props.location.state.from.pathname : '/',
-                search: `from=${props.location.pathname}`,
-                state: { from: props.location }
-              }}
-            />
-          )
-        }
-      }}
-    />
-  )
+  const location = useLocation()
+  const isAuthorized = useSelector(({ firebase: { auth } }) => isLoaded(auth) && !isEmpty(auth))
+  if (isAuthorized || (type === 'public')) {
+    return (
+      <Route {...rest}>
+        <Component {...componentProps} />
+      </Route>
+    )
+  } else {
+    return (
+      <Redirect
+        to={{
+          pathname: '/signin',
+          state: {
+            fromRedirect: true,
+            fromLocation: { ...location }
+          }
+        }}
+      />
+    )
+  }
 }
 
 export default RestrictedRoute

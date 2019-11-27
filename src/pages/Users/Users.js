@@ -6,13 +6,16 @@ import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
 import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
-import { compose } from 'redux'
-import { connect, useSelector } from 'react-redux'
-import { injectIntl } from 'react-intl'
-import { withRouter } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
+import { useHistory, useParams } from 'react-router-dom'
 import { isLoaded, useFirebaseConnect } from 'react-redux-firebase'
 
-const Users = ({ intl, history, isSelecting }) => {
+const Users = () => {
+  const { select } = useParams()
+  const isSelecting = select || false
+  const history = useHistory()
+  const intl = useIntl()
   useFirebaseConnect([{ path: '/users' }])
   const users = useSelector(state => state.firebase.ordered.users)
 
@@ -88,13 +91,4 @@ const Users = ({ intl, history, isSelecting }) => {
 
 Users.propTypes = {}
 
-const mapStateToProps = (state, ownProps) => {
-  const { match: { params: { select } } } = ownProps
-  return { isSelecting: select || false }
-}
-
-export default compose(
-  connect(mapStateToProps),
-  injectIntl,
-  withRouter
-)(Users)
+export default Users

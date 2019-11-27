@@ -13,10 +13,17 @@ import { createMuiTheme } from '@material-ui/core/styles'
 import { useIntl } from 'react-intl'
 import { useDispatch } from 'react-redux'
 import { setPersistentValue } from '../../store/persistentValues/actions'
+import { useHistory, useLocation } from 'react-router'
+import { useFirebase } from 'react-redux-firebase'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
 
 export const PermissionRequestToast = ({ closeToast, initializeMessaging }) => {
   const intl = useIntl()
   const dispatch = useDispatch()
+  const location = useLocation()
+  const history = useHistory()
+  const firebase = useFirebase()
+  const appConfig = useAppConfig
   const theme = useTheme()
 
   const type = theme.palette.type === 'light' ? 'dark' : 'light'
@@ -29,7 +36,7 @@ export const PermissionRequestToast = ({ closeToast, initializeMessaging }) => {
         <Typography>
           <ListItem>
             <ListItemIcon>
-              <Notifications color="secondary" fontSize="large" />
+              <Notifications color='secondary' fontSize='large' />
             </ListItemIcon>
             <ListItemText primary={intl.formatMessage({ id: 'enable_notifications_message' })} />
           </ListItem>
@@ -38,14 +45,14 @@ export const PermissionRequestToast = ({ closeToast, initializeMessaging }) => {
             <Button
               onClick={() => {
                 dispatch(setPersistentValue('notificationPermissionRequested', moment()))
-                initializeMessaging()
+                initializeMessaging(location, initializeMessaging, firebase, appConfig, history)
                 closeToast()
               }}
             >
               {intl.formatMessage({ id: 'enable' })}
             </Button>
             <Button
-              color="secondary"
+              color='secondary'
               onClick={() => {
                 dispatch(setPersistentValue('notificationPermissionRequested', moment()))
                 closeToast()
