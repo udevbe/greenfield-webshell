@@ -1,32 +1,31 @@
-import 'firebase/storage'
 import { AppBar, Button, CircularProgress, Dialog, IconButton, Slide, Toolbar, Typography } from '@material-ui/core'
-import { Close } from '@material-ui/icons'
+import Close from '@material-ui/icons/Close'
 import Dropzone from 'react-dropzone'
 import React, { useState } from 'react'
 import { Cropper } from 'react-image-cropper'
 import { useIntl } from 'react-intl'
 import { useTheme } from '@material-ui/core/styles'
-import { useSelector } from 'react-redux'
+import { useFirebase } from 'react-redux-firebase'
 
 const Transition = props => <Slide direction='up' {...props} />
 
 const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSuccess, handleClose }) => {
   const intl = useIntl()
+  const firebase = useFirebase()
   const [src, setSrc] = useState(undefined)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [file, setFile] = useState(undefined)
   let cropper = null
-  const storage = useSelector(({ firebase: { storage } }) => storage)
 
   const handlePhotoURLUpload = photoUrl => {
     setIsUploading(true)
     setUploadProgress(0)
 
-    const uploadTask = storage.ref(`${path}/${fileName}`).putString(photoUrl, 'data_url')
+    const uploadTask = firebase.storage().ref(`${path}/${fileName}`).putString(photoUrl, 'data_url')
 
     uploadTask.on(
-      storage.TaskEvent.STATE_CHANGED,
+      firebase.firebase_.storage.TaskEvent.STATE_CHANGED,
       snapshot => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         setIsUploading(true)
@@ -126,8 +125,8 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
         {src && !isUploading && (
           <div style={{ maxWidth: '80vw', maxHeight: '80vh' }}>
             <Cropper
-              ref={field => { cropper = field }}
               src={src}
+              ref={ref => { cropper = ref }}
               aspectRatio={9 / 9}
               {...cropperProps}
             />

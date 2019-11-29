@@ -2,7 +2,7 @@ import { Box, CircularProgress, Container, Grid, IconButton, makeStyles, Menu, T
 import React, { useState } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { Apps as AppsIcon } from '@material-ui/icons'
+import AppsIcon from '@material-ui/icons/Apps'
 import { ApplicationLauncher } from '../../components/ApplicationLauncher'
 
 const dataPath = 'userApps'

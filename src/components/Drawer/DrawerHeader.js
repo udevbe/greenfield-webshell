@@ -14,7 +14,6 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Paper,
-  useMediaQuery
 } from '@material-ui/core'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -24,22 +23,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
 import { isEmpty } from 'react-redux-firebase'
-
-/**
- * Be careful using this hook. It only works because the number of
- * breakpoints in theme is static. It will break once you change the number of
- * breakpoints. See https://reactjs.org/docs/hooks-rules.html#only-call-hooks-at-the-top-level
- */
-function useWidth (theme) {
-  const keys = [...theme.breakpoints.keys].reverse()
-  return (
-    keys.reduce((output, key) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const matches = useMediaQuery(theme.breakpoints.up(key))
-      return !output && matches ? key : output
-    }, null) || 'xs'
-  )
-}
+import { useWidth } from '../../utils/theme'
 
 const useStyles = makeStyles(theme => ({
   paper: {

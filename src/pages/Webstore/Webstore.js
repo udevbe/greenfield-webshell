@@ -74,7 +74,7 @@ const Webstore = ({ intl }) => {
   const apps = useSelector(state => state.firebase.ordered.apps)
 
   const classes = useStyles()
-  const appsList = cards.slice(0, Math.min(apps.length, scrollPos)).map(({ key, val }) => {
+  const appsList = cards.slice(0, Math.min(cards.length, scrollPos)).map(({ key, val }) => {
     return (
       <Grid item key={key} xs={12} sm={6} md={4} lg={3} xl={2}>
         <Card className={classes.card}>

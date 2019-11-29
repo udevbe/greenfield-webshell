@@ -1,45 +1,48 @@
 import AltIconAvatar from '../../components/AltIconAvatar'
-import { Check } from '@material-ui/icons'
+import Check from '@material-ui/icons/Check'
 import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
-import { useSelector } from 'react-redux'
+import { shallowEqual, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { useParams } from 'react-router-dom'
-import { useFirebaseConnect } from 'react-redux-firebase'
+import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
 const UserGrants = () => {
   const intl = useIntl()
   const appConfig = useAppConfig()
+  const firebase = useFirebase()
   const { uid } = useParams()
-  const userGrantsPath = `/user_grants/${uid}`
-  useFirebaseConnect([{ path: userGrantsPath, storeAs: 'user_grants' }])
-  const user_grants = useSelector(state => state.firebase.ordered.user_grants)
-  const database = useSelector(({ firebase: { database } }) => database)
+  useFirebaseConnect([{ path: '/user_grants' }])
+  const userGrants = useSelector(state => state.firebase.ordered.user_grants || [], shallowEqual)
 
   const handleGrantToggleChange = (e, isInputChecked, key) => {
-    const ref = database.ref(`${userGrantsPath}/${key}`)
     if (isInputChecked) {
-      ref.set(true)
+      firebase.ref(`/user_grants/${uid}/${key}`).set(true)
     } else {
-      ref.remove()
+      firebase.ref(`/user_grants/${uid}/${key}`).remove()
     }
   }
 
-  const renderGrantItem = (list, i) => {
-    const key = list[i].val ? list[i].val.value : ''
-    const val = appConfig.grants[list[i].key]
-    const userGrants = []
+  const grantList = appConfig.grants.map((grant, index) => ({
+    key: index,
+    val: { name: intl.formatMessage({ id: `grant ${grant}` }), value: grant }
+  }))
 
-    if (user_grants !== undefined) {
-      user_grants.map(role => {
-        if (role.key === key) {
-          if (role.val !== undefined) {
-            userGrants[role.key] = role.val
+  const renderGrantItem = (list, i) => {
+    const key = grantList[i].key
+    const val = appConfig.grants[grantList[i].key]
+
+    let userGrantValues = []
+
+    if (userGrants) {
+      userGrants.forEach(userGrant => {
+        if (userGrant.key === uid) {
+          if (userGrant.value !== undefined) {
+            userGrantValues = userGrant.value
           }
         }
-        return role
       })
     }
 
@@ -50,7 +53,7 @@ const UserGrants = () => {
           <ListItemText primary={intl.formatMessage({ id: `grant_${val}` })} secondary={val} />
           <ListItemSecondaryAction>
             <Switch
-              checked={userGrants[key] === true}
+              checked={userGrantValues[key] === true}
               onChange={(e, isInputChecked) => handleGrantToggleChange(e, isInputChecked, key)}
             />
           </ListItemSecondaryAction>
@@ -59,12 +62,6 @@ const UserGrants = () => {
       </div>
     )
   }
-
-  // TODO check if grants are loaded
-  const grantList = appConfig.grants.map((grant, index) => ({
-    key: index,
-    val: { name: intl.formatMessage({ id: `grant_${grant}` }), value: grant }
-  }))
 
   return (
     <div style={{ height: '100%' }}>

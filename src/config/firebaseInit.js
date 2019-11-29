@@ -2,6 +2,7 @@ import firebaseApp from 'firebase/app'
 import config from './config'
 import 'firebase/auth'
 import 'firebase/database'
+import 'firebase/storage'
 
 const firebase = firebaseApp.initializeApp(
   process.env.NODE_ENV !== 'production' ? config.firebase_config_dev : config.firebase_config

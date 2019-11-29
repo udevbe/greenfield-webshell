@@ -1,3 +1,3 @@
-export const grants = ['create_applink', 'edit_applink', 'delete_applink', 'read_applink']
+export const grants = ['create application link', 'edit application link', 'delete application link', 'read application link']
 
 export default grants

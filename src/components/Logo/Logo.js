@@ -1,10 +1,7 @@
-'use strict'
-
-// import './style.css'
 import React from 'react'
-import { withStyles } from '@material-ui/core/es/styles'
+import makeStyles from '@material-ui/core/styles/makeStyles'
 
-const styles = {
+const useStyles = makeStyles({
   logo: {
     fontFamily: 'Montserrat',
     textAlign: 'center',
@@ -13,17 +10,13 @@ const styles = {
   i: {
     color: 'rgba(111, 174, 42, 1);'
   }
+})
+
+export default ({ fontSize = '4rem', fontWeight = '200' }) => {
+  const classes = useStyles()
+  return (
+    <span className={classes.logo} style={{ fontSize, fontWeight }}>
+        Greenf<span className={classes.i}>i</span>eld
+    </span>
+  )
 }
-
-export default withStyles(styles)(React.memo(
-  (props) => {
-    const fontSize = props.fontSize ? props.fontSize : '4rem'
-    const fontWeight = props.fontWeight ? props.fontWeight : '200'
-
-    return (
-      <span className={props.classes.logo} style={{ fontSize, fontWeight }}>
-        Greenf<span className={props.classes.i}>i</span>eld
-      </span>
-    )
-  }
-))

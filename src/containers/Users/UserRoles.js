@@ -1,45 +1,33 @@
-import { AccountBox } from '@material-ui/icons'
+import AccountBox from '@material-ui/icons/AccountBox'
 import AltIconAvatar from '../../components/AltIconAvatar'
 import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
-import { useSelector } from 'react-redux'
+import { shallowEqual, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useFirebaseConnect } from 'react-redux-firebase'
+import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
 const UserRoles = () => {
   const { uid } = useParams()
-  const userRolesPath = `/user_roles/${uid}`
+  const firebase = useFirebase()
   useFirebaseConnect([{ path: '/roles' }])
-  useFirebaseConnect([{ path: userRolesPath, storeAs: 'user_roles' }])
+  useFirebaseConnect([{ path: `/user_roles/${uid}` }], [uid])
   const roles = useSelector(state => state.firebase.ordered.roles)
-  const user_roles = useSelector(state => state.firebase.ordered.user_roles)
-  const database = useSelector(({ firebase: { database } }) => database)
+  // TODO use a query that directly fetches the user's roles
+  const allUsersRoles = useSelector(state => state.firebase.data.user_roles[uid] || {}, shallowEqual)
 
   const handleRoleToggleChange = (e, isInputChecked, key) => {
-    const ref = database.ref(`${userRolesPath}/${key}`)
     if (isInputChecked) {
-      ref.set(true)
+      firebase.ref(`/user_roles/${uid}/${key}`).set(true)
     } else {
-      ref.remove()
+      firebase.ref(`/user_roles/${uid}/${key}`).remove()
     }
   }
 
   const renderRoleItem = i => {
     const key = roles[i].key
     const val = roles[i].value
-    const userRoles = []
-
-    if (user_roles !== undefined) {
-      user_roles.map(role => {
-        if (role.key === key) {
-          if (role.val !== undefined) {
-            userRoles[role.key] = role.val
-          }
-        }
-        return role
-      })
-    }
+    const hasUserRole = allUsersRoles[key] || false
 
     return (
       <div key={key}>
@@ -48,7 +36,7 @@ const UserRoles = () => {
           <ListItemText primary={val.name} secondary={val.description} />
           <ListItemSecondaryAction>
             <Switch
-              checked={userRoles[key] === true}
+              checked={hasUserRole}
               onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, key)}
             />
           </ListItemSecondaryAction>

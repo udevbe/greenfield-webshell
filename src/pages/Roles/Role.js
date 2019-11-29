@@ -21,13 +21,10 @@ import Scrollbar from '../../components/Scrollbar/Scrollbar'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import classNames from 'classnames'
-import { compose } from 'redux'
-import { change, submit } from 'redux-form'
-import { connect, useSelector } from 'react-redux'
-import { injectIntl } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withRouter } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
@@ -48,57 +45,70 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const Role = (props) => {
-  const { intl, uid, history, dialogs, setDialogIsOpen, editType } = props
-  const firebase = useFirebase()
-  const firebaseApp = firebase.app
+const emptyValues = { name: '', description: '' }
 
-  const [values, setValues] = useState({ name: '', description: '' })
+// TODO use redux-form?
+export const Role = () => {
+  const intl = useIntl()
+  const history = useHistory()
+  const dispatch = useDispatch()
+  const params = useParams()
+  const editType = params.editType ? params.editType : 'data'
+  const uid = params.uid ? params.uid : ''
+  const dialogDeleteRole = useSelector(({ dialogs }) => dialogs.delete_role)
+  const firebase = useFirebase()
+
+  const [values, setValues] = useState(emptyValues)
   const [errors, setErrors] = useState({})
-  useEffect(() => { firebaseApp.database().ref(`roles/${uid}`).on('value', snap => setValues(snap.val() ? snap.val() : {})) })
+
+  useEffect(() => {
+    if (!values.name || values.name === '') {
+      setErrors(errors => ({ ...errors, displayName: 'Required' }))
+    } else {
+      setErrors(errors => {
+        const { displayNameError, ...noDisplayNameErrors } = errors
+        return noDisplayNameErrors
+      })
+    }
+  }, [values.name])
+
+  useFirebaseConnect([{ path: `roles/${uid}` }], [uid])
+  const role = useSelector(({ firebase }) => firebase.data.roles ? firebase.data.roles[uid] : emptyValues)
+  useEffect(() => setValues(role), [role])
 
   const clean = obj => {
     Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
     return obj
   }
 
-  const submit = () => firebaseApp.database().ref(`roles/${uid}`).update(clean(values)).then(() => history.push('/roles'))
+  const submit = () => firebase.database().ref(`roles/${uid}`).update(clean(values)).then(() => history.push('/roles'))
   const handleTabActive = (e, value) => history.push(`/roles/edit/${uid}/${value}`)
   const handleValueChange = (name, value) => setValues({
-    values: {
-      ...values,
-      [name]: value
-    }
-  }, () => validate())
+    ...values,
+    [name]: value
+  })
 
   useFirebaseConnect([{ path: 'role_grants' }])
   const roleGrants = useSelector(state => state.firebase.ordered.role_grants)
 
-  const handleClose = () => setDialogIsOpen('delete_role', false)
-
-  const validate = () => {
-    if (!values.name) {
-      errors.displayName = 'Required'
-    }
-    setErrors({ errors })
-  }
+  const handleClose = () => dispatch(setDialogIsOpen('delete_role', false))
 
   const handleDelete = () => {
     if (uid) {
-      firebaseApp.database().ref().child(`/roles/${uid}`).remove().then(() => {
+      firebase.database().ref().child(`/roles/${uid}`).remove().then(() => {
         handleClose()
         history.goBack()
       })
     }
   }
 
-  const canSave = () => !Object.keys(this.state.errors).length
+  const canSave = () => !Object.keys(errors).length
 
   const classes = useStyles()
 
   return (
     <Activity
-      isLoading={!isLoaded(roleGrants)}
+      isLoading={!role || !isLoaded(roleGrants)}
       appBarContent={
         <div>
           {editType === 'main' && (
@@ -138,7 +148,7 @@ export const Role = (props) => {
                   className={classNames(classes.margin, classes.textField)}
                   error={!!errors.name}
                 >
-                  <InputLabel htmlFor='adornment-password'>{intl.formatMessage({ id: 'name_label' })}</InputLabel>
+                  <InputLabel htmlFor='name'>{intl.formatMessage({ id: 'name_label' })}</InputLabel>
                   <Input
                     id='name'
                     fullWidth
@@ -152,7 +162,7 @@ export const Role = (props) => {
                 </FormControl>
                 <br />
                 <FormControl className={classNames(classes.margin, classes.textField)}>
-                  <InputLabel htmlFor='adornment-password'>
+                  <InputLabel htmlFor='description'>
                     {intl.formatMessage({ id: 'description_label' })}
                   </InputLabel>
                   <Input
@@ -161,20 +171,18 @@ export const Role = (props) => {
                     multiline
                     value={values.description}
                     placeholder={intl.formatMessage({ id: 'description_hint' })}
-                    onChange={e => {
-                      handleValueChange('description', e.target.value)
-                    }}
+                    onChange={e => handleValueChange('description', e.target.value)}
                   />
                 </FormControl>
               </div>
             </div>
           )}
-          {editType === 'grants' && isLoaded(roleGrants) && <RoleGrants {...props} roleGrants={roleGrants} />}
+          {editType === 'grants' && isLoaded(roleGrants) && <RoleGrants roleGrants={roleGrants} />}
         </div>
       </Scrollbar>
 
       <Dialog
-        open={dialogs.delete_role === true}
+        open={dialogDeleteRole}
         onClose={handleClose}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
@@ -198,27 +206,4 @@ export const Role = (props) => {
   )
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { intl, dialogs } = state
-
-  const { match } = ownProps
-  const editType = match.params.editType ? match.params.editType : 'data'
-  const uid = match.params.uid ? match.params.uid : ''
-
-  return {
-    intl,
-    uid,
-    dialogs,
-    editType
-  }
-}
-
-export default compose(
-  connect(
-    mapStateToProps,
-    { setDialogIsOpen, change, submit }
-  ),
-  injectIntl,
-  withRouter,
-  withAppConfigs
-)(Role)
+export default Role

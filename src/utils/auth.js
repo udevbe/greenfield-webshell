@@ -17,7 +17,7 @@ export function useIsGranted (...requestedGrants) {
   // TODO useStore() instead?
   const auth = useSelector(({ firebase: { auth } }) => auth)
   useFirebaseConnect([{ path: `/user_grants/${auth.uid}`, storeAs: 'user_grants' }])
-  const userGrants = useSelector(state => state.firebase.ordered.user_grants)
+  const userGrants = useSelector(state => state.firebase.ordered.user_grants ? state.firebase.ordered.user_grants[auth.uid] || [] : [])
   return requestedGrants.map(requestedGrant => ({ requestedGrant: isGranted(userGrants, requestedGrant) }))
 }
 

@@ -1,35 +1,34 @@
 import Activity from '../../containers/Activity'
 import QuestionDialog from '../../containers/QuestionDialog'
-import { ImageCropDialog } from '../../containers/ImageCropDialog'
-import { Delete, Error, Person, PhotoCamera, Save, VerifiedUser, Visibility, VisibilityOff } from '@material-ui/icons'
-import {
-  Avatar,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  IconButton,
-  Input,
-  InputAdornment,
-  InputLabel,
-  Switch
-} from '@material-ui/core'
+import ImageCropDialog from '../../containers/ImageCropDialog/ImageCropDialog'
+
+import Delete from '@material-ui/icons/Delete'
+import Error from '@material-ui/icons/Error'
+import Person from '@material-ui/icons/Person'
+import PhotoCamera from '@material-ui/icons/PhotoCamera'
+import Save from '@material-ui/icons/Save'
+import VerifiedUser from '@material-ui/icons/VerifiedUser'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
+
+import Avatar from '@material-ui/core/Avatar'
+import FormControl from '@material-ui/core/FormControl'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import IconButton from '@material-ui/core/IconButton'
+import Input from '@material-ui/core/Input'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import InputLabel from '@material-ui/core/InputLabel'
+
 import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
-import { initializeMessaging } from '../../utils/messaging'
 import { GoogleIcon } from '../../components/Icons'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { setDialogIsOpen } from '../../store/dialogs/actions'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
-import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
-import moment from 'moment'
-import { toast } from 'react-toastify'
-import PermissionRequestToast from '../../components/Notifications/PermissionRequestToast'
+import { useFirebase } from 'react-redux-firebase'
 import getSimpleValue from '../../store/simpleValues/selectors'
-import getPersistentValue from '../../store/persistentValues/selectors'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -52,15 +51,14 @@ const MyAccount = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
   const firebase = useFirebase()
-  const auth = useSelector(({ firebase: { auth } }) => auth)
-  const database = useSelector(({ firebase: { database } }) => database)
-  useFirebaseConnect({ path: '', storeAs: 'notificationTokens' })
-  const notificationTokens = useSelector(state => state.firebase.ordered.notificationTokens)
-  useFirebaseConnect({ path: '', storeAs: 'emailNotifications' })
-  const emailNotifications = useSelector(state => state.firebase.ordered.emailNotifications)
+  const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
+  // useFirebaseConnect({ path: '', storeAs: 'notificationTokens' })
+  // const notificationTokens = useSelector(state => state.firebase.ordered.notificationTokens)
+  // useFirebaseConnect({ path: '', storeAs: 'emailNotifications' })
+  // const emailNotifications = useSelector(state => state.firebase.ordered.emailNotifications)
   const newUserPhoto = useSelector(state => getSimpleValue(state, 'new_user_photo', false))
-  const notificationPermissionRequested = useSelector(state => getPersistentValue(state, 'notificationPermissionRequested', false))
-  const notificationPermissionShown = useSelector(state => getSimpleValue(state, 'notificationPermissionShown', false))
+  // const notificationPermissionRequested = useSelector(state => getPersistentValue(state, 'notificationPermissionRequested', false))
+  // const notificationPermissionShown = useSelector(state => getSimpleValue(state, 'notificationPermissionShown', false))
 
   const [values, setValues] = useState({
     displayName: '',
@@ -76,13 +74,13 @@ const MyAccount = () => {
   const [errors, setErrors] = useState({})
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
 
-  useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
-  useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
+  // useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
+  // useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
 
+  const { displayName, email, photoURL } = auth
   useEffect(() => {
-    const { displayName, email, photoURL } = auth
-    setValues({ ...values, displayName, email, photoURL })
-  }, [auth, values])
+    setValues(values => ({ ...values, displayName, email, photoURL }))
+  }, [displayName, email, photoURL])
 
   const getProviderIcon = p => { if (p === 'google.com') { return <GoogleIcon /> } else { return undefined } }
   const handleEmailVerificationsSend = () => auth.currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
@@ -98,13 +96,13 @@ const MyAccount = () => {
   }
   const getProvider = provider => {
     if (provider.indexOf('email') > -1) {
-      return new auth.EmailAuthProvider()
+      return new firebase.firebase_.auth.EmailAuthProvider()
     }
     if (provider.indexOf('anonymous') > -1) {
-      return new auth.AnonymousAuthProvider()
+      return new firebase.firebase_.auth.AnonymousAuthProvider()
     }
     if (provider.indexOf('google') > -1) {
-      return new auth.GoogleAuthProvider()
+      return new firebase.firebase_.auth.GoogleAuthProvider()
     }
 
     throw new Error('Provider is not supported!')
@@ -113,14 +111,14 @@ const MyAccount = () => {
     if (isLinkedWithProvider('password') && !values) {
       if (onSuccess && onSuccess instanceof Function) { onSuccess() }
     } else if (isLinkedWithProvider('password') && values) {
-      const credential = auth.EmailAuthProvider.credential(auth.email, values.password)
-      auth.currentUser.reauthenticateWithCredential(credential)
+      const credential = firebase.auth().EmailAuthProvider.credential(auth.email, values.password)
+      firebase.auth().currentUser.reauthenticateWithCredential(credential)
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
           e => { /* TODO notify user of error */ }
         )
     } else {
-      auth.currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
+      firebase.auth().currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
           e => { /* TODO notify user of error */ }
@@ -141,11 +139,10 @@ const MyAccount = () => {
 
   const linkUserWithPopup = p => {
     const provider = getProvider(p)
-    auth.currentUser.linkWithPopup(provider)
-      .then(
-        () => firebase.updateAuth(auth.currentUser),
-        e => { /* TODO notify user of error */ }
-      )
+    firebase.auth().currentUser.linkWithPopup(provider).then(
+      () => firebase.firebase_.auth().currentUser.updateProfile(firebase.auth().currentUser),
+      e => { /* TODO notify user of error */ }
+    )
   }
   const clean = obj => {
     Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
@@ -163,13 +160,12 @@ const MyAccount = () => {
 
     // Change simple data
     if (simpleChange) {
-      auth.currentUser.updateProfile(simpleValues).then(
+      firebase.firebase_.auth().currentUser.updateProfile(simpleValues).then(
         () => {
-          database.ref(`users/${auth.uid}`).update(clean(simpleValues))
-            .then(
-              () => firebase.updateAuth(values),
-              e => { /* TODO notify user of error */ }
-            )
+          firebase.ref(`users/${auth.uid}`).update(clean(simpleValues)).then(
+            () => firebase.firebase_.auth().currentUser.updateProfile(values),
+            e => { /* TODO notify user of error */ }
+          )
         },
         e => { /* TODO notify user of error */ }
       )
@@ -178,59 +174,55 @@ const MyAccount = () => {
     // Change email
     if (values.email && values.email.localeCompare(auth.email)) {
       reauthenticateUser(values, () => {
-        auth.currentUser.updateEmail(values.email)
-          .then(
-            () => {
-              database.ref(`users/${auth.uid}`).update({ email: values.email })
-                .then(
-                  () => firebase.updateEmail(values.email),
-                  e => { /* TODO notify user of error */ }
-                )
-            },
-            e => {
-              /* TODO notify user of error */
-              if (e.code === 'auth/requires-recent-login') {
-                auth.signOut().then(() => setTimeout(() => alert('Please sign in again to change your email.'), 1))
-              }
+        firebase.firebase_.auth().currentUser.updateEmail(values.email).then(
+          () => {
+            firebase.ref(`users/${auth.uid}`).update({ email: values.email })
+              .then(
+                () => firebase.firebase_.auth().currentUser.updateEmail(values.email),
+                e => { /* TODO notify user of error */ }
+              )
+          },
+          e => {
+            /* TODO notify user of error */
+            if (e.code === 'auth/requires-recent-login') {
+              firebase.firebase_.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your email.'), 1))
             }
-          )
+          }
+        )
       })
     }
     // Change password
     if (values.newPassword) {
       reauthenticateUser(values, () => {
-        auth.currentUser.updatePassword(values.newPassword)
-          .then(
-            () => auth.signOut(),
-            e => {
-              /* TODO notify user of error */
-              if (e.code === 'auth/requires-recent-login') {
-                auth.signOut().then(() => setTimeout(() => alert('Please sign in again to change your password.'), 1))
-              }
+        firebase.firebase_.auth().currentUser.updatePassword(values.newPassword).then(
+          () => firebase.firebase_.auth().signOut(),
+          e => {
+            /* TODO notify user of error */
+            if (e.code === 'auth/requires-recent-login') {
+              firebase.auth().signOut().then(() => setTimeout(() => alert('Please sign in again to change your password.'), 1))
             }
-          )
+          }
+        )
       })
     }
     // We manage the data saving above
     return false
   }
-  const handleClose = () => {
-    dispatch(setSimpleValue('delete_user', false))
-    dispatch(setDialogIsOpen('auth_menu', false))
-  }
-  const handleDelete = () => {
-    reauthenticateUser(false, () => {
-      auth.currentUser.delete()
-        .then(
-          () => handleClose(),
-          e => {
-            /* TODO notify user of error */
-            if (e.code === 'auth/requires-recent-login') {
-              auth.signOut().then(() => setTimeout(() => alert('Please sign in again to delete your account.'), 1))
-            }
-          }
-        )
-    })
+
+  const handleDelete = async () => {
+    try {
+      await firebase.firebase_.auth().currentUser.delete()
+      await firebase.ref(`/users/${auth.uid}`).remove()
+      window.location.reload()
+    } catch (e) {
+      /* TODO notify user of error */
+      if (e.code === 'auth/requires-recent-login') {
+        await firebase.firebase_.auth().signOut()
+        // TODO show a nice popup
+        alert('Please sign in again to delete your account.')
+        window.location.reload()
+      }
+    }
   }
   const validate = () => {
     const providerId = auth.providerData[0].providerId
@@ -277,64 +269,64 @@ const MyAccount = () => {
   }
 
   const handleDisableNotifications = () => {
-    database.ref(`disable_notifications/${auth.uid}`).set(true)
+    firebase.ref(`disable_notifications/${auth.uid}`).set(true)
       .then(() => {
-        database.ref(`notification_tokens/${auth.uid}`).remove()
+        firebase.ref(`notification_tokens/${auth.uid}`).remove()
           .then(() => dispatch(setSimpleValue('disable_notifications', false)))
       })
   }
 
-  const requestNotificationPermission = () => {
-    const reengagingHours = appConfig.notificationsReengagingHours ? appConfig.notificationsReengagingHours : 48
-    const requestNotificationPermission = notificationPermissionRequested
-      ? moment().diff(notificationPermissionRequested, 'hours') > reengagingHours
-      : true
+  // const requestNotificationPermission = () => {
+  //   const reengagingHours = appConfig.notificationsReengagingHours ? appConfig.notificationsReengagingHours : 48
+  //   const requestNotificationPermission = notificationPermissionRequested
+  //     ? moment().diff(notificationPermissionRequested, 'hours') > reengagingHours
+  //     : true
+  //
+  //   if (
+  //     'Notification' in window &&
+  //     window.Notification.permission !== 'granted' &&
+  //     auth.uid &&
+  //     requestNotificationPermission &&
+  //     !notificationPermissionShown
+  //   ) {
+  //     dispatch(setSimpleValue('notificationPermissionShown', true))
+  //     toast.info(
+  //       ({ closeToast }) => (
+  //         <PermissionRequestToast
+  //           closeToast={closeToast}
+  //           initializeMessaging={initializeMessaging}
+  //         />
+  //       ),
+  //       {
+  //         position: toast.POSITION.TOP_CENTER,
+  //         autoClose: false,
+  //         closeButton: false,
+  //         closeOnClick: false
+  //       }
+  //     )
+  //   }
+  // }
 
-    if (
-      'Notification' in window &&
-      window.Notification.permission !== 'granted' &&
-      auth.uid &&
-      requestNotificationPermission &&
-      !notificationPermissionShown
-    ) {
-      dispatch(setSimpleValue('notificationPermissionShown', true))
-      toast.info(
-        ({ closeToast }) => (
-          <PermissionRequestToast
-            closeToast={closeToast}
-            initializeMessaging={initializeMessaging}
-          />
-        ),
-        {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: false,
-          closeButton: false,
-          closeOnClick: false
-        }
-      )
-    }
-  }
-
-  const handleEnableNotificationsChange = e => {
-    if (!e.target.checked) {
-      dispatch(setSimpleValue('disable_notifications', true))
-    } else {
-      database.ref(`disable_notifications/${auth.uid}`).remove(() => {
-        requestNotificationPermission()
-        // eslint-disable-next-line no-self-assign
-        window.location.href = window.location.href
-      })
-    }
-  }
-
-  const handleEmailNotification = e => database.ref(`email_notifications/${auth.uid}`).set(e.target.checked)
+  // const handleEnableNotificationsChange = e => {
+  //   if (!e.target.checked) {
+  //     dispatch(setSimpleValue('disable_notifications', true))
+  //   } else {
+  //     database.ref(`disable_notifications/${auth.uid}`).remove(() => {
+  //       requestNotificationPermission()
+  //       // eslint-disable-next-line no-self-assign
+  //       window.location.href = window.location.href
+  //     })
+  //   }
+  // }
+  //
+  // const handleEmailNotification = e => database.ref(`email_notifications/${auth.uid}`).set(e.target.checked)
 
   const classes = useStyles()
   const showPasswords = isLinkedWithProvider('password')
 
   return (
     <Activity
-      isLoading={!isLoaded(notificationTokens) || !isLoaded(emailNotifications)}
+      isLoading={false}
       iconStyleRight={{ width: '50%' }}
       appBarContent={
         <div style={{ display: 'flex' }}>
@@ -405,30 +397,30 @@ const MyAccount = () => {
               </div>
 
               <div>
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={notificationTokens.length > 0}
-                        onChange={handleEnableNotificationsChange}
-                        value='pushNotifiction'
-                      />
-                    }
-                    label={intl.formatMessage({ id: 'notifications' })}
-                  />
-                </FormGroup>
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={emailNotifications === true}
-                        onChange={handleEmailNotification}
-                        value='emailNotifications'
-                      />
-                    }
-                    label={intl.formatMessage({ id: 'email_notifications' })}
-                  />
-                </FormGroup>
+                {/* <FormGroup row> */}
+                {/*  <FormControlLabel */}
+                {/*    control={ */}
+                {/*      <Switch */}
+                {/*        checked={notificationTokens.length > 0} */}
+                {/*        onChange={handleEnableNotificationsChange} */}
+                {/*        value='pushNotifiction' */}
+                {/*      /> */}
+                {/*    } */}
+                {/*    label={intl.formatMessage({ id: 'notifications' })} */}
+                {/*  /> */}
+                {/* </FormGroup> */}
+                {/* <FormGroup row> */}
+                {/*  <FormControlLabel */}
+                {/*    control={ */}
+                {/*      <Switch */}
+                {/*        checked={emailNotifications === true} */}
+                {/*        onChange={handleEmailNotification} */}
+                {/*        value='emailNotifications' */}
+                {/*      /> */}
+                {/*    } */}
+                {/*    label={intl.formatMessage({ id: 'email_notifications' })} */}
+                {/*  /> */}
+                {/* </FormGroup> */}
               </div>
             </div>
 

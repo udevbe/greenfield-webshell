@@ -43,11 +43,17 @@ export const Roles = () => {
   }
 
   return (
-    <Activity isLoading={!isLoaded(roles)} title={intl.formatMessage({ id: 'roles' })}>
+    <Activity
+      isLoading={!isLoaded(roles)}
+      title={intl.formatMessage({ id: 'roles' })}
+    >
       <div style={{ height: '100%' }}>
         <Scrollbar>
           <List>
-            <ReactList itemRenderer={renderItem} length={roles.length} type='simple' />
+            {
+              isLoaded(roles) &&
+              <ReactList itemRenderer={renderItem} length={roles.length} type='simple' />
+            }
           </List>
         </Scrollbar>
         <div style={{ float: 'left', clear: 'both' }} />

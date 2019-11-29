@@ -3,7 +3,7 @@ import Activity from '../../containers/Activity'
 import AppBar from '@material-ui/core/AppBar'
 import Lock from '@material-ui/icons/Lock'
 import Person from '@material-ui/icons/Person'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Scrollbar from '../../components/Scrollbar'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
@@ -37,7 +37,6 @@ export const User = () => {
   const { uid, editType } = useParams()
   const history = useHistory()
   const intl = useIntl()
-  const [values, setValues] = useState({})
   const firebase = useFirebase()
 
   useFirebaseConnect([{ path: 'admins' }])
@@ -49,11 +48,6 @@ export const User = () => {
   const userGrants = useSelector(state => state.firebase.ordered.user_grants)
 
   const dataLoaded = isLoaded(admins) && isLoaded(userRoles) && isLoaded(userGrants)
-
-  useEffect(() => {
-    firebase.ref(`users/${uid}`).on('value', snap => setValues(snap.val()))
-    return () => firebase.ref(`users/${uid}`).off()
-  }, [firebase, uid, values])
 
   const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
 
@@ -98,7 +92,7 @@ export const User = () => {
               <UserForm
                 handleAdminChange={handleAdminChange}
                 isAdmin={isAdmin}
-                values={values || {}}
+                uid={uid}
               />
             </div>
           )}
