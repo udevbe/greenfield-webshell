@@ -1,9 +1,8 @@
 import React from 'react'
-import { compose } from 'redux'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   container: {
     backgroundColor: theme.palette.background.default,
     height: '100vh',
@@ -16,17 +15,19 @@ const styles = theme => ({
   loader: {
     height: '80px'
   }
-})
+}))
 
-export const LoadingComponent = props => {
-  if (props.isLoading) {
+export const LoadingComponent = ({ isLoading, timedOut, pastDelay, error }) => {
+  const classes = useStyles()
+
+  if (isLoading) {
     // While our other component is loading...
-    if (props.timedOut) {
+    if (timedOut) {
       // In case we've timed out loading our other component.
       return <div>Loader timed out!</div>
-    } else if (props.pastDelay) {
+    } else if (pastDelay) {
       return (
-        <div className={props.classes.container}>
+        <div className={classes.container}>
           <CircularProgress />
         </div>
       )
@@ -34,8 +35,8 @@ export const LoadingComponent = props => {
       // Don't flash "Loading..." when we don't need to.
       return null
     }
-  } else if (props.error) {
-    console.warn(props.error)
+  } else if (error) {
+    console.warn(error)
     // If we aren't loading, maybe
     return <div>Error! Component failed to load</div>
   } else {
@@ -44,4 +45,4 @@ export const LoadingComponent = props => {
   }
 }
 
-export default compose(withStyles(styles, { withTheme: true }))(LoadingComponent)
+export default LoadingComponent

@@ -15,13 +15,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateTheme } from '../store/themeSource/actions'
 import { updateLocale } from '../store/locale/actions'
 import { useIntl } from 'react-intl'
-import { isAuthorised, useIsGranted } from '../utils/auth'
+import { useIsAuthenticated, useIsGranted } from '../utils/auth'
 
 // TODO get all args from hooks
 export const useMenuItems = (deferredPrompt, isAppInstallable, isAppInstalled, handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
-  const authorised = isAuthorised()
+  const authorised = useIsAuthenticated()
   const locale = useSelector(({ locale }) => locale)
   const themeId = useSelector(({ themeSource: { themeId } }) => themeId)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)

@@ -1,11 +1,7 @@
 import { Box, CircularProgress, Container, Grid, IconButton, makeStyles, Menu, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import AppsIcon from '@material-ui/icons/Apps'
 import { ApplicationLauncher } from '../../components/ApplicationLauncher'
-
-const dataPath = 'userApps'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -24,13 +20,12 @@ const applicationLauncherRenderer = ({ val }) => {
   )
 }
 
-const UserApplications = ({ watchCol, unwatchCol, list, isLoading }) => {
+const UserApplications = () => {
+  // TODO app list from realtime firedatabase
+  const isLoading = false
+  const list = []
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
-  // useEffect(() => {
-  //   watchCol(dataPath)
-  //   return () => unwatchCol(dataPath)
-  // })
 
   const handleClick = event => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
@@ -50,7 +45,7 @@ const UserApplications = ({ watchCol, unwatchCol, list, isLoading }) => {
         <Container className={classes.container} maxWidth='md'>
           {isLoading
             ? <CircularProgress />
-            : 0 === 0
+            : list.length === 0
               ? (
                 <Box width='100%' height='100%'>
                   <Typography className={classes.emptyText} align='center'>No applications linked to your account. Visit the WebStore and add some!</Typography>
@@ -63,13 +58,4 @@ const UserApplications = ({ watchCol, unwatchCol, list, isLoading }) => {
   )
 }
 
-const mapStateToProps = (state, _) => ({
-//  isLoading: isLoading(state, dataPath),
-//   list: getCol(state, dataPath)
-})
-
-export default compose(
-  connect(
-    mapStateToProps
-  ),
-)(UserApplications)
+export default UserApplications

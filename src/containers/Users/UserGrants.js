@@ -50,7 +50,7 @@ const UserGrants = () => {
       <div key={key}>
         <ListItem key={i} id={i}>
           <AltIconAvatar icon={<Check />} />
-          <ListItemText primary={intl.formatMessage({ id: `grant_${val}` })} secondary={val} />
+          <ListItemText primary={intl.formatMessage({ id: `${val}` })} secondary={val} />
           <ListItemSecondaryAction>
             <Switch
               checked={userGrantValues[key] === true}

@@ -22,8 +22,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
-import { isEmpty } from 'react-redux-firebase'
 import { useWidth } from '../../utils/theme'
+import { useIsAuthenticated } from '../../utils/auth'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -45,8 +45,12 @@ const useStyles = makeStyles(theme => ({
 export const DrawerHeader = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
-  const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
-  const isAuthorized = !isEmpty(auth)
+  const isAuthorized = useIsAuthenticated()
+  const { photoURL, displayName, email } = useSelector(({ firebase: { auth: { photoURL, displayName, email } } }) => ({
+    photoURL,
+    displayName,
+    email
+  }), shallowEqual)
   const isDrawerOpen = useSelector(({ drawer }) => drawer.open)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const theme = useTheme()
@@ -59,7 +63,7 @@ export const DrawerHeader = () => {
           <List>
             <ListItem>
               <ListItemAvatar>
-                <Avatar src={auth.photoURL} alt='user' />
+                <Avatar src={photoURL} alt='user' />
               </ListItemAvatar>
               <Hidden smDown implementation='css'>
                 <ListItemSecondaryAction>
@@ -80,18 +84,18 @@ export const DrawerHeader = () => {
             </ListItem>
 
             <ListItem>
-              {!isDrawerOpen && width !== 'sm' && width !== 'xs' && auth.photoURL && (
+              {!isDrawerOpen && width !== 'sm' && width !== 'xs' && photoURL && (
                 <ListItemAvatar>
-                  <Avatar src={auth.photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
+                  <Avatar src={photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
                 </ListItemAvatar>
               )}
               <ListItemText
                 classes={{ primary: classes.listItem, secondary: classes.listItem }}
                 style={{
-                  marginLeft: !isDrawerOpen && width !== 'sm' && width !== 'xs' && auth.photoURL ? 7 : undefined
+                  marginLeft: !isDrawerOpen && width !== 'sm' && width !== 'xs' && photoURL ? 7 : undefined
                 }}
-                primary={auth.displayName}
-                secondary={auth.email}
+                primary={displayName}
+                secondary={email}
               />
               {isDrawerOpen && (
                 <ListItemSecondaryAction
@@ -118,9 +122,7 @@ export const DrawerHeader = () => {
               <ListItemSecondaryAction>
                 <IconButton
                   className={classes.button}
-                  onClick={() => {
-                    setDrawerUseMinified(false)
-                  }}
+                  onClick={() => setDrawerUseMinified(false)}
                 >
                   {theme.direction === 'rtl' && <ChevronRight classes={{ root: classes.icon }} />}
                   {theme.direction !== 'rtl' && <ChevronLeft classes={{ root: classes.icon }} />}

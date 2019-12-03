@@ -7,68 +7,38 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import { withStyles, withTheme } from '@material-ui/core/styles'
+import React, { useState } from 'react'
 
-const styles = theme => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper
-  },
-  icon: {
-    color: theme.palette.primary.contrastText
-  }
-})
+const SelectableMenuList = ({ onIndexChange, useMinified, items, index }) => {
+  const [state, setState] = useState({})
 
-class SelectableMenuList extends Component {
-  state = {}
-
-  handleNestedItemsClick = item => {
+  const handleNestedItemsClick = item => {
     if (item.nestedItems) {
-      let previousItems = this.state.previousItems ? this.state.previousItems : []
+      const previousItems = state.previousItems ? state.previousItems : []
       const items = item.nestedItems
       const title = item.primaryText
 
-      previousItems.unshift(this.state.items ? this.state.items : items)
+      previousItems.unshift(state.items ? state.items : items)
 
-      this.setState({ items, previousItems, title, index: item.value })
+      setState({ items, previousItems, title, index: item.value })
     } else {
       if (item.value || item.onClick) {
-        this.setState({ index: item.value })
+        setState({ index: item.value })
       }
     }
   }
 
-  handleBackClick = () => {
-    let previousItems = this.state.previousItems ? this.state.previousItems : []
+  const handleBackClick = () => {
+    const previousItems = state.previousItems ? state.previousItems : []
     const items = previousItems[0] ? previousItems[0] : undefined
 
     previousItems.shift()
 
-    this.setState({ items, previousItems })
+    setState({ items, previousItems })
   }
 
-  getNestedItems = (hostItem, hostIndex) => {
-    if (hostItem.nestedItems !== undefined) {
-      let items = hostItem.nestedItems.filter(function (item) {
-        return item.visible !== false
-      })
-
-      if (items.length > 0) {
-        return items.map((item, i) => {
-          return this.getItem(item, hostIndex.toString() + i.toString())
-        })
-      }
-    }
-
-    return null
-  }
-
-  getItem = (item, i) => {
-    const { onIndexChange, useMinified } = this.props
-    const { index } = this.state
+  const getItem = (item, i) => {
+    const { index } = state
 
     delete item.visible
 
@@ -89,7 +59,7 @@ class SelectableMenuList extends Component {
             key={i}
             onClick={e => {
               onIndexChange(e, item.value)
-              this.handleNestedItemsClick(item)
+              handleNestedItemsClick(item)
 
               if (item.onClick) {
                 item.onClick()
@@ -108,12 +78,10 @@ class SelectableMenuList extends Component {
 
             {item.nestedItems && !useMinified && (
               <ListItemSecondaryAction
-                onClick={() => {
-                  this.handleNestedItemsClick(item)
-                }}
+                onClick={() => handleNestedItemsClick(item)}
               >
                 <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
-                  <KeyboardArrowRight color={'action'} />
+                  <KeyboardArrowRight color='action' />
                 </IconButton>
               </ListItemSecondaryAction>
             )}
@@ -125,45 +93,29 @@ class SelectableMenuList extends Component {
     return null
   }
 
-  render () {
-    const { items, onIndexChange, index } = this.props
+  const list = state.previousItems && state.previousItems.length > 0 ? state.items : items
 
-    const list = this.state.previousItems && this.state.previousItems.length > 0 ? this.state.items : items
-
-    return (
-      <List value={index} onChange={onIndexChange}>
-        {this.state.items && this.state.previousItems && this.state.previousItems.length > 0 && (
-          <div>
-            <ListItem
-              button
-              onClick={() => {
-                this.handleBackClick()
-              }}
-            >
-              <ListItemIcon>
-                <ArrowBack />
-              </ListItemIcon>
-              <ListItemText primary={this.state.title} />
-            </ListItem>
-            <Divider />
-          </div>
-        )}
-        {list
-          .filter(item => {
-            return item.visible !== false
-          })
-          .map((item, i) => {
-            return this.getItem(item, i)
-          })}
-      </List>
-    )
-  }
+  return (
+    <List value={index} onChange={onIndexChange}>
+      {state.items && state.previousItems && state.previousItems.length > 0 && (
+        <div>
+          <ListItem
+            button
+            onClick={() => handleBackClick()}
+          >
+            <ListItemIcon>
+              <ArrowBack />
+            </ListItemIcon>
+            <ListItemText primary={state.title} />
+          </ListItem>
+          <Divider />
+        </div>
+      )}
+      {list.filter(item => item.visible !== false).map((item, i) => getItem(item, i))}
+    </List>
+  )
 }
 
-SelectableMenuList.propTypes = {
-  items: PropTypes.array.isRequired,
-  onIndexChange: PropTypes.func.isRequired,
-  index: PropTypes.string.isRequired
-}
+SelectableMenuList.propTypes = {}
 
-export default withTheme(withStyles(styles, { withTheme: true })(SelectableMenuList))
+export default SelectableMenuList

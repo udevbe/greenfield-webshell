@@ -1,8 +1,6 @@
 import React from 'react'
 import { Redirect, Route, useLocation } from 'react-router'
-import { isEmpty } from 'react-redux-firebase'
-import { useStore } from 'react-redux'
-import { isAuthorised } from '../../utils/auth'
+import { useIsAuthenticated } from '../../utils/auth'
 
 export const RestrictedRoute = ({
   type,
@@ -11,8 +9,7 @@ export const RestrictedRoute = ({
   ...rest
 }) => {
   const location = useLocation()
-  const authEmpty = isEmpty(useStore().getState().firebase.auth)
-  const authorized = isAuthorised() && !authEmpty
+  const authorized = useIsAuthenticated()
   if (authorized || (type === 'public')) {
     return (
       <Route {...rest}>

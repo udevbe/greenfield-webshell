@@ -77,7 +77,7 @@ export const User = () => {
       onBackClick={() => history.push('/users')}
       title={intl.formatMessage({ id: 'edit_user' })}
     >{dataLoaded &&
-    <Scrollbar style={{ height: '100%' }}>
+      <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
           <AppBar position='static'>
             <Tabs value={editType || 'data'} onChange={handleTabActive} fullWidth centered>

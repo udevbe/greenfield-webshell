@@ -1,18 +1,17 @@
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
-import PropTypes from 'prop-types'
 import React from 'react'
 import classNames from 'classnames'
-import drawerActions from '../../store/drawer/actions'
-import withWidth, { isWidthDown } from '@material-ui/core/withWidth'
-import { withStyles } from '@material-ui/core/styles'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
+import { isWidthDown } from '@material-ui/core/withWidth'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { useDispatch, useSelector } from 'react-redux'
+import { useWidth } from '../../utils/theme'
+import { setDrawerMobileOpen } from '../../store/drawer/actions'
 
 const drawerWidth = 240
 
 const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -57,82 +56,48 @@ const styles = theme => ({
   hide: {
     display: 'none'
   }
-})
+}))
 
-class ResponsiveDrawer extends React.Component {
-  state = {
-    mobileOpen: false,
-    open: false
-  }
+const ResponsiveDrawer = ({ children }) => {
+  const classes = useStyles()
+  const theme = useTheme()
+  const width = useWidth(theme)
+  const dispatch = useDispatch()
+  const drawer = useSelector(({ drawer }) => drawer)
 
-  handleDrawerToggle = () => {
-    const { setDrawerMobileOpen, drawer } = this.props
-    setDrawerMobileOpen(!drawer.mobileOpen)
-  }
+  const handleDrawerToggle = () => dispatch(setDrawerMobileOpen(!drawer.mobileOpen))
 
-  handleDrawerOpen = () => {
-    const { setDrawerOpen } = this.props
-    setDrawerOpen(true)
-  }
+  const smDown = isWidthDown('sm', width)
 
-  handleDrawerClose = () => {
-    const { setDrawerOpen } = this.props
-    setDrawerOpen(false)
-  }
-
-  render () {
-    const { classes, theme, children, drawer, width } = this.props
-
-    const smDown = isWidthDown('sm', width)
-
-    return (
-      <div>
-        <SwipeableDrawer
-          disableBackdropTransition={!iOS}
-          disableDiscovery={iOS}
-          variant={smDown ? 'temporary' : 'permanent'}
-          onClose={this.handleDrawerToggle}
-          anchor={smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'}
-          classes={{
-            paper: smDown
-              ? classes.drawerPaper
-              : classNames(
-                classes.drawerPaperOpen,
-                !drawer.open && classes.drawerPaperClose,
-                !drawer.useMinified && classes.hide
-              )
-          }}
-          open={smDown ? drawer.mobileOpen : drawer.open}
-          onOpen={this.handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}
-        >
-          {children}
-        </SwipeableDrawer>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <SwipeableDrawer
+        disableBackdropTransition={!iOS}
+        disableDiscovery={iOS}
+        variant={smDown ? 'temporary' : 'permanent'}
+        onClose={handleDrawerToggle}
+        anchor={smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'}
+        classes={{
+          paper: smDown
+            ? classes.drawerPaper
+            : classNames(
+              classes.drawerPaperOpen,
+              !drawer.open && classes.drawerPaperClose,
+              !drawer.useMinified && classes.hide
+            )
+        }}
+        open={smDown ? drawer.mobileOpen : drawer.open}
+        onOpen={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true // Better open performance on mobile.
+        }}
+      >
+        {children}
+      </SwipeableDrawer>
+    </div>
+  )
 }
 
-ResponsiveDrawer.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
-}
+ResponsiveDrawer.propTypes = {}
 
-const mapStateToProps = state => {
-  const { drawer } = state
-
-  return {
-    drawer
-  }
-}
-
-export default compose(
-  connect(
-    mapStateToProps,
-    { ...drawerActions }
-  ),
-  withWidth(),
-  withStyles(styles, { withTheme: true })
-)(ResponsiveDrawer)
+export default ResponsiveDrawer

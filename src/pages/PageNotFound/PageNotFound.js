@@ -4,11 +4,11 @@ import Home from '@material-ui/icons/Home'
 import Paper from '@material-ui/core/Paper'
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
-import { injectIntl } from 'react-intl'
-import { withAppConfigs } from '../../contexts/AppConfigProvider'
-import { withStyles } from '@material-ui/core/styles'
+import { useIntl } from 'react-intl'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   icon: {
     width: 192,
     height: 192,
@@ -29,19 +29,21 @@ const styles = theme => ({
   button: {
     marginTop: 20
   }
-})
+}))
 
-const PageNotFound = ({ intl, appConfig, classes }) => {
-  const AppIcon = appConfig.appIcon
+const PageNotFound = () => {
+  const { appIcon: AppIcon } = useAppConfig()
+  const intl = useIntl()
+  const classes = useStyles()
 
   return (
     <Activity>
       <Paper className={classes.paper}>
         <div className={classes.container}>
           <AppIcon className={classes.icon} />
-          <Typography variant="h4">{intl.formatMessage({ id: 'warning_404_message' })}</Typography>
-          <Typography variant="subtitle1">{intl.formatMessage({ id: 'warning_404_description' })}</Typography>
-          <Fab color="secondary" aria-label="home" href="/" className={classes.button}>
+          <Typography variant='h4'>{intl.formatMessage({ id: 'warning_404_message' })}</Typography>
+          <Typography variant='subtitle1'>{intl.formatMessage({ id: 'warning_404_description' })}</Typography>
+          <Fab color='secondary' aria-label='home' href='/' className={classes.button}>
             <Home />
           </Fab>
         </div>
@@ -50,4 +52,4 @@ const PageNotFound = ({ intl, appConfig, classes }) => {
   )
 }
 
-export default injectIntl(withStyles(styles, { withTheme: true })(withAppConfigs(PageNotFound)))
+export default PageNotFound

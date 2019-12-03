@@ -13,9 +13,7 @@ import React from 'react'
 import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
 
-export const NotificationToast = props => {
-  const { notification, closeToast } = props
-
+export const NotificationToast = ({ notification, closeToast, icon, title, body, autoClose }) => {
   const theme = useTheme()
 
   const type = theme.palette.type === 'light' ? 'dark' : 'light'
@@ -26,17 +24,12 @@ export const NotificationToast = props => {
     }
   })
 
-  const { icon, title, body, autoClose } = notification
-
   return (
     <ThemeProvider theme={innerTheme}>
       <Paper style={{ margin: -8, marginBottom: -8 }}>
         <List component='div'>
           <ListItem
-
-            onClick={() => {
-              notification.onClick()
-            }}
+            onClick={() => notification.onClick()}
           >
             <ListItemIcon>
               <AltIconAvatar src={icon} icon={<Notifications fontSize='large' />} />
@@ -47,10 +40,9 @@ export const NotificationToast = props => {
                 <Close />
               </IconButton>
             </ListItemSecondaryAction>
-          
           </ListItem>
         </List>
-        {autoClose && <LinearProgress color="secondary" variant='determinate' value={0} />}
+        {autoClose && <LinearProgress color='secondary' variant='determinate' value={0} />}
       </Paper>
     </ThemeProvider>
   )

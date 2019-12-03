@@ -10,21 +10,16 @@ import Slide from '@material-ui/core/Slide'
 const ImageViewer = ({ src, ...rest }) => {
   const [open, setOpen] = useState(false)
 
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   return (
-    <React.Fragment>
+    <>
       <Image src={src} onClick={handleOpen} {...rest} />
 
       <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
+        aria-labelledby='transition-modal-title'
+        aria-describedby='transition-modal-description'
         open={open}
         onClose={handleClose}
         onEscapeKeyDown={handleClose}
@@ -56,8 +51,8 @@ const ImageViewer = ({ src, ...rest }) => {
                 alignItems: 'center'
               }}
             >
-              <Slide direction="down" in={open} mountOnEnter unmountOnExit>
-                <Fab onClick={handleClose} color="secondary" aria-label="close">
+              <Slide direction='down' in={open} mountOnEnter unmountOnExit>
+                <Fab onClick={handleClose} color='secondary' aria-label='close'>
                   <CloseIcon />
                 </Fab>
               </Slide>
@@ -80,7 +75,7 @@ const ImageViewer = ({ src, ...rest }) => {
           </div>
         </Fade>
       </Modal>
-    </React.Fragment>
+    </>
   )
 }
 

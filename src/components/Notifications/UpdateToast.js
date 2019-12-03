@@ -11,11 +11,10 @@ import React from 'react'
 import UpdateIcon from '@material-ui/icons/Update'
 import { ThemeProvider, useTheme } from '@material-ui/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
-import { injectIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 
-export const UpdateToast = props => {
-  const { handleUpdate, closeToast, intl } = props
-
+export const UpdateToast = ({ handleUpdate, closeToast }) => {
+  const intl = useIntl()
   const theme = useTheme()
 
   const type = theme.palette.type === 'light' ? 'dark' : 'light'
@@ -52,4 +51,4 @@ export const UpdateToast = props => {
   )
 }
 
-export default injectIntl(UpdateToast)
+export default UpdateToast

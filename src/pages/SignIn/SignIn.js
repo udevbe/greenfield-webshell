@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import { shallowEqual, useSelector } from 'react-redux'
 import { isEmpty, isLoaded, useFirebase } from 'react-redux-firebase'
 import { Redirect } from 'react-router'
-import { saveAuthorisation } from '../../utils/auth'
 import LoadingComponent from '../../components/LoadingComponent'
 
 const useStyles = makeStyles({
@@ -62,7 +61,6 @@ const SignIn = () => {
   }
 
   if (isEmpty(auth)) {
-    saveAuthorisation(false)
     return (
       <div className={classes.wrap}>
         <div className={classes.text}>
@@ -75,7 +73,6 @@ const SignIn = () => {
       </div>
     )
   } else {
-    saveAuthorisation(true)
     updateUserOnlineStatus(firebase, auth)
     updateUserPublicData(firebase, auth)
     // TODO redirect to wherever we came from based on redirect state we received

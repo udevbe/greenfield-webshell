@@ -13,7 +13,7 @@ import Phone from '@material-ui/icons/Phone'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
-import { FacebookIcon, GitHubIcon, GoogleIcon, TwitterIcon } from '../../components/Icons'
+import { GoogleIcon } from '../../components/Icons'
 import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -33,12 +33,6 @@ const Users = () => {
     switch (provider.providerId) {
       case 'google.com':
         return <GoogleIcon color={color} />
-      case 'facebook.com':
-        return <FacebookIcon color={color} />
-      case 'twitter.com':
-        return <TwitterIcon color={color} />
-      case 'github.com':
-        return <GitHubIcon color={color} />
       case 'phone':
         return <Phone color={color} />
       case 'password':

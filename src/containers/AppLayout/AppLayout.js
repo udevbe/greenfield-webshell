@@ -1,9 +1,8 @@
 import 'react-toastify/dist/ReactToastify.css'
 import Drawer from '../../containers/Drawer'
-import React, { useEffect } from 'react'
+import React from 'react'
 import Routes from '../../containers/Routes'
 import { ToastContainer } from 'react-toastify'
-import { checkForUpdate } from '../../utils/messaging'
 import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles({
@@ -27,8 +26,6 @@ const useStyles = makeStyles({
 })
 
 export const AppLayout = () => {
-  useEffect(() => checkForUpdate())
-
   const classes = useStyles()
 
   return (
