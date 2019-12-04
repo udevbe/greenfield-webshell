@@ -11,10 +11,9 @@ const UserRoles = () => {
   const { uid } = useParams()
   const firebase = useFirebase()
   useFirebaseConnect([{ path: '/roles' }])
-  useFirebaseConnect([{ path: `/user_roles/${uid}` }], [uid])
+  useFirebaseConnect([{ path: `/user_roles/${uid}` }])
   const roles = useSelector(state => state.firebase.ordered.roles)
-  // TODO use a query that directly fetches the user's roles
-  const allUsersRoles = useSelector(state => state.firebase.data.user_roles[uid] || {}, shallowEqual)
+  const allUsersRoles = useSelector(state => state.firebase.data.user_roles ? (state.firebase.data.user_roles[uid] || {}) : {}, shallowEqual)
 
   const handleRoleToggleChange = (e, isInputChecked, key) => {
     if (isInputChecked) {

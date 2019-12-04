@@ -2,7 +2,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import Drawer from '../../containers/Drawer'
 import React from 'react'
 import Routes from '../../containers/Routes'
-import { ToastContainer } from 'react-toastify'
 import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles({
@@ -33,7 +32,6 @@ export const AppLayout = () => {
       <div className={classes.root}>
         <Drawer />
         <Routes />
-        <ToastContainer />
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { injectIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
@@ -10,7 +10,6 @@ import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import { makeStyles } from '@material-ui/core/styles'
-import { compose } from 'redux'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useFirebaseConnect } from 'react-redux-firebase'
 import { useSelector } from 'react-redux'
@@ -67,7 +66,8 @@ const cards = [
 
 const appsListBatchSize = 18
 
-const Webstore = ({ intl }) => {
+const Webstore = () => {
+  const intl = useIntl()
   const [scrollPos, setScrollPos] = useState(appsListBatchSize)
 
   useFirebaseConnect([{ path: 'apps', storeAs: 'apps' }])
@@ -137,6 +137,4 @@ const Webstore = ({ intl }) => {
 
 Webstore.propTypes = {}
 
-export default compose(
-  injectIntl
-)(Webstore)
+export default Webstore

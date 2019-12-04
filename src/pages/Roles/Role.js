@@ -66,14 +66,14 @@ export const Role = () => {
       setErrors(errors => ({ ...errors, displayName: 'Required' }))
     } else {
       setErrors(errors => {
-        const { displayNameError, ...noDisplayNameErrors } = errors
+        const { displayName, ...noDisplayNameErrors } = errors
         return noDisplayNameErrors
       })
     }
   }, [values.name])
 
-  useFirebaseConnect([{ path: `roles/${uid}` }], [uid])
-  const role = useSelector(({ firebase }) => firebase.data.roles ? firebase.data.roles[uid] : emptyValues)
+  useFirebaseConnect([{ path: `roles/${uid}` }])
+  const role = useSelector(({ firebase }) => firebase.data.roles ? (firebase.data.roles[uid] || emptyValues) : emptyValues)
   useEffect(() => setValues(role), [role])
 
   const clean = obj => {
@@ -83,10 +83,7 @@ export const Role = () => {
 
   const submit = () => firebase.database().ref(`roles/${uid}`).update(clean(values)).then(() => history.push('/roles'))
   const handleTabActive = (e, value) => history.push(`/roles/edit/${uid}/${value}`)
-  const handleValueChange = (name, value) => setValues({
-    ...values,
-    [name]: value
-  })
+  const handleValueChange = (name, value) => setValues({ ...values, [name]: value })
 
   useFirebaseConnect([{ path: 'role_grants' }])
   const roleGrants = useSelector(state => state.firebase.ordered.role_grants)
@@ -95,7 +92,10 @@ export const Role = () => {
 
   const handleDelete = () => {
     if (uid) {
-      firebase.database().ref().child(`/roles/${uid}`).remove().then(() => {
+      Promise.all([
+        firebase.database().ref().child(`/role_grants/${uid}`).remove(),
+        firebase.database().ref().child(`/roles/${uid}`).remove()
+      ]).then(() => {
         handleClose()
         history.goBack()
       })
@@ -123,7 +123,10 @@ export const Role = () => {
           )}
 
           {editType === 'main' && (
-            <IconButton color='inherit' aria-label='open drawer' onClick={() => setDialogIsOpen('delete_role', true)}>
+            <IconButton
+              color='inherit' aria-label='open drawer'
+              onClick={() => dispatch(setDialogIsOpen('delete_role', true))}
+            >
               <Delete className='material-icons' />
             </IconButton>
           )}

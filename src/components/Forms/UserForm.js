@@ -11,7 +11,6 @@ import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
 import { useIntl } from 'react-intl'
 import { shallowEqual, useSelector } from 'react-redux'
-import Skeleton from '@material-ui/lab/Skeleton'
 import { useFirebaseConnect } from 'react-redux-firebase'
 
 const useStyles = makeStyles(theme => ({
@@ -100,13 +99,7 @@ const UserForm = ({ handleAdminChange, isAdmin, uid }) => {
           />
         </div>
       </div>
-    ) : (
-      <div className={classes.root}>
-        <Skeleton variant='rect' width={250} height={250} />
-        <Skeleton variant='text' width={250} height={30} />
-        <Skeleton variant='text' width={250} height={30} />
-      </div>
-    )
+    ) : null
 }
 
 UserForm.propTypes = {}

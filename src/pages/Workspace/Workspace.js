@@ -1,10 +1,10 @@
 import React from 'react'
-import { injectIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import UserApplications from '../../containers/UserAppsMenu/UserApplications'
 
-const Workspace = (props) => {
-  const { intl } = props
+const Workspace = () => {
+  const intl = useIntl()
 
   return (
     <Activity
@@ -20,4 +20,4 @@ const Workspace = (props) => {
 
 Workspace.propTypes = {}
 
-export default injectIntl(Workspace)
+export default Workspace

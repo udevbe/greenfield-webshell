@@ -282,7 +282,7 @@
     "@babel/helper-create-class-features-plugin" "^7.5.5"
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-proposal-class-properties@^7.3.3":
+"@babel/plugin-proposal-class-properties@^7.7.0":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.7.4.tgz#2f964f0cb18b948450362742e33e15211e77c2ba"
   integrity sha1-L5ZPDLGLlIRQNidC4z4VIR53wro=
@@ -323,7 +323,7 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-object-rest-spread" "^7.2.0"
 
-"@babel/plugin-proposal-object-rest-spread@^7.3.2", "@babel/plugin-proposal-object-rest-spread@^7.5.5", "@babel/plugin-proposal-object-rest-spread@^7.7.4":
+"@babel/plugin-proposal-object-rest-spread@^7.5.5", "@babel/plugin-proposal-object-rest-spread@^7.6.2", "@babel/plugin-proposal-object-rest-spread@^7.7.4":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.7.4.tgz#cc57849894a5c774214178c8ab64f6334ec8af71"
   integrity sha1-zFeEmJSlx3QhQXjIq2T2M07Ir3E=
@@ -632,7 +632,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-transform-react-constant-elements@^7.0.0", "@babel/plugin-transform-react-constant-elements@^7.2.0":
+"@babel/plugin-transform-react-constant-elements@^7.0.0", "@babel/plugin-transform-react-constant-elements@^7.6.3":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.7.4.tgz#499cf732a21ffd62cc4b0016e27c3906097f8982"
   integrity sha1-SZz3MqIf/WLMSwAW4nw5Bgl/iYI=
@@ -813,7 +813,7 @@
     js-levenshtein "^1.1.3"
     semver "^5.5.0"
 
-"@babel/preset-env@^7.4.5":
+"@babel/preset-env@^7.4.5", "@babel/preset-env@^7.7.1":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/preset-env/-/preset-env-7.7.4.tgz#ccaf309ae8d1ee2409c85a4e2b5e280ceee830f8"
   integrity sha1-zK8wmujR7iQJyFpOK14oDO7oMPg=
@@ -889,7 +889,7 @@
     "@babel/plugin-transform-react-jsx-self" "^7.0.0"
     "@babel/plugin-transform-react-jsx-source" "^7.0.0"
 
-"@babel/preset-react@^7.0.0":
+"@babel/preset-react@^7.0.0", "@babel/preset-react@^7.7.0":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/preset-react/-/preset-react-7.7.4.tgz#3fe2ea698d8fb536d8e7881a592c3c1ee8bf5707"
   integrity sha1-P+LqaY2PtTbY54gaWSw8Hui/Vwc=
@@ -908,6 +908,14 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-transform-typescript" "^7.6.0"
 
+"@babel/runtime-corejs3@^7.7.4":
+  version "7.7.4"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/runtime-corejs3/-/runtime-corejs3-7.7.4.tgz#f861adc1cecb9903dfd66ea97917f02ff8d79888"
+  integrity sha1-+GGtwc7LmQPf1m6peRfwL/jXmIg=
+  dependencies:
+    core-js-pure "^3.0.0"
+    regenerator-runtime "^0.13.2"
+
 "@babel/runtime@7.6.0":
   version "7.6.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/runtime/-/runtime-7.6.0.tgz#4fc1d642a9fd0299754e8b5de62c631cf5568205"
@@ -915,7 +923,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4":
   version "7.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@babel/runtime/-/runtime-7.7.4.tgz#b23a856751e4bf099262f867767889c0e3fe175b"
   integrity sha1-sjqFZ1HkvwmSYvhndniJwOP+F1s=
@@ -973,17 +981,17 @@
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@csstools/normalize.css/-/normalize.css-9.0.1.tgz#c27b391d8457d1e893f1eddeaf5e5412d12ffbb5"
   integrity sha1-wns5HYRX0eiT8e3er15UEtEv+7U=
 
-"@date-io/core@^1.3.11":
-  version "1.3.11"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@date-io/core/-/core-1.3.11.tgz#98e3c366794dfff571e39227e5d718ac7f26b729"
-  integrity sha1-mOPDZnlN//Vx45In5dcYrH8mtyk=
+"@date-io/core@^1.3.12":
+  version "1.3.12"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@date-io/core/-/core-1.3.12.tgz#7443bcd8f6d744ef331578ca1666d8c7c924acc1"
+  integrity sha1-dEO82PbXRO8zFXjKFmbYx8kkrME=
 
-"@date-io/moment@^1.3.11":
-  version "1.3.11"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@date-io/moment/-/moment-1.3.11.tgz#94cc9bb22a7862ca0151db6a091d9f07e1798f6f"
-  integrity sha1-lMybsip4YsoBUdtqCR2fB+F5j28=
+"@date-io/moment@^1.3.12":
+  version "1.3.12"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@date-io/moment/-/moment-1.3.12.tgz#213dfe72fc25355bba0c66a6ac9fab37764756bd"
+  integrity sha1-IT3+cvwlNVu6DGamrJ+rN3ZHVr0=
   dependencies:
-    "@date-io/core" "^1.3.11"
+    "@date-io/core" "^1.3.12"
 
 "@emotion/cache@^10.0.17", "@emotion/cache@^10.0.9":
   version "10.0.19"
@@ -1284,33 +1292,33 @@
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.2.32.tgz#ae5e1c0dc6856d8b9ae192bc000e43b993acba68"
   integrity sha1-rl4cDcaFbYua4ZK8AA5DuZOsumg=
 
-"@formatjs/intl-listformat@^1.2.6":
-  version "1.2.7"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-listformat/-/intl-listformat-1.2.7.tgz#af0ebd2574bc8296dffb2274ff7f314f86f4ec69"
-  integrity sha1-rw69JXS8gpbf+yJ0/38xT4b07Gk=
+"@formatjs/intl-listformat@^1.3.1":
+  version "1.3.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-listformat/-/intl-listformat-1.3.1.tgz#bb75fe8b1caa7c0df765d45ce32030b6123f5311"
+  integrity sha1-u3X+ixyqfA33ZdRc4yAwthI/UxE=
   dependencies:
-    "@formatjs/intl-utils" "^1.4.4"
+    "@formatjs/intl-utils" "^1.6.0"
 
-"@formatjs/intl-relativetimeformat@^4.4.5", "@formatjs/intl-relativetimeformat@^4.4.6":
-  version "4.4.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-4.4.6.tgz#d5ac5ea857186aae6c5cc71194134a18e26c3225"
-  integrity sha1-1axeqFcYaq5sXMcRlBNKGOJsMiU=
+"@formatjs/intl-relativetimeformat@^4.5.1":
+  version "4.5.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-4.5.1.tgz#167298f3ca61123ac4cc4e45d09e55678dd7d369"
+  integrity sha1-FnKY88phEjrEzE5F0J5VZ43X02k=
   dependencies:
-    "@formatjs/intl-utils" "^1.4.4"
+    "@formatjs/intl-utils" "^1.6.0"
 
-"@formatjs/intl-unified-numberformat@^2.1.6":
-  version "2.1.7"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-2.1.7.tgz#04236d9f28bf040259d0748006ef7718f208b53d"
-  integrity sha1-BCNtnyi/BAJZ0HSABu93GPIItT0=
+"@formatjs/intl-unified-numberformat@^2.2.0":
+  version "2.2.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-2.2.0.tgz#ef82469962d7e66dbfce511409961d7013253ecd"
+  integrity sha1-74JGmWLX5m2/zlEUCZYdcBMlPs0=
   dependencies:
-    "@formatjs/intl-utils" "^1.4.4"
+    "@formatjs/intl-utils" "^1.6.0"
 
-"@formatjs/intl-utils@^1.4.4":
-  version "1.4.4"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-utils/-/intl-utils-1.4.4.tgz#1f3120448dc4e9968d859fd85aa027b1ae0b29bc"
-  integrity sha1-HzEgRI3E6ZaNhZ/YWqAnsa4LKbw=
+"@formatjs/intl-utils@^1.6.0":
+  version "1.6.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/intl-utils/-/intl-utils-1.6.0.tgz#43b094232b9ef98b57a270bcecee99168d329e9f"
+  integrity sha1-Q7CUIyue+YtXonC87O6ZFo0ynp8=
 
-"@formatjs/macro@^0.2.5":
+"@formatjs/macro@^0.2.6":
   version "0.2.6"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@formatjs/macro/-/macro-0.2.6.tgz#eb173658d803416a43210778b2f5c04c5a240bb6"
   integrity sha1-6xc2WNgDQWpDIQd4svXATFokC7Y=
@@ -1508,16 +1516,16 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@material-ui/core@^4.7.0":
-  version "4.7.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/core/-/core-4.7.0.tgz#84c02a6d1c99c7900e184538c5f9d87e30cf4c23"
-  integrity sha1-hMAqbRyZx5AOGEU4xfnYfjDPTCM=
+"@material-ui/core@^4.7.1":
+  version "4.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/core/-/core-4.7.1.tgz#87b83da3f6adf45772c0a2be9fd9d162e026f10c"
+  integrity sha1-h7g9o/at9FdywKK+n9nRYuAm8Qw=
   dependencies:
     "@babel/runtime" "^7.4.4"
-    "@material-ui/styles" "^4.6.0"
-    "@material-ui/system" "^4.5.2"
+    "@material-ui/styles" "^4.7.1"
+    "@material-ui/system" "^4.7.1"
     "@material-ui/types" "^4.1.1"
-    "@material-ui/utils" "^4.5.2"
+    "@material-ui/utils" "^4.7.1"
     "@types/react-transition-group" "^4.2.0"
     clsx "^1.0.2"
     convert-css-length "^2.0.1"
@@ -1525,6 +1533,7 @@
     normalize-scroll-left "^0.2.0"
     popper.js "^1.14.1"
     prop-types "^15.7.2"
+    react-is "^16.8.0"
     react-transition-group "^4.3.0"
 
 "@material-ui/icons@^4.5.1":
@@ -1534,15 +1543,16 @@
   dependencies:
     "@babel/runtime" "^7.4.4"
 
-"@material-ui/lab@^4.0.0-alpha.33":
-  version "4.0.0-alpha.33"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/lab/-/lab-4.0.0-alpha.33.tgz#3de96da1e813afcea5a07d56e54ec41cfa636e2c"
-  integrity sha1-PeltoegTr86loH1W5U7EHPpjbiw=
+"@material-ui/lab@^4.0.0-alpha.34":
+  version "4.0.0-alpha.34"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/lab/-/lab-4.0.0-alpha.34.tgz#becbf5e7f9361bcaa30eec66d9f109a2204775e0"
+  integrity sha1-vsv15/k2G8qjDuxm2fEJoiBHdeA=
   dependencies:
     "@babel/runtime" "^7.4.4"
-    "@material-ui/utils" "^4.5.2"
+    "@material-ui/utils" "^4.7.1"
     clsx "^1.0.4"
     prop-types "^15.7.2"
+    react-is "^16.8.0"
 
 "@material-ui/pickers@^3.2.8":
   version "3.2.8"
@@ -1555,15 +1565,15 @@
     react-transition-group "^4.0.0"
     rifm "^0.7.0"
 
-"@material-ui/styles@^4.6.0":
-  version "4.6.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/styles/-/styles-4.6.0.tgz#15679fab6dcbe0cc2416f01a22966f3ea26607c5"
-  integrity sha1-FWefq23L4MwkFvAaIpZvPqJmB8U=
+"@material-ui/styles@^4.7.1":
+  version "4.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/styles/-/styles-4.7.1.tgz#48fa70f06441c35e301a9c4b6c825526a97b7a29"
+  integrity sha1-SPpw8GRBw14wGpxLbIJVJql7eik=
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@emotion/hash" "^0.7.1"
     "@material-ui/types" "^4.1.1"
-    "@material-ui/utils" "^4.5.2"
+    "@material-ui/utils" "^4.7.1"
     clsx "^1.0.2"
     csstype "^2.5.2"
     hoist-non-react-statics "^3.2.1"
@@ -1577,13 +1587,13 @@
     jss-plugin-vendor-prefixer "^10.0.0"
     prop-types "^15.7.2"
 
-"@material-ui/system@^4.5.2":
-  version "4.5.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/system/-/system-4.5.2.tgz#7143bd8422a3f33f435c23f378136254004bbd60"
-  integrity sha1-cUO9hCKj8z9DXCPzeBNiVABLvWA=
+"@material-ui/system@^4.7.1":
+  version "4.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/system/-/system-4.7.1.tgz#d928dacc0eeae6bea569ff3ee079f409efb3517d"
+  integrity sha1-2SjazA7q5r6laf8+4Hn0Ce+zUX0=
   dependencies:
     "@babel/runtime" "^7.4.4"
-    "@material-ui/utils" "^4.5.2"
+    "@material-ui/utils" "^4.7.1"
     prop-types "^15.7.2"
 
 "@material-ui/types@^4.1.1":
@@ -1593,14 +1603,14 @@
   dependencies:
     "@types/react" "*"
 
-"@material-ui/utils@^4.5.2":
-  version "4.5.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/utils/-/utils-4.5.2.tgz#4c2fb531d357cf0da8cece53b588dff9b0bde934"
-  integrity sha1-TC+1MdNXzw2ozs5TtYjf+bC96TQ=
+"@material-ui/utils@^4.7.1":
+  version "4.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@material-ui/utils/-/utils-4.7.1.tgz#dc16c7f0d2cd02fbcdd5cfe601fd6863ae3cc652"
+  integrity sha1-3BbH8NLNAvvN1c/mAf1oY648xlI=
   dependencies:
     "@babel/runtime" "^7.4.4"
     prop-types "^15.7.2"
-    react-is "^16.8.6"
+    react-is "^16.8.0"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -1679,17 +1689,17 @@
     react-lifecycles-compat "^3.0.4"
     warning "^3.0.0"
 
-"@storybook/addon-actions@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-actions/-/addon-actions-5.2.6.tgz#4fe411fc3bdb1d44058f23fbc8eb8d1bac29d521"
-  integrity sha1-T+QR/DvbHUQFjyP7yOuNG6wp1SE=
+"@storybook/addon-actions@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-actions/-/addon-actions-5.2.8.tgz#f63c6e1afb59e94ca1ebc776b7cad9b815e7419e"
+  integrity sha1-9jxuGvtZ6Uyh68d2t8rZuBXnQZ4=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/api" "5.2.6"
-    "@storybook/client-api" "5.2.6"
-    "@storybook/components" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/api" "5.2.8"
+    "@storybook/client-api" "5.2.8"
+    "@storybook/components" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/theming" "5.2.8"
     core-js "^3.0.1"
     fast-deep-equal "^2.0.1"
     global "^4.3.2"
@@ -1699,17 +1709,17 @@
     react-inspector "^3.0.2"
     uuid "^3.3.2"
 
-"@storybook/addon-knobs@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-knobs/-/addon-knobs-5.2.6.tgz#28b2c74ea26519fef204915142a03bd7476f247c"
-  integrity sha1-KLLHTqJlGf7yBJFRQqA710dvJHw=
+"@storybook/addon-knobs@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-knobs/-/addon-knobs-5.2.8.tgz#e0d03823969921a0da57a329376d03066dd749ee"
+  integrity sha1-4NA4I5aZIaDaV6MpN20DBm3XSe4=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/api" "5.2.6"
-    "@storybook/client-api" "5.2.6"
-    "@storybook/components" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/api" "5.2.8"
+    "@storybook/client-api" "5.2.8"
+    "@storybook/components" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/theming" "5.2.8"
     "@types/react-color" "^3.0.1"
     copy-to-clipboard "^3.0.8"
     core-js "^3.0.1"
@@ -1723,60 +1733,60 @@
     react-lifecycles-compat "^3.0.4"
     react-select "^3.0.0"
 
-"@storybook/addon-links@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-links/-/addon-links-5.2.6.tgz#4428127552129a5add732a6d15ff8d12886b6373"
-  integrity sha1-RCgSdVISmlrdcyptFf+NEohrY3M=
+"@storybook/addon-links@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-links/-/addon-links-5.2.8.tgz#8d447581dd511387e9a07ce2484422374f00bc84"
+  integrity sha1-jUR1gd1RE4fpoHziSEQiN08AvIQ=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/router" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/router" "5.2.8"
     common-tags "^1.8.0"
     core-js "^3.0.1"
     global "^4.3.2"
     prop-types "^15.7.2"
     qs "^6.6.0"
 
-"@storybook/addon-viewport@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-viewport/-/addon-viewport-5.2.6.tgz#1ee72bebfde857f460e534ab7f7d591daa844c56"
-  integrity sha1-Hucr6/3oV/Rg5TSrf31ZHaqETFY=
+"@storybook/addon-viewport@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addon-viewport/-/addon-viewport-5.2.8.tgz#b3bdbae1e240dcb19aed7a6c70bfad564f40d84b"
+  integrity sha1-s7264eJA3LGa7XpscL+tVk9A2Es=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/api" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/components" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/api" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/components" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/theming" "5.2.8"
     core-js "^3.0.1"
     global "^4.3.2"
     memoizerific "^1.11.3"
     prop-types "^15.7.2"
     util-deprecate "^1.0.2"
 
-"@storybook/addons@5.2.6", "@storybook/addons@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addons/-/addons-5.2.6.tgz#c1278137acb3502e068b0b0d07a8371c607e9c02"
-  integrity sha1-wSeBN6yzUC4GiwsNB6g3HGB+nAI=
+"@storybook/addons@5.2.8", "@storybook/addons@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/addons/-/addons-5.2.8.tgz#f8bf8bd555b7a69fb1e9a52ab8cdb96384d931ff"
+  integrity sha1-+L+L1VW3pp+x6aUquM25Y4TZMf8=
   dependencies:
-    "@storybook/api" "5.2.6"
-    "@storybook/channels" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/core-events" "5.2.6"
+    "@storybook/api" "5.2.8"
+    "@storybook/channels" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/core-events" "5.2.8"
     core-js "^3.0.1"
     global "^4.3.2"
     util-deprecate "^1.0.2"
 
-"@storybook/api@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/api/-/api-5.2.6.tgz#43d3c20b90e585e6c94b36e29845d39704ae2135"
-  integrity sha1-Q9PCC5DlhebJSzbimEXTlwSuITU=
+"@storybook/api@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/api/-/api-5.2.8.tgz#21f03df8041114eb929bd10b570a17f266568b7f"
+  integrity sha1-IfA9+AQRFOuSm9ELVwoX8mZWi38=
   dependencies:
-    "@storybook/channels" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/router" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/channels" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/router" "5.2.8"
+    "@storybook/theming" "5.2.8"
     core-js "^3.0.1"
     fast-deep-equal "^2.0.1"
     global "^4.3.2"
@@ -1790,35 +1800,35 @@
     telejson "^3.0.2"
     util-deprecate "^1.0.2"
 
-"@storybook/channel-postmessage@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/channel-postmessage/-/channel-postmessage-5.2.6.tgz#60aaef0e80300c9812a571ca3ce0f28e2c404f04"
-  integrity sha1-YKrvDoAwDJgSpXHKPODyjixATwQ=
+"@storybook/channel-postmessage@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/channel-postmessage/-/channel-postmessage-5.2.8.tgz#7a84869ce0fc270c3b5dcd7fa4ed798b6055816f"
+  integrity sha1-eoSGnOD8Jww7Xc1/pO15i2BVgW8=
   dependencies:
-    "@storybook/channels" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
+    "@storybook/channels" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
     core-js "^3.0.1"
     global "^4.3.2"
     telejson "^3.0.2"
 
-"@storybook/channels@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/channels/-/channels-5.2.6.tgz#e2837508864dc4d5b5e03f078886f0ce113762ea"
-  integrity sha1-4oN1CIZNxNW14D8HiIbwzhE3Yuo=
+"@storybook/channels@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/channels/-/channels-5.2.8.tgz#79a99ad85dcacb688073c22340c5b7d16b801202"
+  integrity sha1-eama2F3Ky2iAc8IjQMW30WuAEgI=
   dependencies:
     core-js "^3.0.1"
 
-"@storybook/client-api@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/client-api/-/client-api-5.2.6.tgz#5760cb4302d82ce9210a63f3f55b1e05f04759c1"
-  integrity sha1-V2DLQwLYLOkhCmPz9VseBfBHWcE=
+"@storybook/client-api@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/client-api/-/client-api-5.2.8.tgz#1de791f7888442287f848e5f544eb883c5edc0da"
+  integrity sha1-HeeR94iEQih/hI5fVE64g8XtwNo=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/channel-postmessage" "5.2.6"
-    "@storybook/channels" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/router" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/channel-postmessage" "5.2.8"
+    "@storybook/channels" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/router" "5.2.8"
     common-tags "^1.8.0"
     core-js "^3.0.1"
     eventemitter3 "^4.0.0"
@@ -1827,22 +1837,23 @@
     lodash "^4.17.15"
     memoizerific "^1.11.3"
     qs "^6.6.0"
+    stable "^0.1.8"
     util-deprecate "^1.0.2"
 
-"@storybook/client-logger@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/client-logger/-/client-logger-5.2.6.tgz#cfc4536e9b724b086f7509c2bb34c221016713c9"
-  integrity sha1-z8RTbptySwhvdQnCuzTCIQFnE8k=
+"@storybook/client-logger@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/client-logger/-/client-logger-5.2.8.tgz#5affe2f9dbbee374721fd2e8729116f5ac39c779"
+  integrity sha1-Wv/i+du+43RyH9LocpEW9aw5x3k=
   dependencies:
     core-js "^3.0.1"
 
-"@storybook/components@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/components/-/components-5.2.6.tgz#cddb60227720aea7cae34fe782d0370bcdbd4005"
-  integrity sha1-zdtgIncgrqfK40/ngtA3C829QAU=
+"@storybook/components@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/components/-/components-5.2.8.tgz#f5d4a06ba4ba8c700b2d962deae182105b72fb99"
+  integrity sha1-9dSga6S6jHALLZYt6uGCEFty+5k=
   dependencies:
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/theming" "5.2.8"
     "@types/react-syntax-highlighter" "10.1.0"
     "@types/react-textarea-autosize" "^4.3.3"
     core-js "^3.0.1"
@@ -1861,32 +1872,32 @@
     react-textarea-autosize "^7.1.0"
     simplebar-react "^1.0.0-alpha.6"
 
-"@storybook/core-events@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/core-events/-/core-events-5.2.6.tgz#34c9aae256e7e5f4a565b81f1e77dda8bccc6752"
-  integrity sha1-NMmq4lbn5fSlZbgfHnfdqLzMZ1I=
+"@storybook/core-events@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/core-events/-/core-events-5.2.8.tgz#93fc458ea0820ff1409d268b0fe51abba200f5a4"
+  integrity sha1-k/xFjqCCD/FAnSaLD+Uau6IA9aQ=
   dependencies:
     core-js "^3.0.1"
 
-"@storybook/core@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/core/-/core-5.2.6.tgz#60c092607158d7d28db59f7e67da4f7e12703fb2"
-  integrity sha1-YMCSYHFY19KNtZ9+Z9pPfhJwP7I=
+"@storybook/core@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/core/-/core-5.2.8.tgz#3f6ddbacc705c1893deb15582c3a0a1ecd882cd1"
+  integrity sha1-P23brMcFwYk96xVYLDoKHs2ILNE=
   dependencies:
-    "@babel/plugin-proposal-class-properties" "^7.3.3"
-    "@babel/plugin-proposal-object-rest-spread" "^7.3.2"
+    "@babel/plugin-proposal-class-properties" "^7.7.0"
+    "@babel/plugin-proposal-object-rest-spread" "^7.6.2"
     "@babel/plugin-syntax-dynamic-import" "^7.2.0"
-    "@babel/plugin-transform-react-constant-elements" "^7.2.0"
-    "@babel/preset-env" "^7.4.5"
-    "@storybook/addons" "5.2.6"
-    "@storybook/channel-postmessage" "5.2.6"
-    "@storybook/client-api" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/node-logger" "5.2.6"
-    "@storybook/router" "5.2.6"
-    "@storybook/theming" "5.2.6"
-    "@storybook/ui" "5.2.6"
+    "@babel/plugin-transform-react-constant-elements" "^7.6.3"
+    "@babel/preset-env" "^7.7.1"
+    "@storybook/addons" "5.2.8"
+    "@storybook/channel-postmessage" "5.2.8"
+    "@storybook/client-api" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/node-logger" "5.2.8"
+    "@storybook/router" "5.2.8"
+    "@storybook/theming" "5.2.8"
+    "@storybook/ui" "5.2.8"
     airbnb-js-shims "^1 || ^2"
     ansi-to-html "^0.6.11"
     autoprefixer "^9.4.9"
@@ -1942,10 +1953,10 @@
     webpack-dev-middleware "^3.7.0"
     webpack-hot-middleware "^2.25.0"
 
-"@storybook/node-logger@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/node-logger/-/node-logger-5.2.6.tgz#e353aff14375bef9e922c217a0afb50f93e2ceb1"
-  integrity sha1-41Ov8UN1vvnpIsIXoK+1D5PizrE=
+"@storybook/node-logger@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/node-logger/-/node-logger-5.2.8.tgz#4a3df21d731014d54b9ca53d5b9a72dd350bb075"
+  integrity sha1-Sj3yHXMQFNVLnKU9W5py3TULsHU=
   dependencies:
     chalk "^2.4.2"
     core-js "^3.0.1"
@@ -1953,17 +1964,17 @@
     pretty-hrtime "^1.0.3"
     regenerator-runtime "^0.12.1"
 
-"@storybook/react@^5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/react/-/react-5.2.6.tgz#e61c0ed184add9e715191649ddb995eead756a90"
-  integrity sha1-5hwO0YSt2ecVGRZJ3bmV7q11apA=
+"@storybook/react@^5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/react/-/react-5.2.8.tgz#8d44c2d34caa1d7d748ec1fc9cf0fe2a88b001f9"
+  integrity sha1-jUTC00yqHX10jsH8nPD+KoiwAfk=
   dependencies:
-    "@babel/plugin-transform-react-constant-elements" "^7.2.0"
+    "@babel/plugin-transform-react-constant-elements" "^7.6.3"
     "@babel/preset-flow" "^7.0.0"
-    "@babel/preset-react" "^7.0.0"
-    "@storybook/addons" "5.2.6"
-    "@storybook/core" "5.2.6"
-    "@storybook/node-logger" "5.2.6"
+    "@babel/preset-react" "^7.7.0"
+    "@storybook/addons" "5.2.8"
+    "@storybook/core" "5.2.8"
+    "@storybook/node-logger" "5.2.8"
     "@svgr/webpack" "^4.0.3"
     "@types/webpack-env" "^1.13.7"
     babel-plugin-add-react-displayname "^0.0.5"
@@ -1981,10 +1992,10 @@
     semver "^6.0.0"
     webpack "^4.33.0"
 
-"@storybook/router@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/router/-/router-5.2.6.tgz#5180d3785501699283c6c3717986c877f84fead5"
-  integrity sha1-UYDTeFUBaZKDxsNxeYbId/hP6tU=
+"@storybook/router@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/router/-/router-5.2.8.tgz#d7de2d401701857c033e28560c30e16512f7f72f"
+  integrity sha1-194tQBcBhXwDPihWDDDhZRL39y8=
   dependencies:
     "@reach/router" "^1.2.1"
     "@types/reach__router" "^1.2.3"
@@ -1994,14 +2005,14 @@
     memoizerific "^1.11.3"
     qs "^6.6.0"
 
-"@storybook/theming@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/theming/-/theming-5.2.6.tgz#e04170b3e53dcfc791b2381c8a39192ae88cd291"
-  integrity sha1-4EFws+U9z8eRsjgcijkZKuiM0pE=
+"@storybook/theming@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/theming/-/theming-5.2.8.tgz#a4c9e0e9a5789c1aa71e4fcb7a8ee86efe3dadcf"
+  integrity sha1-pMng6aV4nBqnHk/Leo7obv49rc8=
   dependencies:
     "@emotion/core" "^10.0.14"
     "@emotion/styled" "^10.0.14"
-    "@storybook/client-logger" "5.2.6"
+    "@storybook/client-logger" "5.2.8"
     common-tags "^1.8.0"
     core-js "^3.0.1"
     deep-object-diff "^1.1.0"
@@ -2012,19 +2023,19 @@
     prop-types "^15.7.2"
     resolve-from "^5.0.0"
 
-"@storybook/ui@5.2.6":
-  version "5.2.6"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/ui/-/ui-5.2.6.tgz#33df2f2e03d9cf81dc52928a0dc4db280ee8f56a"
-  integrity sha1-M98vLgPZz4HcUpKKDcTbKA7o9Wo=
+"@storybook/ui@5.2.8":
+  version "5.2.8"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@storybook/ui/-/ui-5.2.8.tgz#da8afca9eb29a40ef3ddc6a9f6e76d7a3344f2ef"
+  integrity sha1-2or8qesppA7z3cap9udtejNE8u8=
   dependencies:
-    "@storybook/addons" "5.2.6"
-    "@storybook/api" "5.2.6"
-    "@storybook/channels" "5.2.6"
-    "@storybook/client-logger" "5.2.6"
-    "@storybook/components" "5.2.6"
-    "@storybook/core-events" "5.2.6"
-    "@storybook/router" "5.2.6"
-    "@storybook/theming" "5.2.6"
+    "@storybook/addons" "5.2.8"
+    "@storybook/api" "5.2.8"
+    "@storybook/channels" "5.2.8"
+    "@storybook/client-logger" "5.2.8"
+    "@storybook/components" "5.2.8"
+    "@storybook/core-events" "5.2.8"
+    "@storybook/router" "5.2.8"
+    "@storybook/theming" "5.2.8"
     copy-to-clipboard "^3.0.8"
     core-js "^3.0.1"
     core-js-pure "^3.0.1"
@@ -2339,9 +2350,9 @@
     "@types/react" "*"
 
 "@types/react@*":
-  version "16.9.13"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@types/react/-/react-16.9.13.tgz#b3ea5dd443f4a680599e2abba8cc66f5e1ce0059"
-  integrity sha1-s+pd1EP0poBZniq7qMxm9eHOAFk=
+  version "16.9.14"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@types/react/-/react-16.9.14.tgz#7f1158ce450b4b5aa83b1c5e1324fa75f348bdd1"
+  integrity sha1-fxFYzkULS1qoOxxeEyT6dfNIvdE=
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -2376,39 +2387,39 @@
     "@types/yargs-parser" "*"
 
 "@typescript-eslint/eslint-plugin@^2.2.0":
-  version "2.9.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-2.9.0.tgz#fa810282c0e45f6c2310b9c0dfcd25bff97ab7e9"
-  integrity sha1-+oECgsDkX2wjELnA380lv/l6t+k=
+  version "2.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-2.10.0.tgz#c4cb103275e555e8a7e9b3d14c5951eb6d431e70"
+  integrity sha1-xMsQMnXlVein6bPRTFlR621DHnA=
   dependencies:
-    "@typescript-eslint/experimental-utils" "2.9.0"
+    "@typescript-eslint/experimental-utils" "2.10.0"
     eslint-utils "^1.4.3"
     functional-red-black-tree "^1.0.1"
     regexpp "^3.0.0"
     tsutils "^3.17.1"
 
-"@typescript-eslint/experimental-utils@2.9.0":
-  version "2.9.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/experimental-utils/-/experimental-utils-2.9.0.tgz#bbe99a8d9510240c055fc4b17230dd0192ba3c7f"
-  integrity sha1-u+majZUQJAwFX8SxcjDdAZK6PH8=
+"@typescript-eslint/experimental-utils@2.10.0":
+  version "2.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/experimental-utils/-/experimental-utils-2.10.0.tgz#8db1656cdfd3d9dcbdbf360b8274dea76f0b2c2c"
+  integrity sha1-jbFlbN/T2dy9vzYLgnTep28LLCw=
   dependencies:
     "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/typescript-estree" "2.9.0"
+    "@typescript-eslint/typescript-estree" "2.10.0"
     eslint-scope "^5.0.0"
 
 "@typescript-eslint/parser@^2.2.0":
-  version "2.9.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/parser/-/parser-2.9.0.tgz#2e9cf438de119b143f642a3a406e1e27eb70b7cd"
-  integrity sha1-Lpz0ON4RmxQ/ZCo6QG4eJ+twt80=
+  version "2.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/parser/-/parser-2.10.0.tgz#24b2e48384ab6d5a6121e4c4faf8892c79657ad3"
+  integrity sha1-JLLkg4SrbVphIeTE+viJLHlletM=
   dependencies:
     "@types/eslint-visitor-keys" "^1.0.0"
-    "@typescript-eslint/experimental-utils" "2.9.0"
-    "@typescript-eslint/typescript-estree" "2.9.0"
+    "@typescript-eslint/experimental-utils" "2.10.0"
+    "@typescript-eslint/typescript-estree" "2.10.0"
     eslint-visitor-keys "^1.1.0"
 
-"@typescript-eslint/typescript-estree@2.9.0":
-  version "2.9.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/typescript-estree/-/typescript-estree-2.9.0.tgz#09138daf8f47d0e494ba7db9e77394e928803017"
-  integrity sha1-CRONr49H0OSUun2553OU6SiAMBc=
+"@typescript-eslint/typescript-estree@2.10.0":
+  version "2.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@typescript-eslint/typescript-estree/-/typescript-estree-2.10.0.tgz#89cdabd5e8c774e9d590588cb42fb9afd14dcbd9"
+  integrity sha1-ic2r1ejHdOnVkFiMtC+5r9FNy9k=
   dependencies:
     debug "^4.1.1"
     eslint-visitor-keys "^1.1.0"
@@ -2800,7 +2811,7 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-ansi-styles@^4.1.0:
+ansi-styles@^4.0.0, ansi-styles@^4.1.0:
   version "4.2.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ansi-styles/-/ansi-styles-4.2.0.tgz#5681f0dcf7ae5880a7841d8831c4724ed9cc0172"
   integrity sha1-VoHw3PeuWICnhB2IMcRyTtnMAXI=
@@ -3046,12 +3057,12 @@ attr-accept@^2.0.0:
   integrity sha1-hCL+9e5KURwgd5bIiCJ6td4DMG8=
 
 autoprefixer@^9.4.9, autoprefixer@^9.6.1:
-  version "9.7.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/autoprefixer/-/autoprefixer-9.7.2.tgz#26cf729fbb709323b40171a874304884dcceffed"
-  integrity sha1-Js9yn7twkyO0AXGodDBIhNzO/+0=
+  version "9.7.3"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/autoprefixer/-/autoprefixer-9.7.3.tgz#fd42ed03f53de9beb4ca0d61fb4f7268a9bb50b4"
+  integrity sha1-/ULtA/U96b60yg1h+09yaKm7ULQ=
   dependencies:
-    browserslist "^4.7.3"
-    caniuse-lite "^1.0.30001010"
+    browserslist "^4.8.0"
+    caniuse-lite "^1.0.30001012"
     chalk "^2.4.2"
     normalize-range "^0.1.2"
     num2fraction "^1.2.2"
@@ -3069,11 +3080,12 @@ aws4@^1.8.0:
   integrity sha1-JDkOatYThrCnRyZXVNKhchnehiw=
 
 axobject-query@^2.0.2:
-  version "2.0.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/axobject-query/-/axobject-query-2.0.2.tgz#ea187abe5b9002b377f925d8bf7d1c561adf38f9"
-  integrity sha1-6hh6vluQArN3+SXYv30cVhrfOPk=
+  version "2.1.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/axobject-query/-/axobject-query-2.1.1.tgz#2a3b1271ec722d48a4cd4b3fcc20c853326a49a7"
+  integrity sha1-KjsScexyLUikzUs/zCDIUzJqSac=
   dependencies:
-    ast-types-flow "0.0.7"
+    "@babel/runtime" "^7.7.4"
+    "@babel/runtime-corejs3" "^7.7.4"
 
 babel-code-frame@^6.22.0:
   version "6.26.0"
@@ -3519,9 +3531,9 @@ binary-extensions@^1.0.0:
   integrity sha1-WYr+VHVbKGilMw0q/51Ou1Mgm2U=
 
 bluebird@^3.3.5, bluebird@^3.5.5:
-  version "3.7.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/bluebird/-/bluebird-3.7.1.tgz#df70e302b471d7473489acf26a93d63b53f874de"
-  integrity sha1-33DjArRx10c0iazyapPWO1P4dN4=
+  version "3.7.2"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
+  integrity sha1-nyKcFb4nJFT/qXOs4NvueaGww28=
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
@@ -3684,14 +3696,14 @@ browserslist@4.7.0:
     electron-to-chromium "^1.3.247"
     node-releases "^1.1.29"
 
-browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.6.0, browserslist@^4.6.4, browserslist@^4.7.3:
-  version "4.7.3"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/browserslist/-/browserslist-4.7.3.tgz#02341f162b6bcc1e1028e30624815d4924442dc3"
-  integrity sha1-AjQfFitrzB4QKOMGJIFdSSRELcM=
+browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.6.0, browserslist@^4.6.4, browserslist@^4.8.0:
+  version "4.8.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/browserslist/-/browserslist-4.8.0.tgz#6f06b0f974a7cc3a84babc2ccc56493668e3c789"
+  integrity sha1-bwaw+XSnzDqEurwszFZJNmjjx4k=
   dependencies:
-    caniuse-lite "^1.0.30001010"
-    electron-to-chromium "^1.3.306"
-    node-releases "^1.1.40"
+    caniuse-lite "^1.0.30001012"
+    electron-to-chromium "^1.3.317"
+    node-releases "^1.1.41"
 
 bser@^2.0.0:
   version "2.1.1"
@@ -3859,10 +3871,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30000989, caniuse-lite@^1.0.30001010:
-  version "1.0.30001012"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/caniuse-lite/-/caniuse-lite-1.0.30001012.tgz#653ec635e815b9e0fb801890923b0c2079eb34ec"
-  integrity sha1-ZT7GNegVueD7gBiQkjsMIHnrNOw=
+caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30000989, caniuse-lite@^1.0.30001012:
+  version "1.0.30001015"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/caniuse-lite/-/caniuse-lite-1.0.30001015.tgz#15a7ddf66aba786a71d99626bc8f2b91c6f0f5f0"
+  integrity sha1-Fafd9mq6eGpx2ZYmvI8rkcbw9fA=
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4065,6 +4077,15 @@ cliui@^5.0.0:
     strip-ansi "^5.2.0"
     wrap-ansi "^5.1.0"
 
+cliui@^6.0.0:
+  version "6.0.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/cliui/-/cliui-6.0.0.tgz#511d702c0c4e41ca156d7d0e96021f23e13225b1"
+  integrity sha1-UR1wLAxOQcoVbX0OlgIfI+EyJbE=
+  dependencies:
+    string-width "^4.2.0"
+    strip-ansi "^6.0.0"
+    wrap-ansi "^6.2.0"
+
 clone-deep@^0.2.4:
   version "0.2.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/clone-deep/-/clone-deep-0.2.4.tgz#4e73dd09e9fb971cc38670c5dced9c1896481cc6"
@@ -4222,11 +4243,7 @@ compose-function@3.0.3:
     arity-n "^1.0.4"
 
 "compositor-module@file:../greenfield/compositor-module":
-  version "1.0.0"
-  dependencies:
-    tinyh264 "0.0.1"
-    westfield-runtime-common "0.3.0"
-    westfield-runtime-server "0.3.0"
+  version "0.0.0"
 
 compressible@~2.0.16:
   version "2.0.17"
@@ -4369,17 +4386,17 @@ copy-to-clipboard@^3.0.8:
     toggle-selection "^1.0.6"
 
 core-js-compat@^3.1.1:
-  version "3.4.4"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js-compat/-/core-js-compat-3.4.4.tgz#d0aa01b1d626e129455d51aa94c27127c564ba2b"
-  integrity sha1-0KoBsdYm4SlFXVGqlMJxJ8Vkuis=
+  version "3.4.7"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js-compat/-/core-js-compat-3.4.7.tgz#39f8080b1d92a524d6d90505c42b9c5c1eb90611"
+  integrity sha1-OfgICx2SpSTW2QUFxCucXB65BhE=
   dependencies:
-    browserslist "^4.7.3"
+    browserslist "^4.8.0"
     semver "^6.3.0"
 
-core-js-pure@^3.0.1:
-  version "3.4.4"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js-pure/-/core-js-pure-3.4.4.tgz#613b936fa0c0482216f0c93794cd8139886efb53"
-  integrity sha1-YTuTb6DASCIW8Mk3lM2BOYhu+1M=
+core-js-pure@^3.0.0, core-js-pure@^3.0.1:
+  version "3.4.7"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js-pure/-/core-js-pure-3.4.7.tgz#c998e1892da9949200c7452cbd33c0df95be9f54"
+  integrity sha1-yZjhiS2plJIAx0UsvTPA35W+n1Q=
 
 core-js@3.2.1:
   version "3.2.1"
@@ -4402,9 +4419,9 @@ core-js@^2.4.0:
   integrity sha1-iluDkfjMcBPacDQRzltYVwYwDX8=
 
 core-js@^3.0.1, core-js@^3.0.4:
-  version "3.4.4"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js/-/core-js-3.4.4.tgz#e3d422f8a51adc4cae2bfa04cef26a5ccc046d29"
-  integrity sha1-49Qi+KUa3EyuK/oEzvJqXMwEbSk=
+  version "3.4.7"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/core-js/-/core-js-3.4.7.tgz#57c35937da80fe494fbc3adcf9cf3dc00eb86b34"
+  integrity sha1-V8NZN9qA/klPvDrc+c89wA64azQ=
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -4570,22 +4587,22 @@ css-loader@2.1.1:
     schema-utils "^1.0.0"
 
 css-loader@^3.0.0:
-  version "3.2.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/css-loader/-/css-loader-3.2.0.tgz#bb570d89c194f763627fcf1f80059c6832d009b2"
-  integrity sha1-u1cNicGU92Nif88fgAWcaDLQCbI=
+  version "3.2.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/css-loader/-/css-loader-3.2.1.tgz#62849b45a414b7bde0bfba17325a026471040eae"
+  integrity sha1-YoSbRaQUt73gv7oXMloCZHEEDq4=
   dependencies:
     camelcase "^5.3.1"
     cssesc "^3.0.0"
     icss-utils "^4.1.1"
     loader-utils "^1.2.3"
     normalize-path "^3.0.0"
-    postcss "^7.0.17"
+    postcss "^7.0.23"
     postcss-modules-extract-imports "^2.0.0"
     postcss-modules-local-by-default "^3.0.2"
-    postcss-modules-scope "^2.1.0"
+    postcss-modules-scope "^2.1.1"
     postcss-modules-values "^3.0.0"
-    postcss-value-parser "^4.0.0"
-    schema-utils "^2.0.0"
+    postcss-value-parser "^4.0.2"
+    schema-utils "^2.6.0"
 
 css-prefers-color-scheme@^3.1.1:
   version "3.1.1"
@@ -5205,13 +5222,14 @@ dotenv@^8.0.0:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha1-l+YZJZradQ7qPk6j4mvO6lQksWo=
 
-downshift@^3.4.3:
-  version "3.4.3"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/downshift/-/downshift-3.4.3.tgz#fbbf88711eaf7029faa7de8a54c16c1b835bf45c"
-  integrity sha1-+7+IcR6vcCn6p96KVMFsG4Nb9Fw=
+downshift@^3.4.5:
+  version "3.4.5"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/downshift/-/downshift-3.4.5.tgz#f0d0e12fcf3de41c465ee8b8d5a1dcc6a252a0ea"
+  integrity sha1-8NDhL8895BxGXui41aHcxqJSoOo=
   dependencies:
     "@babel/runtime" "^7.4.5"
     compute-scroll-into-view "^1.0.9"
+    fast-memoize "^2.5.1"
     prop-types "^15.7.2"
     react-is "^16.9.0"
 
@@ -5243,15 +5261,20 @@ ee-first@1.1.1:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-ejs@^2.6.1, ejs@^2.7.2:
+ejs@^2.6.1:
   version "2.7.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ejs/-/ejs-2.7.4.tgz#48661287573dcc53e366c7a1ae52c3a120eec9ba"
   integrity sha1-SGYSh1c9zFPjZsehrlLDoSDuybo=
 
-electron-to-chromium@^1.3.247, electron-to-chromium@^1.3.306:
-  version "1.3.314"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/electron-to-chromium/-/electron-to-chromium-1.3.314.tgz#c186a499ed2c9057bce9eb8dca294d6d5450facc"
-  integrity sha1-wYakme0skFe86euNyilNbVRQ+sw=
+ejs@^3.0.1:
+  version "3.0.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ejs/-/ejs-3.0.1.tgz#30c8f6ee9948502cc32e85c37a3f8b39b5a614a5"
+  integrity sha1-MMj27plIUCzDLoXDej+LObWmFKU=
+
+electron-to-chromium@^1.3.247, electron-to-chromium@^1.3.317:
+  version "1.3.322"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/electron-to-chromium/-/electron-to-chromium-1.3.322.tgz#a6f7e1c79025c2b05838e8e344f6e89eb83213a8"
+  integrity sha1-pvfhx5AlwrBYOOjjRPbonrgyE6g=
 
 element-resize-detector@^1.1.15:
   version "1.1.15"
@@ -5509,6 +5532,11 @@ eslint-plugin-es@^2.0.0:
     eslint-utils "^1.4.2"
     regexpp "^3.0.0"
 
+eslint-plugin-eslint-plugin@^2.1.0:
+  version "2.1.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint-plugin-eslint-plugin/-/eslint-plugin-eslint-plugin-2.1.0.tgz#a7a00f15a886957d855feacaafee264f039e62d5"
+  integrity sha1-p6APFaiGlX2FX+rKr+4mTwOeYtU=
+
 eslint-plugin-flowtype@3.13.0:
   version "3.13.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.13.0.tgz#e241ebd39c0ce519345a3f074ec1ebde4cf80f2c"
@@ -5590,20 +5618,21 @@ eslint-plugin-react@7.14.3, eslint-plugin-react@~7.14.2:
     prop-types "^15.7.2"
     resolve "^1.10.1"
 
-eslint-plugin-react@^7.16.0:
-  version "7.16.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint-plugin-react/-/eslint-plugin-react-7.16.0.tgz#9928e4f3e2122ed3ba6a5b56d0303ba3e41d8c09"
-  integrity sha1-mSjk8+ISLtO6altW0DA7o+QdjAk=
+eslint-plugin-react@^7.17.0:
+  version "7.17.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint-plugin-react/-/eslint-plugin-react-7.17.0.tgz#a31b3e134b76046abe3cd278e7482bd35a1d12d7"
+  integrity sha1-oxs+E0t2BGq+PNJ450gr01odEtc=
   dependencies:
     array-includes "^3.0.3"
     doctrine "^2.1.0"
+    eslint-plugin-eslint-plugin "^2.1.0"
     has "^1.0.3"
-    jsx-ast-utils "^2.2.1"
+    jsx-ast-utils "^2.2.3"
     object.entries "^1.1.0"
-    object.fromentries "^2.0.0"
+    object.fromentries "^2.0.1"
     object.values "^1.1.0"
     prop-types "^15.7.2"
-    resolve "^1.12.0"
+    resolve "^1.13.1"
 
 eslint-plugin-standard@^4.0.1, eslint-plugin-standard@~4.0.0:
   version "4.0.1"
@@ -5639,9 +5668,9 @@ eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
   integrity sha1-4qgs6oT/JGrW+1f5veW0ZiFFnsI=
 
 eslint@^6.1.0:
-  version "6.7.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint/-/eslint-6.7.1.tgz#269ccccec3ef60ab32358a44d147ac209154b919"
-  integrity sha1-JpzMzsPvYKsyNYpE0UesIJFUuRk=
+  version "6.7.2"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/eslint/-/eslint-6.7.2.tgz#c17707ca4ad7b2d8af986a33feba71e18a9fecd1"
+  integrity sha1-wXcHykrXstivmGoz/rpx4Yqf7NE=
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.10.0"
@@ -5900,9 +5929,9 @@ express@^4.16.2, express@^4.17.0:
     vary "~1.1.2"
 
 ext@^1.1.2:
-  version "1.2.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ext/-/ext-1.2.1.tgz#67e635e8d1c63a3250766a593aa8c3d6db332a32"
-  integrity sha1-Z+Y16NHGOjJQdmpZOqjD1tszKjI=
+  version "1.4.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/ext/-/ext-1.4.0.tgz#89ae7a07158f79d35517882904324077e4379244"
+  integrity sha1-ia56BxWPedNVF4gpBDJAd+Q3kkQ=
   dependencies:
     type "^2.0.0"
 
@@ -5985,6 +6014,11 @@ fast-levenshtein@~2.0.6:
   version "2.0.6"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
+
+fast-memoize@^2.5.1:
+  version "2.5.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/fast-memoize/-/fast-memoize-2.5.1.tgz#c3519241e80552ce395e1a32dcdde8d1fd680f5d"
+  integrity sha1-w1GSQegFUs45Xhoy3N3o0f1oD10=
 
 fault@^1.0.2:
   version "1.0.3"
@@ -6159,7 +6193,7 @@ find-up@^2.0.0, find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-find-up@^4.0.0:
+find-up@^4.0.0, find-up@^4.1.0:
   version "4.1.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/find-up/-/find-up-4.1.0.tgz#97afe7d6cdc0bc5928584b7c8d7b16e8a9aa5d19"
   integrity sha1-l6/n1s3AvFkoWEt8jXsW6KmqXRk=
@@ -7199,28 +7233,28 @@ interpret@^1.0.0, interpret@^1.2.0:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/interpret/-/interpret-1.2.0.tgz#d5061a6224be58e8083985f5014d844359576296"
   integrity sha1-1QYaYiS+WOgIOYX1AU2EQ1lXYpY=
 
-intl-format-cache@^4.2.10, intl-format-cache@^4.2.11:
-  version "4.2.11"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-format-cache/-/intl-format-cache-4.2.11.tgz#0819aad42a27fb38f3e0814f487a1530ad536588"
-  integrity sha1-CBmq1Con+zjz4IFPSHoVMK1TZYg=
+intl-format-cache@^4.2.13:
+  version "4.2.13"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-format-cache/-/intl-format-cache-4.2.13.tgz#7f3df3de048dc87353391cd75760b98b596060da"
+  integrity sha1-fz3z3gSNyHNTORzXV2C5i1lgYNo=
 
-intl-locales-supported@^1.8.3, intl-locales-supported@^1.8.4:
+intl-locales-supported@^1.8.4:
   version "1.8.4"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-locales-supported/-/intl-locales-supported-1.8.4.tgz#e1d19812afa50dc2e2a2b4741ceb4030522d45b1"
   integrity sha1-4dGYEq+lDcLiorR0HOtAMFItRbE=
 
-intl-messageformat-parser@^3.3.0, intl-messageformat-parser@^3.3.1:
-  version "3.3.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-messageformat-parser/-/intl-messageformat-parser-3.3.1.tgz#2140b2072149ae8639645823a3a895d515d251a4"
-  integrity sha1-IUCyByFJroY5ZFgjo6iV1RXSUaQ=
+intl-messageformat-parser@^3.5.0:
+  version "3.5.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-messageformat-parser/-/intl-messageformat-parser-3.5.0.tgz#5dd89d82ee3129e35069c344bf7ae4250bc0e3a0"
+  integrity sha1-Xdidgu4xKeNQacNEv3rkJQvA46A=
 
-intl-messageformat@^7.6.0:
-  version "7.6.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-messageformat/-/intl-messageformat-7.6.1.tgz#69ca8ccc755e854d985ddf1595f4301746f4f248"
-  integrity sha1-acqMzHVehU2YXd8VlfQwF0b08kg=
+intl-messageformat@^7.7.0:
+  version "7.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-messageformat/-/intl-messageformat-7.7.1.tgz#cac7f4f9ac00c7db9a3d235cb666bf3470c30ae1"
+  integrity sha1-ysf0+awAx9uaPSNctma/NHDDCuE=
   dependencies:
-    intl-format-cache "^4.2.11"
-    intl-messageformat-parser "^3.3.1"
+    intl-format-cache "^4.2.13"
+    intl-messageformat-parser "^3.5.0"
 
 intl@^1.2.5:
   version "1.2.5"
@@ -8317,7 +8351,7 @@ jss@10.0.0, jss@^10.0.0:
     is-in-browser "^1.1.3"
     tiny-warning "^1.0.2"
 
-jsx-ast-utils@^2.1.0, jsx-ast-utils@^2.2.1:
+jsx-ast-utils@^2.1.0, jsx-ast-utils@^2.2.1, jsx-ast-utils@^2.2.3:
   version "2.2.3"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/jsx-ast-utils/-/jsx-ast-utils-2.2.3.tgz#8a9364e402448a3ce7f14d357738310d9248054f"
   integrity sha1-ipNk5AJEijzn8U01dzgxDZJIBU8=
@@ -8717,10 +8751,10 @@ material-design-lite@^1.2.0:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/material-design-lite/-/material-design-lite-1.3.0.tgz#d004ce3fee99a1eeb74a78b8a325134a5f1171d3"
   integrity sha1-0ATOP+6Zoe63Sni4oyUTSl8RcdM=
 
-material-ui-filter@^3.1.1:
-  version "3.1.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/material-ui-filter/-/material-ui-filter-3.1.1.tgz#de28261974dcd9aa6bdf0292f4904eb7a6d630fe"
-  integrity sha1-3igmGXTc2apr3wKS9JBOt6bWMP4=
+material-ui-filter@^3.1.3:
+  version "3.1.3"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/material-ui-filter/-/material-ui-filter-3.1.3.tgz#e7182553b248b88453b44fda91559a220a7a7662"
+  integrity sha1-5xglU7JIuIRTtE/akVWaIgp6dmI=
 
 material-ui-image@^3.2.2:
   version "3.2.2"
@@ -9235,10 +9269,10 @@ node-pre-gyp@^0.14.0:
     semver "^5.3.0"
     tar "^4.4.2"
 
-node-releases@^1.1.29, node-releases@^1.1.40:
-  version "1.1.41"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/node-releases/-/node-releases-1.1.41.tgz#57674a82a37f812d18e3b26118aefaf53a00afed"
-  integrity sha1-V2dKgqN/gS0Y47JhGK769ToAr+0=
+node-releases@^1.1.29, node-releases@^1.1.41:
+  version "1.1.42"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/node-releases/-/node-releases-1.1.42.tgz#a999f6a62f8746981f6da90627a8d2fc090bbad7"
+  integrity sha1-qZn2pi+HRpgfbakGJ6jS/AkLutc=
   dependencies:
     semver "^6.3.0"
 
@@ -9435,7 +9469,7 @@ object.entries@^1.1.0:
     function-bind "^1.1.1"
     has "^1.0.3"
 
-object.fromentries@^2.0.0, "object.fromentries@^2.0.0 || ^1.0.0":
+object.fromentries@^2.0.0, "object.fromentries@^2.0.0 || ^1.0.0", object.fromentries@^2.0.1:
   version "2.0.1"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/object.fromentries/-/object.fromentries-2.0.1.tgz#050f077855c7af8ae6649f45c80b16ee2d31e704"
   integrity sha1-BQ8HeFXHr4rmZJ9FyAsW7i0x5wQ=
@@ -10353,10 +10387,10 @@ postcss-modules-local-by-default@^3.0.2:
     postcss-selector-parser "^6.0.2"
     postcss-value-parser "^4.0.0"
 
-postcss-modules-scope@^2.1.0:
-  version "2.1.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/postcss-modules-scope/-/postcss-modules-scope-2.1.0.tgz#ad3f5bf7856114f6fcab901b0502e2a2bc39d4eb"
-  integrity sha1-rT9b94VhFPb8q5AbBQLiorw51Os=
+postcss-modules-scope@^2.1.0, postcss-modules-scope@^2.1.1:
+  version "2.1.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/postcss-modules-scope/-/postcss-modules-scope-2.1.1.tgz#33d4fc946602eb5e9355c4165d68a10727689dba"
+  integrity sha1-M9T8lGYC616TVcQWXWihBydonbo=
   dependencies:
     postcss "^7.0.6"
     postcss-selector-parser "^6.0.0"
@@ -10874,9 +10908,9 @@ pseudomap@^1.0.2:
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
 psl@^1.1.24, psl@^1.1.28:
-  version "1.4.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/psl/-/psl-1.4.0.tgz#5dd26156cdb69fa1fdb8ab1991667d3f80ced7c2"
-  integrity sha1-XdJhVs22n6H9uKsZkWZ9P4DO18I=
+  version "1.5.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/psl/-/psl-1.5.0.tgz#47fd1292def7fdb1e138cd78afa8814cebcf7b13"
+  integrity sha1-R/0Skt73/bHhOM14r6iBTOvPexM=
 
 public-encrypt@^4.0.0:
   version "4.0.3"
@@ -11255,26 +11289,26 @@ react-instantsearch-dom@^6.0.0:
     prop-types "^15.5.10"
     react-instantsearch-core "^6.0.0"
 
-react-intl@^3.7.0:
-  version "3.7.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-intl/-/react-intl-3.7.0.tgz#27d377f2795da4590c49cc1410dc40c528f1f3a0"
-  integrity sha1-J9N38nldpFkMScwUENxAxSjx86A=
+react-intl@^3.9.1:
+  version "3.9.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-intl/-/react-intl-3.9.1.tgz#6bbb3492ff1e789bd4bd97d1d9398a75844ac005"
+  integrity sha1-a7s0kv8eeJvUvZfR2TmKdYRKwAU=
   dependencies:
-    "@formatjs/intl-listformat" "^1.2.6"
-    "@formatjs/intl-relativetimeformat" "^4.4.5"
-    "@formatjs/intl-unified-numberformat" "^2.1.6"
-    "@formatjs/macro" "^0.2.5"
+    "@formatjs/intl-listformat" "^1.3.1"
+    "@formatjs/intl-relativetimeformat" "^4.5.1"
+    "@formatjs/intl-unified-numberformat" "^2.2.0"
+    "@formatjs/macro" "^0.2.6"
     "@types/hoist-non-react-statics" "^3.3.1"
     "@types/invariant" "^2.2.30"
     hoist-non-react-statics "^3.3.1"
-    intl-format-cache "^4.2.10"
-    intl-locales-supported "^1.8.3"
-    intl-messageformat "^7.6.0"
-    intl-messageformat-parser "^3.3.0"
+    intl-format-cache "^4.2.13"
+    intl-locales-supported "^1.8.4"
+    intl-messageformat "^7.7.0"
+    intl-messageformat-parser "^3.5.0"
     invariant "^2.1.1"
     shallow-equal "^1.1.0"
 
-react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6, react-is@^16.9.0:
+react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.9.0:
   version "16.12.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha1-LMD+D7p0LZf9UnxCoTvsTusGJBw=
@@ -11299,14 +11333,14 @@ react-loadable@^5.5.0:
     prop-types "^15.5.0"
 
 react-popper-tooltip@^2.8.3:
-  version "2.10.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-popper-tooltip/-/react-popper-tooltip-2.10.0.tgz#4d8383644d1002a50bd2bf74b2d1214d84ffc77c"
-  integrity sha1-TYODZE0QAqUL0r90stEhTYT/x3w=
+  version "2.10.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-popper-tooltip/-/react-popper-tooltip-2.10.1.tgz#e10875f31916297c694d64a677d6f8fa0a48b4d1"
+  integrity sha1-4Qh18xkWKXxpTWSmd9b4+gpItNE=
   dependencies:
-    "@babel/runtime" "^7.6.3"
-    react-popper "^1.3.4"
+    "@babel/runtime" "^7.7.4"
+    react-popper "^1.3.6"
 
-react-popper@^1.3.4:
+react-popper@^1.3.6:
   version "1.3.6"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-popper/-/react-popper-1.3.6.tgz#32122f83af8fda01bdd4f86625ddacaf64fdd06d"
   integrity sha1-MhIvg6+P2gG91PhmJd2sr2T90G0=
@@ -11953,7 +11987,7 @@ resolve@1.12.0:
   dependencies:
     path-parse "^1.0.6"
 
-resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.3.2, resolve@^1.5.0, resolve@^1.8.1:
+resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.3.2, resolve@^1.5.0, resolve@^1.8.1:
   version "1.13.1"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/resolve/-/resolve-1.13.1.tgz#be0aa4c06acd53083505abb35f4d66932ab35d16"
   integrity sha1-vgqkwGrNUwg1BauzX01mkyqzXRY=
@@ -12146,10 +12180,10 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
-schema-utils@^2.0.0, schema-utils@^2.0.1, schema-utils@^2.2.0, schema-utils@^2.5.0:
-  version "2.6.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/schema-utils/-/schema-utils-2.6.0.tgz#68a259aabbef9d08d1252c2e63c398e476308e80"
-  integrity sha1-aKJZqrvvnQjRJSwuY8OY5HYwjoA=
+schema-utils@^2.0.0, schema-utils@^2.0.1, schema-utils@^2.2.0, schema-utils@^2.5.0, schema-utils@^2.6.0:
+  version "2.6.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/schema-utils/-/schema-utils-2.6.1.tgz#eb78f0b945c7bcfa2082b3565e8db3548011dc4f"
+  integrity sha1-63jwuUXHvPoggrNWXo2zVIAR3E8=
   dependencies:
     ajv "^6.10.2"
     ajv-keywords "^3.4.1"
@@ -12470,22 +12504,22 @@ source-list-map@^2.0.0:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/source-list-map/-/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
   integrity sha1-OZO9hzv8SEecyp6jpUeDXHwVSzQ=
 
-source-map-explorer@^2.1.1:
-  version "2.1.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/source-map-explorer/-/source-map-explorer-2.1.1.tgz#7e7f833cbb7a807dc3a76608c0d581909353852c"
-  integrity sha1-fn+DPLt6gH3Dp2YIwNWBkJNThSw=
+source-map-explorer@^2.1.2:
+  version "2.1.2"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/source-map-explorer/-/source-map-explorer-2.1.2.tgz#305d61efbb1d1ebbf24a9fffef718635054d509c"
+  integrity sha1-MF1h77sdHrvySp//73GGNQVNUJw=
   dependencies:
     btoa "^1.2.1"
     chalk "^3.0.0"
     convert-source-map "^1.7.0"
-    ejs "^2.7.2"
+    ejs "^3.0.1"
     escape-html "^1.0.3"
     glob "^7.1.6"
     lodash "^4.17.15"
     open "^7.0.0"
     source-map "^0.7.3"
     temp "^0.9.1"
-    yargs "^14.2.0"
+    yargs "^15.0.2"
 
 source-map-resolve@^0.5.0, source-map-resolve@^0.5.2:
   version "0.5.2"
@@ -12751,7 +12785,7 @@ string-width@^3.0.0, string-width@^3.1.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^5.1.0"
 
-string-width@^4.1.0:
+string-width@^4.1.0, string-width@^4.2.0:
   version "4.2.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/string-width/-/string-width-4.2.0.tgz#952182c46cc7b2c313d1596e623992bd163b72b5"
   integrity sha1-lSGCxGzHssMT0VluYjmSvRY7crU=
@@ -13049,9 +13083,9 @@ terser-webpack-plugin@1.4.1, terser-webpack-plugin@^1.2.4, terser-webpack-plugin
     worker-farm "^1.7.0"
 
 terser@^4.1.2, terser@^4.3.9:
-  version "4.4.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/terser/-/terser-4.4.0.tgz#22c46b4817cf4c9565434bfe6ad47336af259ac3"
-  integrity sha1-IsRrSBfPTJVlQ0v+atRzNq8lmsM=
+  version "4.4.2"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/terser/-/terser-4.4.2.tgz#448fffad0245f4c8a277ce89788b458bfd7706e8"
+  integrity sha1-RI//rQJF9Miid86JeItFi/13Bug=
   dependencies:
     commander "^2.20.0"
     source-map "~0.6.1"
@@ -13131,11 +13165,6 @@ tinycolor2@^1.4.1:
   version "1.4.1"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
   integrity sha1-9PrTM0R7wLB9TcjpIJ2POaisd+g=
-
-tinyh264@0.0.1:
-  version "0.0.1"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/tinyh264/-/tinyh264-0.0.1.tgz#1f3d698fdbd0e549255a3add1f5f69109296069a"
-  integrity sha1-Hz1pj9vQ5UklWjrdH19pEJKWBpo=
 
 tmp@^0.0.33:
   version "0.0.33"
@@ -13334,9 +13363,9 @@ uglify-js@3.4.x:
     source-map "~0.6.1"
 
 uglify-js@^3.1.4:
-  version "3.7.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/uglify-js/-/uglify-js-3.7.0.tgz#14b854003386b7a7c045910f43afbc96d2aa5307"
-  integrity sha1-FLhUADOGt6fARZEPQ6+8ltKqUwc=
+  version "3.7.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/uglify-js/-/uglify-js-3.7.1.tgz#35c7de17971a4aa7689cd2eae0a5b39bb838c0c5"
+  integrity sha1-NcfeF5caSqdonNLq4KWzm7g4wMU=
   dependencies:
     commander "~2.20.3"
     source-map "~0.6.1"
@@ -13784,18 +13813,6 @@ websocket-extensions@>=0.1.1:
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
   integrity sha1-XS/yKXcAPsaHpLhwc9+7rBRszyk=
 
-westfield-runtime-common@0.3.0:
-  version "0.3.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/westfield-runtime-common/-/westfield-runtime-common-0.3.0.tgz#ec8aac40560b0d4f594ad6c93039569c7facdc85"
-  integrity sha1-7IqsQFYLDU9ZStbJMDlWnH+s3IU=
-
-westfield-runtime-server@0.3.0:
-  version "0.3.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/westfield-runtime-server/-/westfield-runtime-server-0.3.0.tgz#7cf27a918028e08c5f0aa34ea45071cb21efcc51"
-  integrity sha1-fPJ6kYAo4IxfCqNOpFBxyyHvzFE=
-  dependencies:
-    westfield-runtime-common "0.3.0"
-
 whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3, whatwg-encoding@^1.0.5:
   version "1.0.5"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/whatwg-encoding/-/whatwg-encoding-1.0.5.tgz#5abacf777c32166a51d085d6b4f3e7d27113ddb0"
@@ -14043,6 +14060,15 @@ wrap-ansi@^5.1.0:
     string-width "^3.0.0"
     strip-ansi "^5.0.0"
 
+wrap-ansi@^6.2.0:
+  version "6.2.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
+  integrity sha1-6Tk7oHEC5skaOyIUePAlfNKFblM=
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
 wrappy@1:
   version "1.0.2"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
@@ -14145,10 +14171,10 @@ yargs-parser@^13.1.1:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^15.0.0:
-  version "15.0.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/yargs-parser/-/yargs-parser-15.0.0.tgz#cdd7a97490ec836195f59f3f4dbe5ea9e8f75f08"
-  integrity sha1-zdepdJDsg2GV9Z8/Tb5eqej3Xwg=
+yargs-parser@^16.1.0:
+  version "16.1.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/yargs-parser/-/yargs-parser-16.1.0.tgz#73747d53ae187e7b8dbe333f95714c76ea00ecf1"
+  integrity sha1-c3R9U64YfnuNvjM/lXFMduoA7PE=
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
@@ -14187,22 +14213,22 @@ yargs@^13.3.0:
     y18n "^4.0.0"
     yargs-parser "^13.1.1"
 
-yargs@^14.2.0:
-  version "14.2.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/yargs/-/yargs-14.2.2.tgz#2769564379009ff8597cdd38fba09da9b493c4b5"
-  integrity sha1-J2lWQ3kAn/hZfN04+6CdqbSTxLU=
+yargs@^15.0.2:
+  version "15.0.2"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/yargs/-/yargs-15.0.2.tgz#4248bf218ef050385c4f7e14ebdf425653d13bd3"
+  integrity sha1-Qki/IY7wUDhcT34U699CVlPRO9M=
   dependencies:
-    cliui "^5.0.0"
+    cliui "^6.0.0"
     decamelize "^1.2.0"
-    find-up "^3.0.0"
+    find-up "^4.1.0"
     get-caller-file "^2.0.1"
     require-directory "^2.1.1"
     require-main-filename "^2.0.0"
     set-blocking "^2.0.0"
-    string-width "^3.0.0"
+    string-width "^4.2.0"
     which-module "^2.0.0"
     y18n "^4.0.0"
-    yargs-parser "^15.0.0"
+    yargs-parser "^16.1.0"
 
 yargs@^3.10.0:
   version "3.32.0"

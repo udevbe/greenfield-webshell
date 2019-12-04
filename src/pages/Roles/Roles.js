@@ -16,11 +16,11 @@ export const Roles = () => {
   const firebase = useFirebase()
 
   useFirebaseConnect([{ path: '/roles' }])
-  const roles = useSelector(state => state.firebase.ordered.roles)
+  const roles = useSelector(state => state.firebase.ordered.roles || [])
 
   const handleCreateClick = () => {
     const newRole = firebase.ref('/roles').push()
-    firebase.ref('/roles').push().update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
+    newRole.update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
   }
 
   const renderItem = i => {
@@ -50,10 +50,7 @@ export const Roles = () => {
       <div style={{ height: '100%' }}>
         <Scrollbar>
           <List>
-            {
-              isLoaded(roles) &&
-              <ReactList itemRenderer={renderItem} length={roles.length} type='simple' />
-            }
+            <ReactList itemRenderer={renderItem} length={roles.length} type='simple' />
           </List>
         </Scrollbar>
         <div style={{ float: 'left', clear: 'both' }} />

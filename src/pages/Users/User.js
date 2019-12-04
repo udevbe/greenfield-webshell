@@ -39,15 +39,15 @@ export const User = () => {
   const intl = useIntl()
   const firebase = useFirebase()
 
-  useFirebaseConnect([{ path: 'admins' }])
+  useFirebaseConnect([{ path: `admins/${uid}` }])
   useFirebaseConnect([{ path: 'user_roles' }])
   useFirebaseConnect([{ path: 'user_grants' }])
 
-  const admins = useSelector(state => state.firebase.ordered.admins)
-  const userRoles = useSelector(state => state.firebase.ordered.user_roles)
-  const userGrants = useSelector(state => state.firebase.ordered.user_grants)
+  const isAdmin = useSelector(state => state.firebase.data.admins ? state.firebase.data.admins[uid] || false : false)
+  const userRoles = useSelector(state => state.firebase.ordered.user_roles || [])
+  const userGrants = useSelector(state => state.firebase.ordered.user_grants || [])
 
-  const dataLoaded = isLoaded(admins) && isLoaded(userRoles) && isLoaded(userGrants)
+  const dataLoaded = isLoaded(userRoles) && isLoaded(userGrants)
 
   const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
 
@@ -59,24 +59,13 @@ export const User = () => {
     }
   }
 
-  let isAdmin = false
-
-  if (admins !== undefined) {
-    for (const admin of admins) {
-      if (admin.key === uid) {
-        isAdmin = true
-        break
-      }
-    }
-  }
-
   const classes = useStyles()
   return (
     <Activity
       isLoading={!dataLoaded}
       onBackClick={() => history.push('/users')}
       title={intl.formatMessage({ id: 'edit_user' })}
-    >{dataLoaded &&
+    >
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
           <AppBar position='static'>
@@ -99,7 +88,7 @@ export const User = () => {
           {editType === 'roles' && <UserRoles />}
           {editType === 'grants' && <UserGrants />}
         </div>
-      </Scrollbar>}
+      </Scrollbar>
     </Activity>
   )
 }

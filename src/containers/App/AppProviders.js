@@ -1,12 +1,10 @@
 import AppConfigProvider from '../../contexts/AppConfigProvider/Provider'
-import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import { shallowEqual, useSelector } from 'react-redux'
 import getThemeSource from '../../config/themes'
 import { createMuiTheme } from '@material-ui/core'
 import A2HSProvider from 'a2hs'
-import MomentUtils from '@date-io/moment'
 import { IntlProvider } from 'react-intl'
 import locales, { getLocaleMessages } from '../../config/locales'
 
@@ -22,11 +20,9 @@ const AppProviders = ({ appConfig, children }) => {
     <AppConfigProvider appConfig={appConfig}>
       <IntlProvider locale={locale} key={locale} messages={messages}>
         <A2HSProvider>
-          <MuiPickersUtilsProvider utils={MomentUtils}>
-            <ThemeProvider theme={theme}>
-              {children}
-            </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          <ThemeProvider theme={theme}>
+            {children}
+          </ThemeProvider>
         </A2HSProvider>
       </IntlProvider>
     </AppConfigProvider>

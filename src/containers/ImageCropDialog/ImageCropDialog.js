@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import { useTheme } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
 
-const Transition = props => <Slide direction='up' {...props} />
+const Transition = React.forwardRef((props, ref) => <Slide direction='up' {...props} ref={ref} />)
 
 const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSuccess, handleClose }) => {
   const intl = useIntl()

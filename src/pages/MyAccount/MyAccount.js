@@ -51,14 +51,15 @@ const MyAccount = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
   const firebase = useFirebase()
-  const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
-  // useFirebaseConnect({ path: '', storeAs: 'notificationTokens' })
-  // const notificationTokens = useSelector(state => state.firebase.ordered.notificationTokens)
-  // useFirebaseConnect({ path: '', storeAs: 'emailNotifications' })
-  // const emailNotifications = useSelector(state => state.firebase.ordered.emailNotifications)
+
+  const displayName = useSelector(({ firebase: { auth } }) => auth.displayName)
+  const email = useSelector(({ firebase: { auth } }) => auth.email)
+  const emailVerified = useSelector(({ firebase: { auth } }) => auth.emailVerified)
+  const photoURL = useSelector(({ firebase: { auth } }) => auth.photoURL)
+  const uid = useSelector(({ firebase: { auth } }) => auth.uid)
+  const providerData = useSelector(({ firebase: { auth } }) => auth.providerData, shallowEqual)
+
   const newUserPhoto = useSelector(state => getSimpleValue(state, 'new_user_photo', false))
-  // const notificationPermissionRequested = useSelector(state => getPersistentValue(state, 'notificationPermissionRequested', false))
-  // const notificationPermissionShown = useSelector(state => getSimpleValue(state, 'notificationPermissionShown', false))
 
   const [values, setValues] = useState({
     displayName: '',
@@ -74,16 +75,12 @@ const MyAccount = () => {
   const [errors, setErrors] = useState({})
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
 
-  // useFirebaseConnect([{ path: `notification_tokens/${auth.uid}`, storeAs: 'notificationTokens' }])
-  // useFirebaseConnect([{ path: `email_notifications/${auth.uid}`, storeAs: 'emailNotifications' }])
-
-  const { displayName, email, photoURL } = auth
   useEffect(() => {
     setValues(values => ({ ...values, displayName, email, photoURL }))
   }, [displayName, email, photoURL])
 
   const getProviderIcon = p => { if (p === 'google.com') { return <GoogleIcon /> } else { return undefined } }
-  const handleEmailVerificationsSend = () => auth.currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
+  const handleEmailVerificationsSend = () => firebase.firebase_.auth().currentUser.sendEmailVerification().then(() => alert('Verification E-Mail send'))
   const handlePhotoUploadSuccess = snapshot => {
     snapshot.ref.getDownloadURL().then(downloadURL => {
       setValues({ ...values, photoURL: downloadURL })
@@ -111,14 +108,14 @@ const MyAccount = () => {
     if (isLinkedWithProvider('password') && !values) {
       if (onSuccess && onSuccess instanceof Function) { onSuccess() }
     } else if (isLinkedWithProvider('password') && values) {
-      const credential = firebase.auth().EmailAuthProvider.credential(auth.email, values.password)
+      const credential = firebase.auth().EmailAuthProvider.credential(email, values.password)
       firebase.auth().currentUser.reauthenticateWithCredential(credential)
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
           e => { /* TODO notify user of error */ }
         )
     } else {
-      firebase.auth().currentUser.reauthenticateWithPopup(getProvider(auth.providerData[0].providerId))
+      firebase.auth().currentUser.reauthenticateWithPopup(getProvider(providerData[0].providerId))
         .then(
           () => { if (onSuccess && onSuccess instanceof Function) { onSuccess() } },
           e => { /* TODO notify user of error */ }
@@ -127,11 +124,7 @@ const MyAccount = () => {
   }
   const isLinkedWithProvider = provider => {
     try {
-      return (
-        auth &&
-        auth.providerData &&
-        auth.providerData.find(p => p.providerId === provider) !== undefined
-      )
+      return providerData.find(p => p.providerId === provider) !== undefined
     } catch (e) {
       return false
     }
@@ -150,8 +143,8 @@ const MyAccount = () => {
   }
   const submit = () => {
     const simpleChange =
-      (values.displayName && values.displayName.localeCompare(auth.displayName)) ||
-      (values.photoURL && values.photoURL.localeCompare(auth.photoURL))
+      (values.displayName && values.displayName.localeCompare(displayName)) ||
+      (values.photoURL && values.photoURL.localeCompare(photoURL))
 
     const simpleValues = {
       displayName: values.displayName,
@@ -162,7 +155,7 @@ const MyAccount = () => {
     if (simpleChange) {
       firebase.firebase_.auth().currentUser.updateProfile(simpleValues).then(
         () => {
-          firebase.ref(`users/${auth.uid}`).update(clean(simpleValues)).then(
+          firebase.ref(`users/${uid}`).update(clean(simpleValues)).then(
             () => firebase.firebase_.auth().currentUser.updateProfile(values),
             e => { /* TODO notify user of error */ }
           )
@@ -172,11 +165,11 @@ const MyAccount = () => {
     }
 
     // Change email
-    if (values.email && values.email.localeCompare(auth.email)) {
+    if (values.email && values.email.localeCompare(email)) {
       reauthenticateUser(values, () => {
         firebase.firebase_.auth().currentUser.updateEmail(values.email).then(
           () => {
-            firebase.ref(`users/${auth.uid}`).update({ email: values.email })
+            firebase.ref(`users/${uid}`).update({ email: values.email })
               .then(
                 () => firebase.firebase_.auth().currentUser.updateEmail(values.email),
                 e => { /* TODO notify user of error */ }
@@ -211,8 +204,11 @@ const MyAccount = () => {
 
   const handleDelete = async () => {
     try {
+      await Promise.all([
+        firebase.ref(`/users/${uid}`).remove(),
+        firebase.ref(`/user_roles/${uid}`).remove()
+      ])
       await firebase.firebase_.auth().currentUser.delete()
-      await firebase.ref(`/users/${auth.uid}`).remove()
       window.location.reload()
     } catch (e) {
       /* TODO notify user of error */
@@ -225,7 +221,7 @@ const MyAccount = () => {
     }
   }
   const validate = () => {
-    const providerId = auth.providerData[0].providerId
+    const providerId = providerData[0].providerId
     const errors = {}
 
     if (!values.displayName) {
@@ -236,7 +232,7 @@ const MyAccount = () => {
       errors.email = 'Required'
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
       errors.email = 'Invalid email address'
-    } else if (!values.password && providerId === 'password' && auth.email.localeCompare(values.email)) {
+    } else if (!values.password && providerId === 'password' && email.localeCompare(values.email)) {
       errors.password = 'For email change enter your password'
     }
 
@@ -259,9 +255,9 @@ const MyAccount = () => {
   const canSave = () => {
     if (Object.keys(errors).length) { return false }
 
-    if (values.displayName !== auth.displayName ||
-      values.email !== auth.email ||
-      values.photoURL !== auth.photoURL) {
+    if (values.displayName !== displayName ||
+      values.email !== email ||
+      values.photoURL !== photoURL) {
       return true
     }
 
@@ -269,57 +265,12 @@ const MyAccount = () => {
   }
 
   const handleDisableNotifications = () => {
-    firebase.ref(`disable_notifications/${auth.uid}`).set(true)
+    firebase.ref(`disable_notifications/${uid}`).set(true)
       .then(() => {
-        firebase.ref(`notification_tokens/${auth.uid}`).remove()
+        firebase.ref(`notification_tokens/${uid}`).remove()
           .then(() => dispatch(setSimpleValue('disable_notifications', false)))
       })
   }
-
-  // const requestNotificationPermission = () => {
-  //   const reengagingHours = appConfig.notificationsReengagingHours ? appConfig.notificationsReengagingHours : 48
-  //   const requestNotificationPermission = notificationPermissionRequested
-  //     ? moment().diff(notificationPermissionRequested, 'hours') > reengagingHours
-  //     : true
-  //
-  //   if (
-  //     'Notification' in window &&
-  //     window.Notification.permission !== 'granted' &&
-  //     auth.uid &&
-  //     requestNotificationPermission &&
-  //     !notificationPermissionShown
-  //   ) {
-  //     dispatch(setSimpleValue('notificationPermissionShown', true))
-  //     toast.info(
-  //       ({ closeToast }) => (
-  //         <PermissionRequestToast
-  //           closeToast={closeToast}
-  //           initializeMessaging={initializeMessaging}
-  //         />
-  //       ),
-  //       {
-  //         position: toast.POSITION.TOP_CENTER,
-  //         autoClose: false,
-  //         closeButton: false,
-  //         closeOnClick: false
-  //       }
-  //     )
-  //   }
-  // }
-
-  // const handleEnableNotificationsChange = e => {
-  //   if (!e.target.checked) {
-  //     dispatch(setSimpleValue('disable_notifications', true))
-  //   } else {
-  //     database.ref(`disable_notifications/${auth.uid}`).remove(() => {
-  //       requestNotificationPermission()
-  //       // eslint-disable-next-line no-self-assign
-  //       window.location.href = window.location.href
-  //     })
-  //   }
-  // }
-  //
-  // const handleEmailNotification = e => database.ref(`email_notifications/${auth.uid}`).set(e.target.checked)
 
   const classes = useStyles()
   const showPasswords = isLinkedWithProvider('password')
@@ -330,7 +281,7 @@ const MyAccount = () => {
       iconStyleRight={{ width: '50%' }}
       appBarContent={
         <div style={{ display: 'flex' }}>
-          {auth.uid && (
+          {uid && (
             <IconButton
               color='inherit'
               disabled={!canSave()}
@@ -341,7 +292,7 @@ const MyAccount = () => {
             </IconButton>
           )}
 
-          {auth.uid && (
+          {uid && (
             <IconButton
               color='inherit' aria-label='open drawer'
               onClick={() => dispatch(setSimpleValue('delete_user', true))}
@@ -354,12 +305,12 @@ const MyAccount = () => {
       title={intl.formatMessage({ id: 'my_account' })}
     >
       <div>
-        {auth.uid && (
+        {uid && (
           <div style={{ margin: 15, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {values.photoURL && (
                 <Avatar
-                  alt={auth.displayName}
+                  alt={displayName}
                   src={values.photoURL}
                   className={classNames(classes.avatar, classes.bigAvatar)}
                 />
@@ -394,33 +345,6 @@ const MyAccount = () => {
                     return <div key={i} />
                   }
                 })}
-              </div>
-
-              <div>
-                {/* <FormGroup row> */}
-                {/*  <FormControlLabel */}
-                {/*    control={ */}
-                {/*      <Switch */}
-                {/*        checked={notificationTokens.length > 0} */}
-                {/*        onChange={handleEnableNotificationsChange} */}
-                {/*        value='pushNotifiction' */}
-                {/*      /> */}
-                {/*    } */}
-                {/*    label={intl.formatMessage({ id: 'notifications' })} */}
-                {/*  /> */}
-                {/* </FormGroup> */}
-                {/* <FormGroup row> */}
-                {/*  <FormControlLabel */}
-                {/*    control={ */}
-                {/*      <Switch */}
-                {/*        checked={emailNotifications === true} */}
-                {/*        onChange={handleEmailNotification} */}
-                {/*        value='emailNotifications' */}
-                {/*      /> */}
-                {/*    } */}
-                {/*    label={intl.formatMessage({ id: 'email_notifications' })} */}
-                {/*  /> */}
-                {/* </FormGroup> */}
               </div>
             </div>
 
@@ -460,10 +384,10 @@ const MyAccount = () => {
                     <InputAdornment position='end'>
                       <IconButton
                         aria-label='Toggle password visibility'
-                        onClick={auth.emailVerified === true ? undefined : handleEmailVerificationsSend}
+                        onClick={emailVerified === true ? undefined : handleEmailVerificationsSend}
                       >
-                        {auth.emailVerified && <VerifiedUser color='primary' />}
-                        {!auth.emailVerified && <Error color='secondary' />}
+                        {emailVerified && <VerifiedUser color='primary' />}
+                        {!emailVerified && <Error color='secondary' />}
                       </IconButton>
                     </InputAdornment>
                   }
@@ -578,7 +502,7 @@ const MyAccount = () => {
         />
 
         <ImageCropDialog
-          path={`users/${auth.uid}`}
+          path={`users/${uid}`}
           fileName='photoURL'
           onUploadSuccess={s => handlePhotoUploadSuccess(s)}
           open={isPhotoDialogOpen}
