@@ -1,8 +1,9 @@
 import { ReactReduxFirebaseProvider } from 'react-redux-firebase'
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import firebase from '../../config/firebaseInit'
 
-export const FirebaseProvider = ({ firebase, children }) => {
+const FirebaseProvider = ({ children }) => {
   const dispatch = useDispatch()
   return (
     <ReactReduxFirebaseProvider
@@ -14,3 +15,5 @@ export const FirebaseProvider = ({ firebase, children }) => {
     </ReactReduxFirebaseProvider>
   )
 }
+
+export default FirebaseProvider

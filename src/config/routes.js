@@ -1,18 +1,14 @@
 /* eslint-disable react/jsx-key */
-import React from 'react'
+import React, { lazy } from 'react'
 import RestrictedRoute from '../containers/RestrictedRoute'
-import makeLoadable from '../containers/MyLoadable'
 
-const MyLoadable = (opts, preloadComponents) =>
-  makeLoadable({ ...opts, firebase: () => import('./firebaseInit') }, preloadComponents)
-
-const AsyncWorkspace = MyLoadable({ loader: () => import('../pages/Workspace') })
-const AsyncWebstore = MyLoadable({ loader: () => import('../pages/Webstore') })
+const Workspace = lazy(() => import('../pages/Workspace'))
+const WebStore = lazy(() => import('../pages/WebStore'))
 
 const routes = [
-  <RestrictedRoute type='private' path='/' exact component={AsyncWorkspace} />,
-  <RestrictedRoute type='private' path='/workspace' exact component={AsyncWorkspace} />,
-  <RestrictedRoute type='private' path='/webstore' exact component={AsyncWebstore} />
+  <RestrictedRoute type='private' path='/' exact component={Workspace} />,
+  <RestrictedRoute type='private' path='/workspace' exact component={Workspace} />,
+  <RestrictedRoute type='private' path='/webstore' exact component={WebStore} />
 ]
 
 export default routes

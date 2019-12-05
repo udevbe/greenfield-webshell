@@ -66,7 +66,7 @@ const cards = [
 
 const appsListBatchSize = 18
 
-const Webstore = () => {
+const WebStore = () => {
   const intl = useIntl()
   const [scrollPos, setScrollPos] = useState(appsListBatchSize)
 
@@ -135,6 +135,6 @@ const Webstore = () => {
   )
 }
 
-Webstore.propTypes = {}
+WebStore.propTypes = {}
 
-export default Webstore
+export default WebStore

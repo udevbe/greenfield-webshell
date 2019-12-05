@@ -9,18 +9,6 @@ let installPromptShowed = false
 
 // TODO use A2HS with hooks/different lib
 const Root = ({ deferredPrompt, isAppInstallable, isAppInstalled }) => {
-  // const userData = {
-  //   displayName: user.displayName ? user.displayName : 'UserName',
-  //   email: user.email ? user.email : ' ',
-  //   photoURL: user.photoURL,
-  //   emailVerified: user.emailVerified,
-  //   isAnonymous: user.isAnonymous,
-  //   uid: user.uid,
-  //   providerData: user.providerData
-  // }
-  // TODO add chat/messaging
-  // initializeMessaging({ ...props, ...actions, initMessaging, firebaseApp, history, auth: userData }, true)
-
   const loaded = useSelector(({ firebase }) => isLoaded(firebase.auth))
 
   if (loaded) {
