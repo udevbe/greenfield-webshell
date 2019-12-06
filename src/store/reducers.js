@@ -6,6 +6,7 @@ import simpleValues from './simpleValues/reducer'
 import themeSource from './themeSource/reducer'
 import drawer from './drawer/reducer'
 import { combineReducers } from 'redux'
+import addToHomeScreen from './addToHomeScreen/reducer'
 
 export const appReducers = {
   firebase,
@@ -14,7 +15,8 @@ export const appReducers = {
   persistentValues,
   simpleValues,
   drawer,
-  themeSource
+  themeSource,
+  addToHomeScreen
 }
 
 const rootReducer = combineReducers(appReducers)

@@ -1,0 +1,4 @@
+const namespace = 'ADD_TO_HOMESCREEN'
+
+export const ON_SAVE_INSTALL_PROPOSAL_EVENT = `${namespace}@ON_SAVE_INSTALL_PROPOSAL_EVENT`
+export const ON_PROMPT_TO_ADD_TO_HOME_SCREEN = `${namespace}@ON_PROMPT_TO_ADD_TO_HOME_SCREEN`

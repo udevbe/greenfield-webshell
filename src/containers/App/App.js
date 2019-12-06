@@ -21,6 +21,13 @@ const App = () => {
       <AppProviders appConfig={config}>
         <CssBaseline />
         <Helmet>
+          <html lang='en' />
+          <meta
+            name='Description'
+            content='Greenfield. A fully distributed cloud desktop. Run applications remotely from physically different machines, or run them directly inside your browser. All at the same time.'
+          />
+          <meta name='theme-color' content='#dcdcdc' />
+          <link rel='manifest' href='/manifest.json' />
           <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
         </Helmet>
         <Router history={history}>

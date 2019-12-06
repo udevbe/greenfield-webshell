@@ -18,7 +18,7 @@ import { useIntl } from 'react-intl'
 import { useIsAuthenticated, useIsGranted } from '../utils/auth'
 
 // TODO get all args from hooks
-export const useMenuItems = (deferredPrompt, isAppInstallable, isAppInstalled, handleSignOut) => {
+export const useMenuItems = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
@@ -26,6 +26,7 @@ export const useMenuItems = (deferredPrompt, isAppInstallable, isAppInstalled, h
   const themeId = useSelector(({ themeSource: { themeId } }) => themeId)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const isGranted = useIsGranted('administration', 'read_users', 'read_roles')
+  const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
 
   const themeItems = themes.map(t => {
     return {
@@ -125,8 +126,8 @@ export const useMenuItems = (deferredPrompt, isAppInstallable, isAppInstalled, h
       ]
     },
     {
-      visible: isAppInstallable && !isAppInstalled,
-      onClick: () => deferredPrompt.prompt(),
+      visible: !!addToHomeScreenProposalEvent,
+      onClick: () => addToHomeScreenProposalEvent.prompt(),
       primaryText: intl.formatMessage({ id: 'install' }),
       leftIcon: <VerticalAlignBottomIcon />
     }
