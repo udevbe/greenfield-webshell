@@ -3,17 +3,38 @@ import AltIconAvatar from '../../components/AltIconAvatar'
 import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
-import { shallowEqual, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
+import { useFirebase } from 'react-redux-firebase'
+import { useRoles, useRolesLoading, useUserRoleEnabled } from '../../utils/auth'
 
-const UserRoles = () => {
+const UserRoleItem = ({ uid, roleEntry, handleRoleToggleChange }) => {
+  const roleId = roleEntry.key
+  const { description, name } = roleEntry.value
+  const hasUserRole = useUserRoleEnabled(uid, roleId)
+
+  return (
+    <div key={roleId}>
+      <ListItem key={roleId} id={roleId}>
+        <AltIconAvatar icon={<AccountBox />} />
+        <ListItemText primary={name} secondary={description} />
+        <ListItemSecondaryAction>
+          <Switch
+            checked={hasUserRole}
+            onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, roleId)}
+          />
+        </ListItemSecondaryAction>
+      </ListItem>
+      <Divider variant='inset' />
+    </div>
+  )
+}
+
+const UserRoles = ({ setIsLoading }) => {
   const { uid } = useParams()
   const firebase = useFirebase()
-  useFirebaseConnect([{ path: '/roles' }])
-  useFirebaseConnect([{ path: `/user_roles/${uid}` }])
-  const roles = useSelector(state => state.firebase.ordered.roles)
-  const allUsersRoles = useSelector(state => state.firebase.data.user_roles ? (state.firebase.data.user_roles[uid] || {}) : {}, shallowEqual)
+  const roles = useRoles()
+  const rolesIsLoading = useRolesLoading()
+  setIsLoading(rolesIsLoading)
 
   const handleRoleToggleChange = (e, isInputChecked, key) => {
     if (isInputChecked) {
@@ -23,33 +44,18 @@ const UserRoles = () => {
     }
   }
 
-  const renderRoleItem = i => {
-    const key = roles[i].key
-    const val = roles[i].value
-    const hasUserRole = allUsersRoles[key] || false
-
-    return (
-      <div key={key}>
-        <ListItem key={i} id={i}>
-          <AltIconAvatar icon={<AccountBox />} />
-          <ListItemText primary={val.name} secondary={val.description} />
-          <ListItemSecondaryAction>
-            <Switch
-              checked={hasUserRole}
-              onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, key)}
-            />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <Divider variant='inset' />
-      </div>
-    )
-  }
-
   return (
     <div style={{ height: '100%' }}>
       <List style={{ height: '100%' }}>
         <ReactList
-          itemRenderer={renderRoleItem}
+          itemRenderer={
+            idx => (
+              <UserRoleItem
+                roleEntry={roles[idx]} uid={uid}
+                handleRoleToggleChange={handleRoleToggleChange}
+              />
+            )
+          }
           length={roles ? roles.length : 0}
           type='simple'
         />

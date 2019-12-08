@@ -15,17 +15,19 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateTheme } from '../store/themeSource/actions'
 import { updateLocale } from '../store/locale/actions'
 import { useIntl } from 'react-intl'
-import { useIsAuthenticated, useIsGranted } from '../utils/auth'
+import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
 
 // TODO get all args from hooks
 export const useMenuItems = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
+  const uid = useUserId()
+  const webstoreAccess = useGrant(uid, 'read web store applications')
   const locale = useSelector(({ locale }) => locale)
   const themeId = useSelector(({ themeSource: { themeId } }) => themeId)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
-  const isGranted = useIsGranted('administration', 'read_users', 'read_roles')
+  const isAdmin = useIsAdmin(useUserId())
   const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
 
   const themeItems = themes.map(t => {
@@ -73,27 +75,27 @@ export const useMenuItems = (handleSignOut) => {
       value: '/workspace'
     },
     {
-      visible: authorised,
+      visible: authorised && webstoreAccess,
       primaryText: intl.formatMessage({ id: 'webstore' }),
       primaryTogglesNestedList: false,
       leftIcon: <PublicIcon />,
       value: '/webstore'
     },
     {
-      visible: authorised, // In prod: isGranted['administration'],
+      visible: isAdmin,
       primaryTogglesNestedList: true,
       primaryText: intl.formatMessage({ id: 'administration' }),
       leftIcon: <Security />,
       nestedItems: [
         {
           value: '/users',
-          visible: authorised, // In prod: isGranted['read_users'],
+          visible: isAdmin,
           primaryText: intl.formatMessage({ id: 'users' }),
           leftIcon: <GroupIcon />
         },
         {
           value: '/roles',
-          visible: isGranted.read_roles,
+          visible: isAdmin,
           primaryText: intl.formatMessage({ id: 'roles' }),
           leftIcon: <AccountBoxIcon />
         }

@@ -1,20 +1,18 @@
 import AccountBox from '@material-ui/icons/AccountBox'
 import Activity from '../../containers/Activity'
 import AppBar from '@material-ui/core/AppBar'
-import Lock from '@material-ui/icons/Lock'
 import Person from '@material-ui/icons/Person'
-import React from 'react'
+import React, { useState } from 'react'
 import Scrollbar from '../../components/Scrollbar'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import UserForm from '../../components/Forms/UserForm'
-import UserGrants from '../../containers/Users/UserGrants'
 import UserRoles from '../../containers/Users/UserRoles'
-import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
-import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
+import { useFirebase } from 'react-redux-firebase'
+import { useIsAdmin, useIsAdminLoading } from '../../utils/auth'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,16 +36,9 @@ export const User = () => {
   const history = useHistory()
   const intl = useIntl()
   const firebase = useFirebase()
-
-  useFirebaseConnect([{ path: `admins/${uid}` }])
-  useFirebaseConnect([{ path: 'user_roles' }])
-  useFirebaseConnect([{ path: 'user_grants' }])
-
-  const isAdmin = useSelector(state => state.firebase.data.admins ? state.firebase.data.admins[uid] || false : false)
-  const userRoles = useSelector(state => state.firebase.ordered.user_roles || [])
-  const userGrants = useSelector(state => state.firebase.ordered.user_grants || [])
-
-  const dataLoaded = isLoaded(userRoles) && isLoaded(userGrants)
+  const isAdmin = useIsAdmin(uid)
+  const loading = useIsAdminLoading(uid)
+  const [isLoading, setIsLoading] = useState(loading)
 
   const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
 
@@ -62,7 +53,7 @@ export const User = () => {
   const classes = useStyles()
   return (
     <Activity
-      isLoading={!dataLoaded}
+      isLoading={isLoading}
       onBackClick={() => history.push('/users')}
       title={intl.formatMessage({ id: 'edit_user' })}
     >
@@ -72,7 +63,6 @@ export const User = () => {
             <Tabs value={editType || 'data'} onChange={handleTabActive} fullWidth centered>
               <Tab value='profile' icon={<Person className='material-icons' />} />
               <Tab value='roles' icon={<AccountBox className='material-icons' />} />
-              <Tab value='grants' icon={<Lock className='material-icons' />} />
             </Tabs>
           </AppBar>
 
@@ -85,8 +75,7 @@ export const User = () => {
               />
             </div>
           )}
-          {editType === 'roles' && <UserRoles />}
-          {editType === 'grants' && <UserGrants />}
+          {editType === 'roles' && <UserRoles setIsLoading={setIsLoading} />}
         </div>
       </Scrollbar>
     </Activity>
