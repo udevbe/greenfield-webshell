@@ -39,7 +39,7 @@ const UserForm = ({ handleAdminChange, isAdmin, uid }) => {
   const appConfig = useAppConfig()
   const intl = useIntl()
 
-  useFirebaseConnect([{ path: `users/${uid}` }])
+  useFirebaseConnect([{ path: `/users/${uid}` }])
   const user = useSelector(({ firebase }) => firebase.data.users && firebase.data.users[uid], shallowEqual)
 
   const isLinkedWithProvider = provider => {

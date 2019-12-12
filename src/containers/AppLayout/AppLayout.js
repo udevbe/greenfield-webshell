@@ -1,4 +1,3 @@
-import 'react-toastify/dist/ReactToastify.css'
 import Drawer from '../../containers/Drawer'
 import React from 'react'
 import Routes from '../../containers/Routes'

@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 
-const Transition = props => <Slide direction='up' {...props} />
+const Transition = React.forwardRef((props, ref) => <Slide direction='up' {...props} ref={ref} />)
 
 const DeleteDialog = ({ name, fullScreen, handleDelete }) => {
   const intl = useIntl()

@@ -4,7 +4,6 @@ import React from 'react'
 import { shallowEqual, useSelector } from 'react-redux'
 import getThemeSource from '../../config/themes'
 import { createMuiTheme } from '@material-ui/core'
-import A2HSProvider from 'a2hs'
 import { IntlProvider } from 'react-intl'
 import locales, { getLocaleMessages } from '../../config/locales'
 
@@ -19,11 +18,9 @@ const AppProviders = ({ appConfig, children }) => {
   return (
     <AppConfigProvider appConfig={appConfig}>
       <IntlProvider locale={locale} key={locale} messages={messages}>
-        <A2HSProvider>
-          <ThemeProvider theme={theme}>
-            {children}
-          </ThemeProvider>
-        </A2HSProvider>
+        <ThemeProvider theme={theme}>
+          {children}
+        </ThemeProvider>
       </IntlProvider>
     </AppConfigProvider>
   )

@@ -13,7 +13,7 @@ import { useIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues/actions'
 import getSimpleValue from '../../store/simpleValues/selectors'
 
-const Transition = props => <Slide direction='up' {...props} />
+const Transition = React.forwardRef((props, ref) => <Slide direction='up' {...props} ref={ref} />)
 
 const QuestionDialog = ({ name, handleAction, fullScreen, title = '', message = '', action = '' }) => {
   const intl = useIntl()

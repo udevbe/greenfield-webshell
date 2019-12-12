@@ -3,31 +3,30 @@ import Scrollbar from '../../components/Scrollbar'
 import SelectableMenuList from '../../containers/SelectableMenuList'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { useHistory, useParams } from 'react-router-dom'
-import { useDispatch, useSelector, useStore } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useFirebase } from 'react-redux-firebase'
 import { setDrawerMobileOpen } from '../../store/drawer/actions'
-import { withA2HS } from 'a2hs'
+import { useUserId } from '../../utils/auth'
 
-// TODO get rid of a2hs and replace it with something better
-export const DrawerContent = ({ deferredPrompt, isAppInstallable, isAppInstalled }) => {
+export const DrawerContent = () => {
   const appConfig = useAppConfig()
   const firebase = useFirebase()
-  const uid = useStore().getState().firebase.auth.uid
+  const uid = useUserId()
   const dispatch = useDispatch()
   const history = useHistory()
   const drawer = useSelector(({ drawer }) => drawer)
   const params = useParams()
 
   const handleSignOut = async () => {
-    await firebase.ref(`users/${uid}/connections`).remove()
+    await firebase.ref(`/users/${uid}/connections`).remove()
     // TODO get messaging working
     // await database.ref(`users/${profile.uid}/notificationTokens/${messaging.token}`).remove()
     // TODO use firebase' build in user meta data functionality
-    await firebase.ref(`users/${uid}/lastOnline`).set(new Date())
+    await firebase.ref(`/users/${uid}/lastOnline`).set(new Date())
     await firebase.logout()
     window.location.reload()
   }
-  const menuItems = appConfig.useMenuItems(deferredPrompt, isAppInstallable, isAppInstalled, handleSignOut)
+  const menuItems = appConfig.useMenuItems(handleSignOut)
 
   const handleChange = (event, index) => {
     if (index !== undefined) {
@@ -59,4 +58,4 @@ export const DrawerContent = ({ deferredPrompt, isAppInstallable, isAppInstalled
   )
 }
 
-export default withA2HS(DrawerContent)
+export default DrawerContent

@@ -30,6 +30,11 @@ export function useUserRolesLoading (uid) {
   return useSelector(state => state.firebase.requesting[`user_roles/${uid}`])
 }
 
+/**
+ * @param {string}uid
+ * @param {string}roleId
+ * @return {boolean}
+ */
 export function useUserRoleEnabled (uid, roleId) {
   useFirebaseConnect([{ path: `user_roles/${uid}/${roleId}` }])
   return useSelector(state => {
@@ -50,10 +55,25 @@ export function useRoles () {
   return useSelector(state => state.firebase.ordered.roles || [])
 }
 
+/**
+ * @return {boolean}
+ */
 export function useRolesLoading () {
   return useSelector(state => state.firebase.requesting['/roles'])
 }
 
+/**
+ * @return {boolean}
+ */
+export function useUserIsAnonymous () {
+  return useSelector(({ firebase }) => firebase.auth.isAnonymous)
+}
+
+/**
+ * @param {string}uid
+ * @param {boolean}grant
+ * @return {boolean}
+ */
 export function useGrant (uid, grant) {
   useFirebaseConnect([{ path: '/role_grants' }])
   useFirebaseConnect([{ path: `/user_roles/${uid}` }])
@@ -75,6 +95,9 @@ export function useGrant (uid, grant) {
   })
 }
 
+/**
+ * @return {boolean}
+ */
 export function useIsAuthenticated () {
   return useSelector(({ firebase: { auth } }) => isLoaded(auth) && !isEmpty(auth))
 }

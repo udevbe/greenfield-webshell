@@ -1,6 +1,5 @@
 import AppLayout from '../../containers/AppLayout'
 import React, { useEffect } from 'react'
-import { withA2HS } from 'a2hs'
 import { useDispatch, useSelector } from 'react-redux'
 import { isLoaded } from 'react-redux-firebase'
 import LoadingComponent from '../../components/LoadingComponent'
@@ -30,4 +29,4 @@ const Root = () => {
   }
 }
 
-export default withA2HS(Root)
+export default Root

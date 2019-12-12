@@ -37,8 +37,8 @@ const config = {
     measurementId: 'G-84RFF1PNSR'
   },
   firebase_providers: [
-    'google.com',
     'password',
+    'google.com',
     'anonymous'
   ],
   drawer_width: 240,
@@ -48,20 +48,7 @@ const config = {
   locales,
   themes,
   grants,
-  routes,
-  notificationsReengagingHours: 48,
-  firebaseLoader: () => import('./firebaseInit'),
-  getNotifications: (notification, history) => {
-    return {
-      chat: {
-        path: 'chats',
-        autoClose: 5000,
-        // getNotification: () => <div>YOUR CUSTOM NOTIFICATION COMPONENT</div>,
-        onClick: () => history.push('/chats'),
-        ...notification
-      }
-    }
-  }
+  routes
 }
 
 export default config
