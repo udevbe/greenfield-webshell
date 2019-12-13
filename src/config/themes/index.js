@@ -77,7 +77,8 @@ const getThemeSource = (t, ts) => {
         return createMuiTheme({
           ...source,
           typography: {
-            useNextVariants: true
+            useNextVariants: true,
+            fontSize: 12
           },
           palette: { ...palette }
         })

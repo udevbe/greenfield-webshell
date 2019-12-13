@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 
-export const Roles = () => {
+export const Roles = React.memo(() => {
   const history = useHistory()
   const intl = useIntl()
   const firebase = useFirebase()
@@ -63,7 +63,7 @@ export const Roles = () => {
       </div>
     </Activity>
   )
-}
+})
 
 Roles.propTypes = {}
 

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { isLoaded } from 'react-redux-firebase'
 import LoadingComponent from '../../components/LoadingComponent'
 import { saveInstallProposalEvent } from '../../store/addToHomeScreen/actions'
+import Fade from '@material-ui/core/Fade'
 
 // TODO use A2HS with hooks/different lib
 const Root = () => {
@@ -20,9 +21,11 @@ const Root = () => {
 
   if (loaded) {
     return (
-      <div>
-        <AppLayout />
-      </div>
+      <Fade in timeout={300}>
+        <div>
+          <AppLayout />
+        </div>
+      </Fade>
     )
   } else {
     return <LoadingComponent />

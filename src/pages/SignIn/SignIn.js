@@ -7,6 +7,7 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { isEmpty, isLoaded, useFirebase } from 'react-redux-firebase'
 import { Redirect } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent'
+import Fade from '@material-ui/core/Fade'
 
 const useStyles = makeStyles({
   wrap: {
@@ -52,7 +53,7 @@ function updateUserPublicData (firebase, auth) {
   firebase.ref(`users/${auth.uid}`).update(publicUserData)
 }
 
-const SignIn = () => {
+const SignIn = React.memo(() => {
   const firebase = useFirebase()
   const classes = useStyles()
   const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
@@ -62,15 +63,17 @@ const SignIn = () => {
 
   if (isEmpty(auth)) {
     return (
-      <div className={classes.wrap}>
-        <div className={classes.text}>
-          <Logo />
-          <Typography variant='h6' color='textSecondary' noWrap>
+      <Fade in timeout={500}>
+        <div className={classes.wrap}>
+          <div className={classes.text}>
+            <Logo />
+            <Typography variant='h6' color='textSecondary' noWrap>
               The Cloud Desktop
-          </Typography>
-          <AuthUI />
+            </Typography>
+            <AuthUI />
+          </div>
         </div>
-      </div>
+      </Fade>
     )
   } else {
     updateUserOnlineStatus(firebase, auth)
@@ -78,7 +81,7 @@ const SignIn = () => {
     // TODO redirect to wherever we came from based on redirect state we received
     return <Redirect to='/' />
   }
-}
+})
 
 SignIn.propTypes = {}
 

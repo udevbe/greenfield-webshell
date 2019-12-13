@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const DrawerHeader = () => {
+export const DrawerHeader = React.memo(() => {
   const intl = useIntl()
   const dispatch = useDispatch()
   const isAuthorized = useIsAuthenticated()
@@ -134,6 +134,6 @@ export const DrawerHeader = () => {
       )}
     </Paper>
   )
-}
+})
 
 export default DrawerHeader

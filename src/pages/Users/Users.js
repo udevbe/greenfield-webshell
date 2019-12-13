@@ -9,7 +9,6 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Email from '@material-ui/icons/Email'
 import OfflinePin from '@material-ui/icons/OfflinePin'
 import Person from '@material-ui/icons/Person'
-import Phone from '@material-ui/icons/Phone'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
@@ -19,7 +18,7 @@ import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { isLoaded, useFirebaseConnect } from 'react-redux-firebase'
 
-const Users = () => {
+const Users = React.memo(() => {
   const { select } = useParams()
   const isSelecting = select || false
   const history = useHistory()
@@ -33,8 +32,6 @@ const Users = () => {
     switch (provider.providerId) {
       case 'google.com':
         return <GoogleIcon color={color} />
-      case 'phone':
-        return <Phone color={color} />
       case 'password':
         return <Email color={color} />
       default:
@@ -89,7 +86,7 @@ const Users = () => {
       </div>
     </Activity>
   )
-}
+})
 
 Users.propTypes = {}
 

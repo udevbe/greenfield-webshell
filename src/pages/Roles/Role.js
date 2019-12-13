@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 const emptyValues = { name: '', description: '' }
 
 // TODO use redux-form?
-export const Role = () => {
+export const Role = React.memo(() => {
   const intl = useIntl()
   const history = useHistory()
   const dispatch = useDispatch()
@@ -207,6 +207,6 @@ export const Role = () => {
       </Dialog>
     </Activity>
   )
-}
+})
 
 export default Role

@@ -3,18 +3,26 @@ import Scrollbar from '../../components/Scrollbar'
 import SelectableMenuList from '../../containers/SelectableMenuList'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { useHistory, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useFirebase } from 'react-redux-firebase'
 import { setDrawerMobileOpen } from '../../store/drawer/actions'
 import { useUserId } from '../../utils/auth'
 
-export const DrawerContent = () => {
+export const DrawerContent = React.memo(() => {
   const appConfig = useAppConfig()
   const firebase = useFirebase()
   const uid = useUserId()
   const dispatch = useDispatch()
   const history = useHistory()
-  const drawer = useSelector(({ drawer }) => drawer)
+  const {
+    open,
+    mobileOpen,
+    useMinified
+  } = useSelector(({ drawer: { open, mobileOpen, useMinified } }) => ({
+    open,
+    mobileOpen,
+    useMinified
+  }), shallowEqual)
   const params = useParams()
 
   const handleSignOut = async () => {
@@ -29,7 +37,7 @@ export const DrawerContent = () => {
   const menuItems = appConfig.useMenuItems(handleSignOut)
 
   const handleChange = (event, index) => {
-    if (index !== undefined) {
+    if (index !== undefined && mobileOpen) {
       dispatch(setDrawerMobileOpen(false))
     }
 
@@ -51,11 +59,11 @@ export const DrawerContent = () => {
           items={menuItems}
           onIndexChange={handleChange}
           index={params.path ? params.path : '/'}
-          useMinified={drawer.useMinified && !drawer.open}
+          useMinified={useMinified && !open}
         />
       </Scrollbar>
     </div>
   )
-}
+})
 
 export default DrawerContent

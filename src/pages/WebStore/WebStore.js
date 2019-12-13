@@ -4,15 +4,13 @@ import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
-import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
 import { makeStyles } from '@material-ui/core/styles'
 import InfiniteScroll from 'react-infinite-scroller'
-import { useFirebaseConnect } from 'react-redux-firebase'
-import { useSelector } from 'react-redux'
+import Grow from '@material-ui/core/Grow'
+import CardMedia from '@material-ui/core/CardMedia'
+import Image from '../../components/Image'
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -29,26 +27,26 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8)
   },
-  card: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  cardMedia: {
-    paddingTop: '56.25%' // 16:9
-  },
-  cardContent: {
-    flexGrow: 1
-  },
   footer: {
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6)
   }
 }))
 
+const useWebAppTileStyles = makeStyles(theme => ({
+  card: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  cardContent: {
+    flexGrow: 1
+  }
+}))
+
 const cards = [
   {
-    key: 1,
+    appId: 1,
     val: {
       media: `https://source.unsplash.com/random?sig=${Math.random()}`,
       name: 'Super Awesome App',
@@ -57,55 +55,64 @@ const cards = [
         en: 'WebApp intro. Describes what it does and how and why you should use it.'
       }
     }
-  }, { key: 2, val: null }, { key: 3, val: null }, { key: 4, val: null }, { key: 5, val: null },
-  { key: 6, val: null }, { key: 7, val: null }, { key: 8, val: null }, { key: 9, val: null }, { key: 10, val: null },
-  { key: 11, val: null }, { key: 12, val: null }, { key: 13, val: null }, { key: 14, val: null },
-  { key: 15, val: null }, { key: 16, val: null }, { key: 17, val: null }, { key: 18, val: null },
-  { key: 19, val: null }, { key: 20, val: null }
+  },
+  { appId: 2, val: null }, { appId: 3, val: null }, { appId: 4, val: null }, { appId: 5, val: null },
+  { appId: 6, val: null }, { appId: 7, val: null }, { appId: 8, val: null }, { appId: 9, val: null },
+  { appId: 10, val: null }, { appId: 11, val: null }, { appId: 12, val: null }, { appId: 13, val: null },
+  { appId: 14, val: null }, { appId: 15, val: null }, { appId: 16, val: null }, { appId: 17, val: null },
+  { appId: 18, val: null }, { appId: 19, val: null }, { appId: 20, val: null }, { appId: 21, val: null },
+  { appId: 22, val: null }, { appId: 23, val: null }, { appId: 24, val: null }, { appId: 25, val: null },
+  { appId: 26, val: null }, { appId: 27, val: null }, { appId: 28, val: null }, { appId: 29, val: null },
+  { appId: 30, val: null }, { appId: 31, val: null }, { appId: 32, val: null }
 ]
 
-const appsListBatchSize = 18
+const appsListBatchSize = 10
 
-const WebStore = () => {
-  const intl = useIntl()
-  const [scrollPos, setScrollPos] = useState(appsListBatchSize)
-
-  useFirebaseConnect([{ path: 'apps', storeAs: 'apps' }])
-  const apps = useSelector(state => state.firebase.ordered.apps)
-
-  const classes = useStyles()
-  const appsList = cards.slice(0, Math.min(cards.length, scrollPos)).map(({ key, val }) => {
-    return (
-      <Grid item key={key} xs={12} sm={6} md={4} lg={3} xl={2}>
+const WebAppTile = ({ appId, index }) => {
+  const classes = useWebAppTileStyles()
+  return (
+    <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
+      <Grid item xs={6} sm={4} md={3} lg={2} xl={1}>
         <Card className={classes.card}>
           <CardMedia
             className={classes.cardMedia}
-            image={`https://source.unsplash.com/random?sig=${key}`}
             title='Image title'
-          />
+          >
+            <Image src={`https://source.unsplash.com/random?sig=${appId}`} />
+          </CardMedia>
           <CardContent className={classes.cardContent}>
-            <Typography gutterBottom variant='h5' component='h2'>
-                      Heading
+            <Typography gutterBottom variant='h6' align='center'>
+                      Application title
             </Typography>
-            <Typography>
-              WebApp intro. Describes what it does and how and why you should use it.
+            <Typography gutterBottom vaiant='caption' align='center'>
+                      Short Application description
             </Typography>
           </CardContent>
-          <CardActions>
-            <Button size='small' color='primary'>
-                      Launch
-            </Button>
-            <Button size='small' color='primary'>
-                      Add
-            </Button>
-            <Button size='small' color='primary'>
-                      More
-            </Button>
-          </CardActions>
+          {/*<CardActions>*/}
+          {/*  <Button size='small' color='primary'>*/}
+          {/*            Try*/}
+          {/*  </Button>*/}
+          {/*  <Button size='small' color='primary'>*/}
+          {/*            Add*/}
+          {/*  </Button>*/}
+          {/*</CardActions>*/}
         </Card>
       </Grid>
-    )
-  })
+    </Grow>
+  )
+}
+
+const WebStore = () => {
+  const intl = useIntl()
+  const [webApps, setWebApps] = useState([])
+
+  const classes = useStyles()
+
+  const loadMoreApps = () => {
+    const additionalApps = cards.slice(webApps.length, Math.min(cards.length, webApps.length + appsListBatchSize)).map(({ appId, val }, index) =>
+      (<WebAppTile appId={appId} key={appId} index={index} />))
+    setWebApps([...webApps, ...additionalApps])
+  }
 
   const mainRef = useRef(null)
   return (
@@ -122,12 +129,12 @@ const WebStore = () => {
           useWindow={false}
           getScrollParent={() => mainRef.current}
           pageStart={0}
-          loadMore={() => { setScrollPos(scrollPos + appsListBatchSize) }}
-          hasMore={apps ? (apps.length > scrollPos) : false}
+          loadMore={loadMoreApps}
+          hasMore={webApps.length !== cards.length}
           loader={<div className='loader' key={0}>Loading ...</div>}
         >
           <Grid container spacing={4}>
-            {appsList}
+            {webApps}
           </Grid>
         </InfiniteScroll>
       </Container>

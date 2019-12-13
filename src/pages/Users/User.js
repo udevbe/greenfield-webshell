@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const User = () => {
+export const User = React.memo(() => {
   const { uid, editType } = useParams()
   const history = useHistory()
   const intl = useIntl()
@@ -80,7 +80,7 @@ export const User = () => {
       </Scrollbar>
     </Activity>
   )
-}
+})
 
 User.propTypes = {}
 

@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import UserApplications from '../../containers/UserAppsMenu/UserApplications'
 
-const Workspace = () => {
+const Workspace = React.memo(() => {
   const intl = useIntl()
 
   return (
@@ -16,7 +16,7 @@ const Workspace = () => {
       }
     />
   )
-}
+})
 
 Workspace.propTypes = {}
 
