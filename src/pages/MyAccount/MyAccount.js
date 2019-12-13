@@ -16,8 +16,10 @@ import IconButton from '@material-ui/core/IconButton'
 import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import InputLabel from '@material-ui/core/InputLabel'
+import Typography from '@material-ui/core/Typography'
 
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import classNames from 'classnames'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
@@ -96,15 +98,17 @@ const MyAccount = React.memo(() => {
         if (poller && emailVerified) {
           clearInterval(poller)
           poller = 0
-        } else {
+        } else if (!emailVerified) {
           firebase.reloadAuth()
         }
-      }, 5000)
+      }, 3000)
     } catch (e) {
-      /* TODO notify user of error */
+      // TODO error in sentry.io
+      // TODO intl
+      toast.error(<Typography variant='body1'>Could not send E-Mail. Try again later.</Typography>)
       throw e
     }
-    alert('Verification E-Mail send')
+    toast.info(<Typography variant='body1'>Verification E-Mail send</Typography>)
   }
   const handlePhotoUploadSuccess = async snapshot => {
     const downloadURL = await snapshot.ref.getDownloadURL()
@@ -166,11 +170,13 @@ const MyAccount = React.memo(() => {
           await firebase.updateEmail(values.email)
           await firebase.reloadAuth()
         } catch (e) {
-          /* TODO notify user of error */
           if (e.code === 'auth/requires-recent-login') {
-            await firebase.logout()
-            alert('Please sign in again to change your email.')
-            window.location.reload()
+            // TODO intl
+            toast.error(
+              <Typography variant='body1'>
+                Authentication error. Log out and in again to change your email.
+              </Typography>
+            )
           }
         }
       })
@@ -186,9 +192,11 @@ const MyAccount = React.memo(() => {
             window.location.reload()
           } catch (e) {
             if (e.code === 'auth/requires-recent-login') {
-              await firebase.logout()
-              alert('Please sign in again to change your password.')
-              window.location.reload()
+              toast.error(
+                <Typography variant='body1'>
+                  Authentication error. Log out and in again to change your email.
+                </Typography>
+              )
             }
           }
         })
@@ -228,18 +236,19 @@ const MyAccount = React.memo(() => {
         } catch (e) {
           /* TODO notify user of error */
           if (e.code === 'auth/requires-recent-login') {
-            await firebase.logout()
-            // TODO show a nice popup
-            alert('Please sign in again to delete your account.')
-            window.location.reload()
+            // TODO intl
+            toast.error(
+              <Typography variant='body1'>
+                Authentication error. Log out and in again to change your email.
+              </Typography>
+            )
           }
         }
       })
     } catch (e) {
       // TODO intl
-      // TODO nice notification
       dispatch(setSimpleValue('delete_user', false))
-      alert('Failed to delete your account.')
+      toast.error(<Typography variant='body1'>Failed to delete your account.</Typography>)
     }
   }
 

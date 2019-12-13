@@ -15,7 +15,7 @@ import getSimpleValue from '../../store/simpleValues/selectors'
 
 const Transition = React.forwardRef((props, ref) => <Slide direction='up' {...props} ref={ref} />)
 
-const QuestionDialog = ({ name, handleAction, fullScreen, title = '', message = '', action = '' }) => {
+const QuestionDialog = React.memo(({ name, handleAction, fullScreen, title = '', message = '', action = '', cancelColor = 'default', actionColor = 'primary' }) => {
   const intl = useIntl()
   const dispatch = useDispatch()
   const isDialogOpen = useSelector(state => getSimpleValue(state, name, false))
@@ -31,27 +31,27 @@ const QuestionDialog = ({ name, handleAction, fullScreen, title = '', message = 
       open={isDialogOpen}
       onClose={handleClose}
       TransitionComponent={Transition}
-      aria-labelledby='alert-dialog-title'
-      aria-describedby='alert-dialog-description'
+      aria-labelledby='question-dialog-title'
+      aria-describedby='question-dialog-description'
     >
-      <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+      <DialogTitle id='question-dialog-title'>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id='alert-dialog-description'>{message}</DialogContentText>
+        <DialogContentText id='question-dialog-description'>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color='primary'>
+        <Button onClick={handleClose} color={cancelColor}>
           {intl.formatMessage({ id: 'cancel' })}
         </Button>
         <Button
           onClick={() => handleAction(handleClose)}
-          color='secondary'
+          color={actionColor}
         >
           {action}
         </Button>
       </DialogActions>
     </Dialog>
   )
-}
+})
 
 QuestionDialog.propTypes = {}
 

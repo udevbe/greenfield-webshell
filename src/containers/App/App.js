@@ -8,8 +8,11 @@ import { CssBaseline } from '@material-ui/core'
 import Helmet from 'react-helmet'
 import { Route, Switch } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const history = createBrowserHistory()
+toast.configure(config.toastConfig)
 
 const Root = lazy(() => import('../Root'))
 const SignIn = lazy(() => import('../../pages/SignIn'))
@@ -28,7 +31,16 @@ const App = () => {
           />
           <meta name='theme-color' content='#dcdcdc' />
           <link rel='manifest' href='/manifest.json' />
+          <link rel='subresource' href='logo.png' />
+          <link rel='subresource' href='index.css' />
+          <link rel='preload' href='https://fonts.googleapis.com/css?family=Roboto:300,400,500' as='font' />
+          <link rel='preload' href='https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500' as='font' />
+          <link rel='stylesheet' type='text/css' href='index.css' />
           <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
+          <link rel='dns-prefetch' href='https://fonts.googleapis.com' />
+          <link rel='preconnect' href='https://fonts.googleapis.com' />
+          <link rel='dns-prefetch' href='https://cdn.firebase.com' />
+          <link rel='preconnect' href='https://cdn.firebase.com' />
         </Helmet>
         <Router history={history}>
           <Suspense fallback={<LoadingComponent />}>
