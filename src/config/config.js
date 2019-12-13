@@ -52,7 +52,8 @@ const config = {
   toastConfig: {
     autoClose: 5000,
     draggable: false,
-    hideProgressBar: true
+    hideProgressBar: true,
+    closeButton: false
   }
 }
 

@@ -5,12 +5,12 @@ import { shallowEqual, useSelector } from 'react-redux'
  * @param {string} uid
  */
 export function useIsAdmin (uid) {
-  useFirebaseConnect([{ path: `admins/${uid}` }])
+  useFirebaseConnect([{ path: `/admins/${uid}` }])
   return useSelector(state => state.firebase.data.admins ? state.firebase.data.admins[uid] || false : false)
 }
 
 export function useIsAdminLoading (uid) {
-  return useSelector(state => state.firebase.requesting[`admins/${uid}`])
+  return useSelector(state => state.firebase.requesting[`/admins/${uid}`])
 }
 
 export function useUserId () {
@@ -22,12 +22,12 @@ export function useUserId () {
  * @return {Array<Object.<string, boolean>>}
  */
 export function useUserRoles (uid) {
-  useFirebaseConnect([{ path: `user_roles/${uid}` }])
+  useFirebaseConnect([{ path: `/user_roles/${uid}` }])
   return useSelector(state => state.firebase.ordered.user_roles ? state.firebase.ordered.user_roles[uid] || [] : [], shallowEqual)
 }
 
 export function useUserRolesLoading (uid) {
-  return useSelector(state => state.firebase.requesting[`user_roles/${uid}`])
+  return useSelector(state => state.firebase.requesting[`/user_roles/${uid}`])
 }
 
 /**
@@ -36,7 +36,7 @@ export function useUserRolesLoading (uid) {
  * @return {boolean}
  */
 export function useUserRoleEnabled (uid, roleId) {
-  useFirebaseConnect([{ path: `user_roles/${uid}/${roleId}` }])
+  useFirebaseConnect([{ path: `/user_roles/${uid}/${roleId}` }])
   return useSelector(state => {
     if (state.firebase.data.user_roles && state.firebase.data.user_roles[uid]) {
       return state.firebase.data.user_roles[uid][roleId]
@@ -47,7 +47,7 @@ export function useUserRoleEnabled (uid, roleId) {
 }
 
 export function useUserRoleEnabledLoading (uid, roleId) {
-  return useSelector(state => state.firebase.requesting[`user_roles/${uid}/${roleId}`])
+  return useSelector(state => state.firebase.requesting[`/user_roles/${uid}/${roleId}`])
 }
 
 export function useRoles () {

@@ -1,3 +1,36 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500");
 @import url(https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500);
 @import url(https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css);
+
+.toast-success {
+    background: rgba(111, 174, 42, 1);
+    font-family: "Roboto Medium", monospace;
+    font-size: large;
+    top: 64px;
+    border-radius: 10px
+}
+
+.toast-info {
+    background: rgba(50, 191, 249, 1);
+    font-family: "Roboto Medium", monospace;
+    font-size: large;
+    top: 64px;
+    border-radius: 10px
+}
+
+.toast-warn {
+    background: rgb(255, 179, 71);
+    font-family: "Roboto Medium", monospace;
+    font-size: large;
+    top: 64px;
+    color: black;
+    border-radius: 10px
+}
+
+.toast-error {
+    background: rgba(250, 67, 117, 1);
+    font-family: "Roboto Medium", monospace;
+    font-size: large;
+    top: 64px;
+    border-radius: 10px
+}
