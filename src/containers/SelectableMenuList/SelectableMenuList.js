@@ -9,7 +9,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import React, { useState } from 'react'
 
-const SelectableMenuList = ({ onIndexChange, useMinified, items, index }) => {
+const SelectableMenuList = React.memo(({ onIndexChange, useMinified, items, index }) => {
   const [state, setState] = useState({})
 
   const handleNestedItemsClick = item => {
@@ -23,7 +23,7 @@ const SelectableMenuList = ({ onIndexChange, useMinified, items, index }) => {
       setState({ items, previousItems, title, index: item.value })
     } else {
       if (item.value || item.onClick) {
-        setState({ index: item.value })
+        setState(state => ({ ...state, index: item.value }))
       }
     }
   }
@@ -114,7 +114,7 @@ const SelectableMenuList = ({ onIndexChange, useMinified, items, index }) => {
       {list.filter(item => item.visible !== false).map((item, i) => getItem(item, i))}
     </List>
   )
-}
+})
 
 SelectableMenuList.propTypes = {}
 

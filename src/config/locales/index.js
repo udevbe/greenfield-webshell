@@ -1,5 +1,5 @@
-//import 'intl-pluralrules'
-import en_messages from './en'
+// import 'intl-pluralrules'
+import en from './en'
 import '@formatjs/intl-relativetimeformat/polyfill'
 import '@formatjs/intl-relativetimeformat/dist/locale-data/de'
 import '@formatjs/intl-relativetimeformat/dist/locale-data/en'
@@ -9,7 +9,7 @@ import intl from 'intl'
 // START: Intl polyfill
 // Required for working on Safari
 // Code from here: https://formatjs.io/guides/runtime-environments/
-let localesMyAppSupports = [
+const localesMyAppSupports = [
   /* list locales here */
 ]
 
@@ -18,7 +18,7 @@ if (global.Intl) {
   if (!areIntlLocalesSupported(localesMyAppSupports)) {
     // `Intl` exists, but it doesn't have the data we need, so load the
     // polyfill and replace the constructors with need with the polyfill's.
-    let IntlPolyfill = intl
+    const IntlPolyfill = intl
     Intl.NumberFormat = IntlPolyfill.NumberFormat
     Intl.DateTimeFormat = IntlPolyfill.DateTimeFormat
   }
@@ -31,20 +31,20 @@ if (global.Intl) {
 const locales = [
   {
     locale: 'en',
-    messages: en_messages
+    messages: en
   }
 ]
 
 export function getLocaleMessages (l, ls) {
   if (ls) {
     for (let i = 0; i < ls.length; i++) {
-      if (ls[i]['locale'] === l) {
-        return ls[i]['messages']
+      if (ls[i].locale === l) {
+        return ls[i].messages
       }
     }
   }
 
-  return en_messages // Default locale
+  return en // Default locale
 }
 
 export default locales

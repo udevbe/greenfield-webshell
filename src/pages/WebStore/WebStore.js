@@ -11,6 +11,8 @@ import InfiniteScroll from 'react-infinite-scroller'
 import Grow from '@material-ui/core/Grow'
 import CardMedia from '@material-ui/core/CardMedia'
 import Image from '../../components/Image'
+import CardActions from '@material-ui/core/CardActions'
+import Button from '@material-ui/core/Button'
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -50,70 +52,79 @@ const cards = [
     val: {
       media: `https://source.unsplash.com/random?sig=${Math.random()}`,
       name: 'Super Awesome App',
-      description: {
-        default: 'WebApp intro. Describes what it does and how and why you should use it.',
-        en: 'WebApp intro. Describes what it does and how and why you should use it.'
-      }
+      description: 'WebApp intro. Describes what it does and how and why you should use it.'
     }
   },
-  { appId: 2, val: null }, { appId: 3, val: null }, { appId: 4, val: null }, { appId: 5, val: null },
-  { appId: 6, val: null }, { appId: 7, val: null }, { appId: 8, val: null }, { appId: 9, val: null },
-  { appId: 10, val: null }, { appId: 11, val: null }, { appId: 12, val: null }, { appId: 13, val: null },
-  { appId: 14, val: null }, { appId: 15, val: null }, { appId: 16, val: null }, { appId: 17, val: null },
-  { appId: 18, val: null }, { appId: 19, val: null }, { appId: 20, val: null }, { appId: 21, val: null },
-  { appId: 22, val: null }, { appId: 23, val: null }, { appId: 24, val: null }, { appId: 25, val: null },
-  { appId: 26, val: null }, { appId: 27, val: null }, { appId: 28, val: null }, { appId: 29, val: null },
-  { appId: 30, val: null }, { appId: 31, val: null }, { appId: 32, val: null }
+  {
+    appId: 2,
+    val: {
+      media: `https://source.unsplash.com/random?sig=${Math.random()}`,
+      name: 'Super Awesome App',
+      description: 'WebApp intro. Describes what it does and how and why you should use it.'
+    }
+  }, {
+    appId: 3,
+    val: {
+      media: `https://source.unsplash.com/random?sig=${Math.random()}`,
+      name: 'Super Awesome App',
+      description: 'WebApp intro. Describes what it does and how and why you should use it.'
+    }
+  }
 ]
 
 const appsListBatchSize = 10
 
-const WebAppTile = ({ appId, index }) => {
+const WebAppTile = React.memo(({ app, index }) => {
   const classes = useWebAppTileStyles()
+  const { media, name, description } = app
+
+  const handleAdd = () => {
+    // TODO update use application list
+  }
+
   return (
     <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
       <Grid item xs={6} sm={4} md={3} lg={2} xl={1}>
-        <Card className={classes.card}>
+        <Card className={classes.card} elevation={5}>
           <CardMedia
             className={classes.cardMedia}
-            title='Image title'
+            title={name}
           >
-            <Image src={`https://source.unsplash.com/random?sig=${appId}`} />
+            <Image src={media} />
           </CardMedia>
           <CardContent className={classes.cardContent}>
             <Typography gutterBottom variant='h6' align='center'>
-                      Application title
+              {name}
             </Typography>
             <Typography gutterBottom vaiant='caption' align='center'>
-                      Short Application description
+              {description}
             </Typography>
           </CardContent>
-          {/*<CardActions>*/}
-          {/*  <Button size='small' color='primary'>*/}
-          {/*            Try*/}
-          {/*  </Button>*/}
-          {/*  <Button size='small' color='primary'>*/}
-          {/*            Add*/}
-          {/*  </Button>*/}
-          {/*</CardActions>*/}
+          <CardActions>
+            <Button size='small' color='primary' onClick={handleAdd} variant='contained'>
+                      Add
+            </Button>
+          </CardActions>
         </Card>
       </Grid>
     </Grow>
   )
-}
+})
 
-const WebStore = () => {
+const WebStore = React.memo(() => {
   const intl = useIntl()
-  const [webApps, setWebApps] = useState([])
+  const [webAppTiles, setWebAppTiles] = useState([])
 
-  const classes = useStyles()
+  // const publicApps = useSelector(({ firebase }) => firebase.ordered.webstore.public)
 
   const loadMoreApps = () => {
-    const additionalApps = cards.slice(webApps.length, Math.min(cards.length, webApps.length + appsListBatchSize)).map(({ appId, val }, index) =>
-      (<WebAppTile appId={appId} key={appId} index={index} />))
-    setWebApps([...webApps, ...additionalApps])
+    const additionalApps = cards
+      .slice(webAppTiles.length, Math.min(cards.length, webAppTiles.length + appsListBatchSize))
+      .map(({ appId, val }, index) => <WebAppTile key={appId} index={index} app={val} />)
+    setWebAppTiles([...webAppTiles, ...additionalApps])
   }
 
+  const classes = useStyles()
   const mainRef = useRef(null)
   return (
     <Activity
@@ -130,17 +141,17 @@ const WebStore = () => {
           getScrollParent={() => mainRef.current}
           pageStart={0}
           loadMore={loadMoreApps}
-          hasMore={webApps.length !== cards.length}
+          hasMore={webAppTiles.length !== cards.length}
           loader={<div className='loader' key={0}>Loading ...</div>}
         >
           <Grid container spacing={4}>
-            {webApps}
+            {webAppTiles}
           </Grid>
         </InfiniteScroll>
       </Container>
     </Activity>
   )
-}
+})
 
 WebStore.propTypes = {}
 

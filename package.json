@@ -20,6 +20,7 @@
     "@material-ui/lab": "^4.0.0-alpha.35",
     "@material-ui/styles": "^4.7.1",
     "classnames": "^2.2.6",
+    "clsx": "^1.0.4",
     "compositor-module": "file:../greenfield/compositor-module",
     "firebase": "^7.5.2",
     "history": "^4.10.1",
