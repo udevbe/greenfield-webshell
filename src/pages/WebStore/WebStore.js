@@ -127,7 +127,6 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
         <Card className={classes.card} elevation={5}>
           {busy && <div className={classes.overlay}><CircularProgress /></div>}
           <CardMedia
-            className={classes.cardMedia}
             title={name}
           >
             <Image src={media} />

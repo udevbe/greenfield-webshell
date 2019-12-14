@@ -147,9 +147,9 @@ const Activity = ({
           </IconButton>
           {!onBackClick && drawer.open && false && <div style={{ marginRight: 32 }} />}
 
-          <Typography variant='h6' color='inherit' noWrap>
-            {headerTitle}
-          </Typography>
+          {/*<Typography variant='h6' color='inherit' noWrap>*/}
+          {/*  {headerTitle}*/}
+          {/*</Typography>*/}
           <div className={classes.grow} />
           {appBarContent}
         </Toolbar>
