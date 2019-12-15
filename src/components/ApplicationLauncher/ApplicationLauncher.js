@@ -6,28 +6,24 @@ import Image from '../Image'
 const useStyles = makeStyles({
   card: {
     width: 80,
-    // height: '100%',
     display: 'flex',
     flexDirection: 'column',
     position: 'relative'
   },
-  // cardMedia: {
-  //   paddingTop: '100%'
-  // },
   cardContent: {
     flexGrow: 1
   }
 })
 
-export const ApplicationLauncher = ({ application: { appIconURL, appTitle, appId, appURL, appType }, onLaunchApplication }) => {
+export const ApplicationLauncher = ({ application: { icon, title, url, type }, appId, onLaunchApplication }) => {
   const classes = useStyles()
 
   return (
     <>
-      <Card className={classes.card} key={appId} elevation={5}>
-        <CardActionArea onClick={() => onLaunchApplication({ appIconURL, appTitle, appId, appURL, appType })}>
-          <CardMedia title={appTitle}>
-            <Image src={appIconURL} />
+      <Card className={classes.card} key={appId} elevation={3}>
+        <CardActionArea onClick={() => onLaunchApplication({ icon, title, url, type })}>
+          <CardMedia title={title}>
+            <Image src={icon} />
           </CardMedia>
         </CardActionArea>
       </Card>
@@ -36,7 +32,7 @@ export const ApplicationLauncher = ({ application: { appIconURL, appTitle, appId
         variant='subtitle2'
         noWrap
       >
-        {appTitle}
+        {title}
       </Typography>
     </>
   )

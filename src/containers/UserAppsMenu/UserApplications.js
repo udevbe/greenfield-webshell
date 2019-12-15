@@ -4,93 +4,10 @@ import AppsIcon from '@material-ui/icons/Apps'
 import { ApplicationLauncher } from '../../components/ApplicationLauncher'
 import Link from '@material-ui/core/Link'
 import { Link as RouterLink } from 'react-router-dom'
-
-const userApplications = [
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 1,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 2,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 3,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 4,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 5,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 6,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 7,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 8,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 9,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 10,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 11,
-    appURL: '',
-    appType: 'web'
-  },
-  {
-    appIconURL: `https://source.unsplash.com/random?sig=${Math.random()}`,
-    appTitle: 'test',
-    appId: 12,
-    appURL: '',
-    appType: 'web'
-  }
-]
+import { useUserId } from '../../utils/auth'
+import { useUserAppIds, useUserAppsLoading } from '../../database/hooks'
+import { useFirebase } from 'react-redux-firebase'
+import { queryApp } from '../../database/queries'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -102,19 +19,29 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const ApplicationLauncherTile = React.memo(({ application }) => {
+const ApplicationLauncherTile = React.memo(({ appId }) => {
+  const firebase = useFirebase()
+  const [app, setApp] = useState(null)
+  queryApp(firebase, appId).then(app => setApp(app))
   const onLaunchApplication = () => {}
 
   return (
     <Grid item xs={4} sm={3} md={2} lg={1} xl={1}>
-      <ApplicationLauncher application={application} onLaunchApplication={onLaunchApplication} />
+      {app
+        ? <ApplicationLauncher application={app} onLaunchApplication={onLaunchApplication} />
+        : <CircularProgress />}
     </Grid>
   )
 })
 
+const WebstoreLink = React.forwardRef((props, ref) => <RouterLink innerRef={ref} {...props} />)
+
 const UserApplications = React.memo(() => {
   // TODO app list from realtime firedatabase
-  const isLoading = false
+  const firebase = useFirebase()
+  const uid = useUserId()
+  const userAppIds = useUserAppIds(firebase, uid)
+  const isLoading = useUserAppsLoading(firebase, uid)
 
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
@@ -122,7 +49,6 @@ const UserApplications = React.memo(() => {
   const handleClick = event => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
 
-  const WebstoreLink = React.forwardRef((props, ref) => <RouterLink innerRef={ref} {...props} />)
   return (
     <>
       <IconButton aria-controls='application-launcher-menu' aria-haspopup='true' onClick={handleClick}>
@@ -141,7 +67,7 @@ const UserApplications = React.memo(() => {
         <Container className={classes.container} maxWidth='lg'>
           {isLoading
             ? <CircularProgress />
-            : userApplications.length === 0
+            : userAppIds.length === 0
               ? (
                 <Box width='100%' height='100%'>
                   <Typography
@@ -153,9 +79,11 @@ const UserApplications = React.memo(() => {
                   </Typography>
                 </Box>
               )
-              : <Grid container spacing={1}>{userApplications.map(application =>
-                <ApplicationLauncherTile key={application.id} application={application} />)}
-                </Grid>}
+              : <Grid container spacing={1}>{userAppIds.map(appId =>
+                <ApplicationLauncherTile
+                  key={appId} appId={appId}
+                />)}
+              </Grid>}
         </Container>
       </Menu>
     </>

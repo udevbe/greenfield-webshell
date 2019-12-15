@@ -10,7 +10,7 @@ export function useIsAdmin (uid) {
 }
 
 export function useIsAdminLoading (uid) {
-  return useSelector(state => state.firebase.requesting[`/admins/${uid}`])
+  return useSelector(state => state.firebase.requesting[`admins/${uid}`])
 }
 
 export function useUserId () {
@@ -27,7 +27,7 @@ export function useUserRoles (uid) {
 }
 
 export function useUserRolesLoading (uid) {
-  return useSelector(state => state.firebase.requesting[`/user_roles/${uid}`])
+  return useSelector(state => state.firebase.requesting[`user_roles/${uid}`])
 }
 
 /**
@@ -47,7 +47,7 @@ export function useUserRoleEnabled (uid, roleId) {
 }
 
 export function useUserRoleEnabledLoading (uid, roleId) {
-  return useSelector(state => state.firebase.requesting[`/user_roles/${uid}/${roleId}`])
+  return useSelector(state => state.firebase.requesting[`user_roles/${uid}/${roleId}`])
 }
 
 export function useRoles () {
@@ -59,7 +59,7 @@ export function useRoles () {
  * @return {boolean}
  */
 export function useRolesLoading () {
-  return useSelector(state => state.firebase.requesting['/roles'])
+  return useSelector(state => state.firebase.requesting.roles)
 }
 
 /**
