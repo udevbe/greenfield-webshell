@@ -1,5 +1,4 @@
 import { toast } from 'react-toastify'
-import React from 'react'
 
 export function notifySuccess (message) {
   toast.success(

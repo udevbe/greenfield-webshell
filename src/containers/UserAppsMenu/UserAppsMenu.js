@@ -1,43 +1,28 @@
 import { Box, CircularProgress, Container, Grid, IconButton, makeStyles, Menu, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import AppsIcon from '@material-ui/icons/Apps'
-import { ApplicationLauncher } from '../../components/ApplicationLauncher'
 import Link from '@material-ui/core/Link'
 import { Link as RouterLink } from 'react-router-dom'
 import { useUserId } from '../../utils/auth'
 import { useUserAppIds, useUserAppsLoading } from '../../database/hooks'
 import { useFirebase } from 'react-redux-firebase'
-import { queryApp } from '../../database/queries'
+import { ApplicationLauncherTile } from '../../components/UserAppsMenu'
 
 const useStyles = makeStyles(theme => ({
   container: {
-    minHeight: 100,
-    width: '90vw'
+    minHeight: 100
+    // [theme.breakpoints.down('sm')]: {
+    //   width: '90vw'
+    // }
   },
   menuPaper: {
-    backgroundColor: 'rgba(0,0,0,0.5)'
+    backgroundColor: 'rgba(0,0,0,0.6)'
   }
 }))
 
-const ApplicationLauncherTile = React.memo(({ appId }) => {
-  const firebase = useFirebase()
-  const [app, setApp] = useState(null)
-  queryApp(firebase, appId).then(app => setApp(app))
-  const onLaunchApplication = () => {}
-
-  return (
-    <Grid item xs={4} sm={3} md={2} lg={1} xl={1}>
-      {app
-        ? <ApplicationLauncher application={app} onLaunchApplication={onLaunchApplication} />
-        : <CircularProgress />}
-    </Grid>
-  )
-})
-
 const WebstoreLink = React.forwardRef((props, ref) => <RouterLink innerRef={ref} {...props} />)
 
-const UserApplications = React.memo(() => {
-  // TODO app list from realtime firedatabase
+const UserAppsMenu = React.memo(({ anchorElRef }) => {
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppIds = useUserAppIds(firebase, uid)
@@ -46,7 +31,7 @@ const UserApplications = React.memo(() => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
 
-  const handleClick = event => setAnchorEl(event.currentTarget)
+  const handleClick = () => setAnchorEl(anchorElRef.current)
   const handleClose = () => setAnchorEl(null)
 
   return (
@@ -56,7 +41,12 @@ const UserApplications = React.memo(() => {
       </IconButton>
       <Menu
         id='simple-menu'
+        getContentAnchorEl={null}
         anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 0,
+          horizontal: 'right'
+        }}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
@@ -71,15 +61,15 @@ const UserApplications = React.memo(() => {
               ? (
                 <Box width='100%' height='100%'>
                   <Typography
-                    className={classes.emptyText}
                     align='center'
                     variant='h6'
                   >
+                    {/* TODO intl */}
                     No applications here. Visit the <Link component={WebstoreLink} to='/webstore'>Webstore</Link> and add some!
                   </Typography>
                 </Box>
               )
-              : <Grid container spacing={1}>{userAppIds.map(appId =>
+              : <Grid container spacing={2} alignItems='stretch'>{userAppIds.map(appId =>
                 <ApplicationLauncherTile
                   key={appId} appId={appId}
                 />)}
@@ -90,4 +80,4 @@ const UserApplications = React.memo(() => {
   )
 })
 
-export default UserApplications
+export default UserAppsMenu
