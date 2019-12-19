@@ -2,6 +2,7 @@ import Drawer from '../../containers/Drawer'
 import React from 'react'
 import Routes from '../../containers/Routes'
 import { makeStyles } from '@material-ui/styles'
+import Notification from '../../components/Notification'
 
 const useStyles = makeStyles({
   body: {
@@ -29,6 +30,7 @@ export const AppLayout = () => {
   return (
     <div className={classes.body}>
       <div className={classes.root}>
+        <Notification />
         <Drawer />
         <Routes />
       </div>

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { isLoaded } from 'react-redux-firebase'
 import LoadingComponent from '../../components/LoadingComponent'
-import { saveInstallProposalEvent } from '../../store/addToHomeScreen/actions'
+import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
 import Fade from '@material-ui/core/Fade'
 
 // TODO use A2HS with hooks/different lib

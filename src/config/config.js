@@ -48,13 +48,7 @@ const config = {
   locales,
   themes,
   grants,
-  routes,
-  toastConfig: {
-    autoClose: 5000,
-    draggable: false,
-    hideProgressBar: true,
-    closeButton: false
-  }
+  routes
 }
 
 export default config

@@ -16,7 +16,11 @@ const useStyles = makeStyles(theme => ({
     // }
   },
   menuPaper: {
-    backgroundColor: 'rgba(0,0,0,0.6)'
+    backgroundColor: 'rgba(0,0,0,0.4)'
+  },
+  noAppsText: {
+    color: 'white',
+    textStroke: 'thin rgba(0,0,0,0.6)'
   }
 }))
 
@@ -63,6 +67,7 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
                   <Typography
                     align='center'
                     variant='h6'
+                    className={classes.noAppsText}
                   >
                     {/* TODO intl */}
                     No applications here. Visit the <Link component={WebstoreLink} to='/webstore'>Webstore</Link> and add some!

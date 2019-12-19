@@ -3,8 +3,7 @@ import { useFirebase } from 'react-redux-firebase'
 import { useUserId } from '../../utils/auth'
 import { useUserAppLinkId, useUserAppLinkIdLoading } from '../../database/hooks'
 import { queryAddAppToUser, queryRemoveAppFromUser } from '../../database/queries'
-import { notifyInfo, notifySuccess } from '../../utils/notify'
-import { toast } from 'react-toastify'
+import { useNotifyError, useNotifyInfo, useNotifySuccess } from '../../utils/notify'
 import Typography from '@material-ui/core/Typography'
 import Grow from '@material-ui/core/Grow'
 import Grid from '@material-ui/core/Grid'
@@ -48,6 +47,9 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appId)
   const userAppLinkIdLoading = useUserAppLinkIdLoading(uid)
+  const notifySuccess = useNotifySuccess()
+  const notifyInfo = useNotifyInfo()
+  const notifyError = useNotifyError()
 
   const removeApp = async () => {
     await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
@@ -73,7 +75,7 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     } catch (e) {
       // TODO error in sentry.io
       // TODO intl
-      toast.error(<Typography variant='body1'>Could not add application. Try again later.</Typography>)
+      notifyError('Could not add application. Try again later.')
     }
     setBusy(false)
   }

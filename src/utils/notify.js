@@ -1,29 +1,19 @@
-import { toast } from 'react-toastify'
+import { showNotification } from '../store/notification'
+import { useDispatch } from 'react-redux'
 
-export function notifySuccess (message) {
-  toast.success(
-    message,
-    { className: 'toast-success' }
-  )
+export const useNotifySuccess = () => {
+  const dispatch = useDispatch()
+  return (message) => dispatch(showNotification({ type: 'success', message }))
 }
-
-export function notifyInfo (message) {
-  toast.info(
-    message,
-    { className: 'toast-info' }
-  )
+export const useNotifyInfo = () => {
+  const dispatch = useDispatch()
+  return (message) => dispatch(showNotification({ type: 'info', message }))
 }
-
-export function notifyWarn (message) {
-  toast.warn(
-    message,
-    { className: 'toast-warn' }
-  )
+export const useNotifyWarn = () => {
+  const dispatch = useDispatch()
+  return (message) => dispatch(showNotification({ type: 'warn', message }))
 }
-
-export function notifyError (message) {
-  toast.error(
-    message,
-    { className: 'toast-error' }
-  )
+export const useNotifyError = () => {
+  const dispatch = useDispatch()
+  return (message) => dispatch(showNotification({ type: 'error', message }))
 }

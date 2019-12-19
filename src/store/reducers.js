@@ -6,9 +6,11 @@ import simpleValues from './simpleValues/reducer'
 import themeSource from './themeSource/reducer'
 import drawer from './drawer/reducer'
 import { combineReducers } from 'redux'
-import addToHomeScreen from './addToHomeScreen/reducer'
+import addToHomeScreen from './addToHomeScreen'
+import compositor from './compositor'
+import notification from './notification'
 
-export const appReducers = {
+export default combineReducers({
   firebase,
   dialogs,
   locale,
@@ -16,9 +18,7 @@ export const appReducers = {
   simpleValues,
   drawer,
   themeSource,
-  addToHomeScreen
-}
-
-const rootReducer = combineReducers(appReducers)
-
-export default (state, action) => rootReducer(state, action)
+  addToHomeScreen,
+  compositor,
+  notification
+})

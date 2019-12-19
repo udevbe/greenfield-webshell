@@ -16,10 +16,8 @@ import IconButton from '@material-ui/core/IconButton'
 import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import InputLabel from '@material-ui/core/InputLabel'
-import Typography from '@material-ui/core/Typography'
 
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import classNames from 'classnames'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
@@ -31,6 +29,7 @@ import { useUserId, useUserIsAnonymous } from '../../utils/auth'
 import { useUserProp, useUserPropLoading } from '../../utils/userData'
 import ImageCropDialog from '../../containers/ImageCropDialog/ImageCropDialog'
 import QuestionDialog from '../../containers/QuestionDialog'
+import { useNotifyError, useNotifyInfo } from '../../utils/notify'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -55,6 +54,9 @@ const MyAccount = React.memo(() => {
   const firebase = useFirebase()
   const uid = useUserId()
   const isAnonymous = useUserIsAnonymous()
+
+  const notifyError = useNotifyError()
+  const notifyInfo = useNotifyInfo()
 
   const displayName = useUserProp(uid, 'displayName')
   const photoURL = useUserProp(uid, 'photoURL')
@@ -105,10 +107,11 @@ const MyAccount = React.memo(() => {
     } catch (e) {
       // TODO error in sentry.io
       // TODO intl
-      toast.error(<Typography variant='body1'>Could not send E-Mail. Try again later.</Typography>)
+      notifyError('Could not send E-Mail. Try again later.')
       throw e
     }
-    toast.info(<Typography variant='body1'>Verification E-Mail send</Typography>)
+    // TODO intl
+    notifyInfo('Verification E-Mail send')
   }
   const handlePhotoUploadSuccess = async snapshot => {
     const downloadURL = await snapshot.ref.getDownloadURL()
@@ -172,11 +175,7 @@ const MyAccount = React.memo(() => {
         } catch (e) {
           if (e.code === 'auth/requires-recent-login') {
             // TODO intl
-            toast.error(
-              <Typography variant='body1'>
-                Authentication error. Log out and in again to change your email.
-              </Typography>
-            )
+            notifyError('Authentication error. Log out and in again to change your email.')
           }
         }
       })
@@ -192,11 +191,8 @@ const MyAccount = React.memo(() => {
             window.location.reload()
           } catch (e) {
             if (e.code === 'auth/requires-recent-login') {
-              toast.error(
-                <Typography variant='body1'>
-                  Authentication error. Log out and in again to change your email.
-                </Typography>
-              )
+              // TODO intl
+              notifyError('Authentication error. Log out and in again to change your email.')
             }
           }
         })
@@ -237,18 +233,14 @@ const MyAccount = React.memo(() => {
           /* TODO notify user of error */
           if (e.code === 'auth/requires-recent-login') {
             // TODO intl
-            toast.error(
-              <Typography variant='body1'>
-                Authentication error. Log out and in again to change your email.
-              </Typography>
-            )
+            notifyError('Authentication error. Log out and in again to change your email.')
           }
         }
       })
     } catch (e) {
       // TODO intl
       dispatch(setSimpleValue('delete_user', false))
-      toast.error(<Typography variant='body1'>Failed to delete your account.</Typography>)
+      notifyError('Failed to delete your account.')
     }
   }
 

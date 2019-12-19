@@ -8,11 +8,8 @@ import { CssBaseline } from '@material-ui/core'
 import Helmet from 'react-helmet'
 import { Route, Switch } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 const history = createBrowserHistory()
-toast.configure(config.toastConfig)
 
 const Root = lazy(() => import('../Root'))
 const SignIn = lazy(() => import('../../pages/SignIn'))
