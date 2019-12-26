@@ -340,7 +340,7 @@ const MyAccount = React.memo(() => {
       title={intl.formatMessage({ id: 'my_account' })}
     >
       {!userPropsLoading &&
-      <div>
+        <div>
           {uid && (
             <div style={{ margin: 15, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -385,10 +385,10 @@ const MyAccount = React.memo(() => {
                   )}
                 </FormControl>
                 {!isAnonymous &&
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                  error={!!errors.email}
-                >
+                  <FormControl
+                    className={classNames(classes.margin, classes.textField)}
+                    error={!!errors.email}
+                  >
                     <InputLabel htmlFor='email'>{intl.formatMessage({ id: 'email' })}</InputLabel>
                     <Input
                       id='email'
@@ -410,9 +410,9 @@ const MyAccount = React.memo(() => {
                         </InputAdornment>
                       }
                     />
-                  {errors.email && (
-                    <FormHelperText id='name-helper-text'>{errors.email}</FormHelperText>
-                  )}
+                    {errors.email && (
+                      <FormHelperText id='name-helper-text'>{errors.email}</FormHelperText>
+                    )}
                   </FormControl>}
 
                 {isLinkedWithPasswordProvider && (
@@ -504,13 +504,13 @@ const MyAccount = React.memo(() => {
             </div>
           )}
 
-        <QuestionDialog
-          name='delete_user'
-          handleAction={handleDelete}
-          title={intl.formatMessage({ id: 'delete_account_dialog_title' })}
-          message={intl.formatMessage({ id: 'delete_account_dialog_message' })}
-          action={intl.formatMessage({ id: 'delete' })}
-        />
+          <QuestionDialog
+            name='delete_user'
+            handleAction={handleDelete}
+            title={intl.formatMessage({ id: 'delete_account_dialog_title' })}
+            message={intl.formatMessage({ id: 'delete_account_dialog_message' })}
+            action={intl.formatMessage({ id: 'delete' })}
+          />
 
           <ImageCropDialog
             path={`users/${uid}`}

@@ -1,5 +1,0 @@
-const AppsBar = () => {
-
-}
-
-export { AppsBar }

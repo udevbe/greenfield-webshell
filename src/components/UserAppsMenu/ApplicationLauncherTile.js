@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { useFirebase } from 'react-redux-firebase'
-import { queryApp } from '../../database/queries'
+import React from 'react'
+import { useFirebaseConnect } from 'react-redux-firebase'
 import { CircularProgress, Grid, makeStyles } from '@material-ui/core'
 import { ApplicationLauncher } from './ApplicationLauncher'
+import { useSelector } from 'react-redux'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -11,16 +11,19 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export const ApplicationLauncherTile = React.memo(({ appId }) => {
-  const firebase = useFirebase()
-  const [app, setApp] = useState(null)
-  queryApp(firebase, appId).then(app => setApp(app))
-  const onLaunchApplication = () => {}
+  useFirebaseConnect([{ path: `/apps/${appId}` }])
+  const app = useSelector(({ firebase }) => {
+    if (firebase.data.apps) {
+      return firebase.data.apps[appId] || null
+    }
+    return null
+  })
 
   const classes = useStyles()
   return (
     <Grid item className={classes.root}>
       {app
-        ? <ApplicationLauncher application={app} onLaunchApplication={onLaunchApplication} />
+        ? <ApplicationLauncher application={app} />
         : <CircularProgress />}
     </Grid>
   )

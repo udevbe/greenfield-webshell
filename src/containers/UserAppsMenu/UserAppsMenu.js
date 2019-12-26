@@ -11,9 +11,6 @@ import { ApplicationLauncherTile } from '../../components/UserAppsMenu'
 const useStyles = makeStyles(theme => ({
   container: {
     minHeight: 100
-    // [theme.breakpoints.down('sm')]: {
-    //   width: '90vw'
-    // }
   },
   menuPaper: {
     backgroundColor: 'rgba(0,0,0,0.4)'

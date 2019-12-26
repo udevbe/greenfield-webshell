@@ -36,8 +36,8 @@ const WebStore = React.memo(() => {
   const intl = useIntl()
   const [webAppTiles, setWebAppTiles] = useState([])
 
-  useFirebaseConnect([{ path: '/apps' }])
-  const allApps = useSelector(({ firebase }) => firebase.ordered.apps || [])
+  useFirebaseConnect([{ path: '/apps', storeAs: 'allApps' }])
+  const allApps = useSelector(({ firebase }) => firebase.ordered.allApps || [])
 
   const loadMoreApps = () => {
     const additionalApps = allApps

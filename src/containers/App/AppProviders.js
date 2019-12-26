@@ -1,4 +1,4 @@
-import AppConfigProvider from '../../contexts/AppConfigProvider/Provider'
+import AppConfigProvider from '../../contexts/AppConfigProvider/AppConfigProvider'
 import { ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import { shallowEqual, useSelector } from 'react-redux'

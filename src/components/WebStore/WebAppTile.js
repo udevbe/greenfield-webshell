@@ -89,7 +89,7 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
           <CardMedia
             title={title}
           >
-            <Image src={icon} />
+            <Image src={icon} alt={title} />
           </CardMedia>
           <CardContent className={classes.cardContent}>
             <Typography gutterBottom variant='h6' align='center'>

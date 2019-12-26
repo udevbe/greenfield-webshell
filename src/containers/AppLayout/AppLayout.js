@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   }
 })
 
-export const AppLayout = () => {
+export const AppLayout = React.memo(() => {
   const classes = useStyles()
 
   return (
@@ -36,6 +36,6 @@ export const AppLayout = () => {
       </div>
     </div>
   )
-}
+})
 
 export default AppLayout

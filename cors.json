@@ -1,0 +1,13 @@
+[
+  {
+    "origin": [
+      "http://localhost:5000/",
+      "http://localhost:3000/",
+      "https://preview.greenfield.app"
+    ],
+    "method": [
+      "GET"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]

@@ -7,7 +7,7 @@ import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
 import Fade from '@material-ui/core/Fade'
 
 // TODO use A2HS with hooks/different lib
-const Root = () => {
+const Root = React.memo(() => {
   const loaded = useSelector(({ firebase }) => isLoaded(firebase.auth))
   const dispatch = useDispatch()
   useEffect(() => {
@@ -30,6 +30,6 @@ const Root = () => {
   } else {
     return <LoadingComponent />
   }
-}
+})
 
 export default Root

@@ -4,7 +4,7 @@ import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { Switch } from 'react-router-dom'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 
-export const Routes = () => {
+export const Routes = React.memo(() => {
   const appConfig = useAppConfig()
   const customRoutes = appConfig.routes ? appConfig.routes : []
   const appRoutes = getAppRoutes()
@@ -19,6 +19,6 @@ export const Routes = () => {
       </Suspense>
     </div>
   )
-}
+})
 
 export default Routes

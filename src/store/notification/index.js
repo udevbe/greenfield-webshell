@@ -5,7 +5,7 @@ import { createSlice } from '@reduxjs/toolkit'
  */
 
 /**
- * @typedef {{message:string,type:'info'|'warn'|'error'|'success'}}Notification
+ * @typedef {{message:string,variant:'info'|'warn'|'error'|'success'}}Notification
  */
 
 /**

@@ -22,7 +22,7 @@
     "@reduxjs/toolkit": "^1.1.0",
     "classnames": "^2.2.6",
     "clsx": "^1.0.4",
-    "compositor-module": "file:../greenfield/compositor-module",
+    "compositor-module": "1.0.0",
     "firebase": "^7.6.1",
     "history": "^4.10.1",
     "intl": "^1.2.5",

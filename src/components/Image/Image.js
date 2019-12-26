@@ -24,6 +24,7 @@ const Image = ({
   onLoad,
   onClick,
   onError,
+  alt,
   ...image
 }) => {
   const [imageError, setImageError] = useState(false)
@@ -96,6 +97,7 @@ const Image = ({
       {image.src &&
       <img
         {...image}
+        alt={alt}
         style={styles.image}
         onLoad={handleLoadImage}
         onError={handleImageError}
@@ -124,6 +126,8 @@ Image.propTypes = {
   animationDuration: PropTypes.number,
   /** Override aspect ratio. */
   aspectRatio: PropTypes.number,
+  /** Set image alt. */
+  alt: PropTypes.string,
   /** Override the background color. */
   color: PropTypes.string,
   /** Disables the error icon if set to true. */

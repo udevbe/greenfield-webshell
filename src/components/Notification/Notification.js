@@ -18,7 +18,7 @@ const Notification = React.memo(() => {
         setShowingNotification(notification)
         setOpen(true)
       }
-    }, 100)
+    }, 150)
   }, [open, notification, showingNotification])
 
   const handleClose = (event, reason) => {
@@ -42,7 +42,7 @@ const Notification = React.memo(() => {
       onExited={handleExited}
     >
       <NotificationContent
-        variant={showingNotification.type}
+        variant={showingNotification.variant}
         message={showingNotification.message}
         onClose={handleClose}
       />

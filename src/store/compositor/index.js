@@ -1,48 +1,76 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 /**
- * @typedef {{}}WaylandSurfaceView
+ * @typedef {{title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean}}UserSurfaceState
  */
 /**
- * @typedef {{id:number, views:Array<WaylandSurfaceView>}}WaylandSurface
+ * @typedef {{id:number, clientId: string, userSurfaceState: UserSurfaceState}}UserSurface
  */
 /**
- * @typedef {{id:number, surfaces: Array<WaylandSurface>}}WaylandClient
+ * @typedef {{id:number, userSurfaces: Object.<number,UserSurface>}}WaylandClient
  */
 /**
- * @typedef {{clients: Array<WaylandClient>}}CompositorState
+ * @typedef {{clients: Object.<string,WaylandClient>, initialized: boolean, initializing: boolean}}CompositorState
  */
 /**
  * @type {CompositorState}
  */
-const initialState = { clients: [] }
+const initialState = { clients: {}, initialized: false, initializing: false }
 /**
  * @typedef {{type:string,payload:*}}Action
  */
 
 const reducers = {
+
+  /**
+   * @param {CompositorState}state
+   */
+  compositorInitializing: (state) => { state.initializing = true },
+  /**
+   * @param {CompositorState}state
+   */
+  compositorInitialized: (state) => {
+    state.initializing = false
+    state.initialized = true
+  },
   /**
    * @param {CompositorState}state
    * @param {Action}action
    */
-  onClientConnected: (state, action) => state.clients.push(action.payload.client),
+  createClient: (state, action) => {
+    const client = action.payload
+    state.clients[client.id] = {
+      id: client.id,
+      userSurfaces: {}
+    }
+  },
   /**
    * @param {CompositorState}state
    * @param {Action}action
    */
-  onClientDisconnected: (state, action) => { state.clients = state.clients.filter(client => client.id !== action.payload.client.id) },
+  destroyClient: (state, action) => {
+    const client = action.payload
+    delete state.clients[client.id]
+  },
   /**
    * @param {CompositorState}state
    * @param {Action}action
    */
-  onSurfaceCreated: (state, action) => { state.clients.find(client => client.id === action.payload.client.id).surfaces.push(action.payload.surface) },
+  createUserSurface: (state, action) => {
+    const { id, clientId, userSurfaceState } = action.payload
+    state.clients[clientId].userSurfaces[id] = { id, clientId, userSurfaceState }
+  },
+  updateUserSurface: (state, action) => {
+    const { id, clientId, userSurfaceState } = action.payload
+    state.clients[clientId].userSurfaces[id].userSurfaceState = userSurfaceState
+  },
   /**
    * @param {CompositorState}state
    * @param {Action}action
    */
-  onSurfaceDestroyed: (state, action) => {
-    const client = state.clients.find(client => client.id === state.client.id)
-    client.surfaces = client.surfaces.filter(surface => surface.id !== action.surface.id)
+  destroyUserSurface: (state, action) => {
+    const { id, clientId } = action.payload
+    delete state.clients[clientId].userSurfaces[id]
   }
 }
 
@@ -52,5 +80,5 @@ const slice = createSlice({
   name: 'greenfield/compositor'
 })
 
-export const { onClientConnected, onClientDisconnected, onSurfaceCreated, onSurfaceDestroyed } = slice.actions
+export const { compositorInitializing, compositorInitialized, createClient, destroyClient, createUserSurface, updateUserSurface, destroyUserSurface } = slice.actions
 export default slice.reducer

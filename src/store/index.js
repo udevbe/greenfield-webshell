@@ -12,7 +12,8 @@ const persistConfig = {
     'firebase',
     'simpleValues',
     'addToHomeScreen',
-    'compositor'
+    'compositor',
+    'notification'
   ]
 }
 
