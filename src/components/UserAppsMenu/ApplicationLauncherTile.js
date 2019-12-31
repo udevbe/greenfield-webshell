@@ -23,7 +23,7 @@ export const ApplicationLauncherTile = React.memo(({ appId }) => {
   return (
     <Grid item className={classes.root}>
       {app
-        ? <ApplicationLauncher application={app} />
+        ? <ApplicationLauncher application={app} appId={appId} />
         : <CircularProgress />}
     </Grid>
   )
