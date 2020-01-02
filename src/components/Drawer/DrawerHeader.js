@@ -13,17 +13,14 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  Paper,
+  Paper
 } from '@material-ui/core'
 import React from 'react'
-import { useIntl } from 'react-intl'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { setDrawerOpen, setDrawerUseMinified } from '../../store/drawer/actions'
-import { setDialogIsOpen } from '../../store/dialogs/actions'
+import { setDrawerOpen, setDrawerPath, setDrawerUseMinified } from '../../store/drawer'
 import { useWidth } from '../../utils/theme'
-import { useIsAuthenticated } from '../../utils/auth'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -43,86 +40,33 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export const DrawerHeader = React.memo(() => {
-  const intl = useIntl()
   const dispatch = useDispatch()
-  const isAuthorized = useIsAuthenticated()
   const { photoURL, displayName, email } = useSelector(({ firebase: { auth: { photoURL, displayName, email } } }) => ({
     photoURL,
     displayName,
     email
   }), shallowEqual)
-  const isDrawerOpen = useSelector(({ drawer }) => drawer.open)
+  const notMinified = useSelector(({ drawer }) => !drawer.useMinified)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const theme = useTheme()
   const width = useWidth(theme)
   const classes = useStyles()
   return (
     <Paper className={classes.paper}>
-      {isAuthorized && (
-        <div>
-          <List>
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar src={photoURL} alt='user' />
-              </ListItemAvatar>
-              <Hidden smDown implementation='css'>
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => dispatch(setDrawerOpen(false))}
-                  >
-                    <ChromeReaderMode classes={{ root: classes.icon }} />
-                  </IconButton>
-                  <IconButton
-                    className={classes.button}
-                    onClick={() => dispatch(setDrawerUseMinified(false))}
-                  >
-                    {theme.direction === 'rtl' && <ChevronRight classes={{ root: classes.icon }} />}
-                    {theme.direction !== 'rtl' && <ChevronLeft classes={{ root: classes.icon }} />}
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </Hidden>
-            </ListItem>
-
-            <ListItem>
-              {!isDrawerOpen && width !== 'sm' && width !== 'xs' && photoURL && (
-                <ListItemAvatar>
-                  <Avatar src={photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
-                </ListItemAvatar>
-              )}
-              <ListItemText
-                classes={{ primary: classes.listItem, secondary: classes.listItem }}
-                style={{
-                  marginLeft: !isDrawerOpen && width !== 'sm' && width !== 'xs' && photoURL ? 7 : undefined
-                }}
-                primary={displayName}
-                secondary={email}
-              />
-              {isDrawerOpen && (
-                <ListItemSecondaryAction
-                  onClick={() => {
-                    dispatch(setDialogIsOpen('auth_menu', !isAuthMenu))
-                  }}
-                >
-                  <IconButton>
-                    {isAuthMenu && <ArrowDropUp classes={{ root: classes.icon }} />}
-                    {!isAuthMenu && <ArrowDropDown classes={{ root: classes.icon }} />}
-                  </IconButton>
-                </ListItemSecondaryAction>
-              )}
-            </ListItem>
-          </List>
-        </div>
-      )}
-
-      {!isAuthorized && (
+      <div>
         <List>
           <ListItem>
-            <ListItemText classes={{ primary: classes.listItem }} primary={intl.formatMessage({ id: 'app_name' })} />
+            <ListItemAvatar>
+              <Avatar src={photoURL} alt='user' />
+            </ListItemAvatar>
             <Hidden smDown implementation='css'>
               <ListItemSecondaryAction>
+                <IconButton onClick={() => dispatch(setDrawerUseMinified(true))}>
+                  <ChromeReaderMode classes={{ root: classes.icon }} />
+                </IconButton>
                 <IconButton
                   className={classes.button}
-                  onClick={() => setDrawerUseMinified(false)}
+                  onClick={() => dispatch(setDrawerOpen(false))}
                 >
                   {theme.direction === 'rtl' && <ChevronRight classes={{ root: classes.icon }} />}
                   {theme.direction !== 'rtl' && <ChevronLeft classes={{ root: classes.icon }} />}
@@ -130,8 +74,32 @@ export const DrawerHeader = React.memo(() => {
               </ListItemSecondaryAction>
             </Hidden>
           </ListItem>
+
+          <ListItem>
+            {!notMinified && width !== 'sm' && width !== 'xs' && photoURL && (
+              <ListItemAvatar>
+                <Avatar src={photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
+              </ListItemAvatar>
+            )}
+            <ListItemText
+              classes={{ primary: classes.listItem, secondary: classes.listItem }}
+              style={{
+                marginLeft: !notMinified && width !== 'sm' && width !== 'xs' && photoURL ? 7 : undefined
+              }}
+              primary={displayName}
+              secondary={email}
+            />
+            {notMinified && (
+              <ListItemSecondaryAction onClick={() => dispatch(setDrawerPath(['user']))}>
+                <IconButton>
+                  {isAuthMenu && <ArrowDropUp classes={{ root: classes.icon }} />}
+                  {!isAuthMenu && <ArrowDropDown classes={{ root: classes.icon }} />}
+                </IconButton>
+              </ListItemSecondaryAction>
+            )}
+          </ListItem>
         </List>
-      )}
+      </div>
     </Paper>
   )
 })

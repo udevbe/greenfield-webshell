@@ -3,9 +3,9 @@ import React from 'react'
 import classNames from 'classnames'
 import { isWidthDown } from '@material-ui/core/withWidth'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useWidth } from '../../utils/theme'
-import { setDrawerMobileOpen } from '../../store/drawer/actions'
+import { setDrawerMobileOpen } from '../../store/drawer'
 
 const drawerWidth = 240
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen
     })
   },
-  drawerPaperClose: {
+  drawerPaperMinified: {
     height: '100vh',
     overflowX: 'hidden',
     transition: theme.transitions.create('width', {
@@ -63,9 +63,17 @@ const ResponsiveDrawer = ({ children }) => {
   const theme = useTheme()
   const width = useWidth(theme)
   const dispatch = useDispatch()
-  const drawer = useSelector(({ drawer }) => drawer)
+  const {
+    mobileOpen,
+    open,
+    useMinified
+  } = useSelector(({ drawer: { mobileOpen, open, useMinified } }) => ({
+    mobileOpen,
+    open,
+    useMinified
+  }), shallowEqual)
 
-  const handleDrawerToggle = () => dispatch(setDrawerMobileOpen(!drawer.mobileOpen))
+  const handleDrawerToggle = () => dispatch(setDrawerMobileOpen(!mobileOpen))
 
   const smDown = isWidthDown('sm', width)
 
@@ -74,7 +82,7 @@ const ResponsiveDrawer = ({ children }) => {
       <SwipeableDrawer
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
-        variant={smDown ? 'temporary' : 'permanent'}
+        variant={smDown ? 'temporary' : useMinified ? 'permanent' : 'persistent'}
         onClose={handleDrawerToggle}
         anchor={smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'}
         classes={{
@@ -82,11 +90,11 @@ const ResponsiveDrawer = ({ children }) => {
             ? classes.drawerPaper
             : classNames(
               classes.drawerPaperOpen,
-              !drawer.open && classes.drawerPaperClose,
-              !drawer.useMinified && classes.hide
+              useMinified && classes.drawerPaperMinified,
+              !useMinified && !open && classes.hide
             )
         }}
-        open={smDown ? drawer.mobileOpen : drawer.open}
+        open={smDown ? mobileOpen : open}
         onOpen={handleDrawerToggle}
         ModalProps={{
           keepMounted: true // Better open performance on mobile.

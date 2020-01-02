@@ -6,6 +6,7 @@ import getThemeSource from '../../config/themes'
 import { createMuiTheme } from '@material-ui/core'
 import { IntlProvider } from 'react-intl'
 import locales, { getLocaleMessages } from '../../config/locales'
+import CompositorProvider from '../../contexts/CompositorProvider'
 
 const AppProviders = ({ appConfig, children }) => {
   const locale = useSelector(({ locale }) => locale, shallowEqual)
@@ -19,7 +20,9 @@ const AppProviders = ({ appConfig, children }) => {
     <AppConfigProvider appConfig={appConfig}>
       <IntlProvider locale={locale} key={locale} messages={messages}>
         <ThemeProvider theme={theme}>
-          {children}
+          <CompositorProvider>
+            {children}
+          </CompositorProvider>
         </ThemeProvider>
       </IntlProvider>
     </AppConfigProvider>

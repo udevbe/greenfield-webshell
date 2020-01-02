@@ -7,10 +7,9 @@ import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
-import drawerActions from '../../store/drawer/actions'
+import { setDrawerMobileOpen, setDrawerOpen } from '../../store/drawer'
 import { isWidthDown } from '@material-ui/core/withWidth'
 import { Helmet } from 'react-helmet'
-import { bindActionCreators } from 'redux'
 import { useIntl } from 'react-intl'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useTheme } from '@material-ui/core/styles'
@@ -79,18 +78,25 @@ const Activity = ({
   const intl = useIntl()
   const drawer = useSelector(state => state.drawer, shallowEqual)
   const isOffline = useSelector(({ connection }) => (connection ? !connection.isConnected : false), shallowEqual)
-  const { setDrawerMobileOpen, setDrawerOpen } = bindActionCreators({ ...drawerActions }, useDispatch())
+  const {
+    mobileOpen,
+    open
+  } = useSelector(({ drawer: { mobileOpen, open } }) => ({
+    mobileOpen,
+    open
+  }), shallowEqual)
+  const dispatch = useDispatch()
 
   const handleDrawerMenuClick = () => {
     const smDown = isWidthDown('sm', width)
 
-    if (!drawer.open) {
-      setDrawerOpen(true)
+    if (!open) {
+      dispatch(setDrawerOpen(true))
       if (smDown) {
-        setDrawerMobileOpen(!drawer.mobileOpen)
+        dispatch(setDrawerMobileOpen(!mobileOpen))
       }
     } else {
-      setDrawerMobileOpen(!drawer.mobileOpen)
+      dispatch(setDrawerMobileOpen(!mobileOpen))
     }
   }
 

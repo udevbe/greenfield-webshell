@@ -7,7 +7,7 @@ import { createSlice } from '@reduxjs/toolkit'
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
  */
 /**
- * @typedef {{pointerGrab: UserSurface, keyboardFocus: UserSurface}}UserSeat
+ * @typedef {{pointerGrab: ?UserSurface, keyboardFocus: ?UserSurface}}UserSeat
  */
 /**
  * @typedef {{clients: Object.<string,WaylandClient>, initialized: boolean, initializing: boolean, seat: UserSeat, userSurfaces: Object.<string,UserSurface>}}CompositorState

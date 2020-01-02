@@ -11,127 +11,210 @@ import StyleIcon from '@material-ui/icons/Style'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import allLocales from './locales'
 import { themes } from './themes'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { updateTheme } from '../store/themeSource/actions'
 import { updateLocale } from '../store/locale/actions'
 import { useIntl } from 'react-intl'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
+import { useCompositor } from '../contexts/CompositorProvider'
 
-// TODO get all args from hooks
+/**
+ * @typedef {{
+ *   variant: 'divider',
+ *   inset: ?string,
+ *   style: ?string,
+ *   visible: ?boolean
+ * }}DrawerDivider
+ */
+/**
+ * @typedef {{
+ *   variant: 'subheader',
+ *   style: ?string,
+ *   text: string,
+ *   visible: ?boolean
+ * }}DrawerSubheader
+ */
+/**
+ * @typedef {{
+ *   variant: 'actionItem'
+ *   onClick: ?function():void,
+ *   text: string,
+ *   leftIcon: Component,
+ *   visible: ?boolean
+ * }}DrawerActionItem
+ */
+/**
+ * @typedef {{
+ *   variant: 'listItem'
+ *   path: string,
+ *   onClick: ?function():void,
+ *   text: string,
+ *   leftIcon: Component,
+ *   entries: Array<DrawerEntry>,
+ *   visible: ?boolean
+ * }}DrawerListItem
+ */
+/**
+ * @typedef {DrawerDivider|DrawerSubheader|DrawerActionItem|DrawerListItem}DrawerEntry
+ */
+
 export const useMenuItems = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
   const uid = useUserId()
   const webstoreAccess = useGrant(uid, 'read web store applications')
-  const locale = useSelector(({ locale }) => locale)
-  const themeId = useSelector(({ themeSource: { themeId } }) => themeId)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
   const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
-
-  const themeItems = themes.map(t => {
-    return {
-      value: undefined,
-      visible: true,
-      primaryText: intl.formatMessage({ id: t.id }),
-      onClick: () => dispatch(updateTheme(t.id)),
-      leftIcon: <StyleIcon style={{ color: t.color }} />
-    }
-  })
-
-  const localeItems = allLocales.map(l => {
-    return {
-      value: undefined,
-      visible: true,
-      primaryText: intl.formatMessage({ id: l.locale }),
-      onClick: () => dispatch(updateLocale(l.locale)),
-      leftIcon: <LanguageIcon />
-    }
-  })
+  const userSurfaces = useSelector(({ compositor }) =>
+    Object.values(compositor.userSurfaces).map(({ id, clientId, title, key }) =>
+      ({ id, clientId, title, key })
+    ), shallowEqual
+  )
+  const compositor = useCompositor()
 
   if (isAuthMenu) {
-    return [
-      {
-        value: '/my_account',
-        primaryText: intl.formatMessage({ id: 'my_account' }),
-        leftIcon: <AccountBoxIcon />
-      },
-      {
-        value: '/signin',
-        onClick: handleSignOut,
-        primaryText: intl.formatMessage({ id: 'sign_out' }),
-        leftIcon: <ExitToAppIcon />
+    return {
+      variant: 'listItem',
+      visible: authorised,
+      entries: {
+        my_account: {
+          variant: 'actionItem',
+          path: '/my_account',
+          text: intl.formatMessage({ id: 'my_account' }),
+          leftIcon: <AccountBoxIcon />
+        },
+        sign_in: {
+          variant: 'actionItem',
+          path: '/signin',
+          onClick: handleSignOut,
+          text: intl.formatMessage({ id: 'sign_out' }),
+          leftIcon: <ExitToAppIcon />
+        }
       }
-    ]
+    }
   }
 
-  return [
-    {
-      visible: authorised,
-      primaryText: intl.formatMessage({ id: 'workspace' }),
-      primaryTogglesNestedList: false,
-      leftIcon: <SettingsSystemDaydreamIcon />,
-      value: '/workspace'
-    },
-    {
-      visible: authorised && webstoreAccess,
-      primaryText: intl.formatMessage({ id: 'webstore' }),
-      primaryTogglesNestedList: false,
-      leftIcon: <PublicIcon />,
-      value: '/webstore'
-    },
-    {
-      visible: isAdmin,
-      primaryTogglesNestedList: true,
-      primaryText: intl.formatMessage({ id: 'administration' }),
-      leftIcon: <Security />,
-      nestedItems: [
-        {
-          value: '/users',
-          visible: isAdmin,
-          primaryText: intl.formatMessage({ id: 'users' }),
-          leftIcon: <GroupIcon />
-        },
-        {
-          value: '/roles',
-          visible: isAdmin,
-          primaryText: intl.formatMessage({ id: 'roles' }),
-          leftIcon: <AccountBoxIcon />
+  return {
+    variant: 'listItem',
+    visible: authorised,
+    entries: {
+      user: {
+        variant: 'listItem',
+        visible: false,
+        entries: {
+          my_account: {
+            variant: 'actionItem',
+            path: '/my_account',
+            text: intl.formatMessage({ id: 'my_account' }),
+            leftIcon: <AccountBoxIcon />
+          },
+          sign_in: {
+            variant: 'actionItem',
+            path: '/signin',
+            onClick: handleSignOut,
+            text: intl.formatMessage({ id: 'sign_out' }),
+            leftIcon: <ExitToAppIcon />
+          }
         }
-      ]
-    },
-    {
-      divider: true,
-      visible: authorised
-    },
-    {
-      visible: authorised,
-      primaryText: intl.formatMessage({ id: 'settings' }),
-      primaryTogglesNestedList: true,
-      leftIcon: <SettingsIcon />,
-      nestedItems: [
-        {
-          primaryText: intl.formatMessage({ id: 'theme' }),
-          secondaryText: intl.formatMessage({ id: themeId }),
-          primaryTogglesNestedList: true,
-          leftIcon: <StyleIcon />,
-          nestedItems: themeItems
-        },
-        {
-          primaryText: intl.formatMessage({ id: 'language' }),
-          secondaryText: intl.formatMessage({ id: locale }),
-          primaryTogglesNestedList: true,
-          leftIcon: <LanguageIcon />,
-          nestedItems: localeItems
+      },
+      workspace: {
+        variant: 'listItem',
+        visible: authorised,
+        text: intl.formatMessage({ id: 'workspace' }),
+        leftIcon: <SettingsSystemDaydreamIcon />,
+        path: '/workspace',
+        entries: userSurfaces.reduce((nestedMenu, { key, title, id, clientId }) => ({
+          ...nestedMenu,
+          [key]: {
+            visible: authorised,
+            variant: 'actionItem',
+            text: title,
+            onClick: () => {}
+          }
+        }), {})
+      },
+      webstore: {
+        variant: 'actionItem',
+        visible: authorised && webstoreAccess,
+        text: intl.formatMessage({ id: 'webstore' }),
+        leftIcon: <PublicIcon />,
+        path: '/webstore'
+      },
+      _divider0: {
+        variant: 'divider',
+        visible: authorised
+      },
+      administration: {
+        variant: 'listItem',
+        visible: isAdmin,
+        text: intl.formatMessage({ id: 'administration' }),
+        leftIcon: <Security />,
+        entries: {
+          users: {
+            variant: 'actionItem',
+            path: '/users',
+            visible: isAdmin,
+            text: intl.formatMessage({ id: 'users' }),
+            leftIcon: <GroupIcon />
+          },
+          roles: {
+            variant: 'actionItem',
+            path: '/roles',
+            visible: isAdmin,
+            text: intl.formatMessage({ id: 'roles' }),
+            leftIcon: <AccountBoxIcon />
+          }
         }
-      ]
-    },
-    {
-      visible: !!addToHomeScreenProposalEvent,
-      onClick: () => addToHomeScreenProposalEvent.prompt(),
-      primaryText: intl.formatMessage({ id: 'install' }),
-      leftIcon: <VerticalAlignBottomIcon />
+      },
+      settings: {
+        variant: 'listItem',
+        visible: authorised,
+        text: intl.formatMessage({ id: 'settings' }),
+        leftIcon: <SettingsIcon />,
+        entries: {
+          theme: {
+            variant: 'listItem',
+            text: intl.formatMessage({ id: 'theme' }),
+            leftIcon: <StyleIcon />,
+            entries: themes.reduce((menuList, { id, color }) => {
+              return {
+                ...menuList,
+                [id]: {
+                  variant: 'actionItem',
+                  visible: authorised,
+                  text: intl.formatMessage({ id }),
+                  onClick: () => dispatch(updateTheme(id)),
+                  leftIcon: <StyleIcon style={{ color }} />
+                }
+              }
+            }, {})
+          },
+          locale: {
+            variant: 'listItem',
+            text: intl.formatMessage({ id: 'language' }),
+            leftIcon: <LanguageIcon />,
+            entries: allLocales.reduce((menuList, { locale }) => ({
+              ...menuList,
+              [locale]: {
+                variant: 'actionItem',
+                visible: true,
+                text: intl.formatMessage({ id: locale }),
+                onClick: () => dispatch(updateLocale(locale)),
+                leftIcon: <LanguageIcon />
+              }
+            }), {})
+          }
+        }
+      },
+      install: {
+        variant: 'actionItem',
+        visible: !!addToHomeScreenProposalEvent,
+        onClick: () => addToHomeScreenProposalEvent.prompt(),
+        text: intl.formatMessage({ id: 'install' }),
+        leftIcon: <VerticalAlignBottomIcon />
+      }
     }
-  ]
+  }
 }
