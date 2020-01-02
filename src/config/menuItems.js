@@ -16,7 +16,6 @@ import { updateTheme } from '../store/themeSource/actions'
 import { updateLocale } from '../store/locale/actions'
 import { useIntl } from 'react-intl'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
-import { useCompositor } from '../contexts/CompositorProvider'
 
 /**
  * @typedef {{
@@ -58,7 +57,7 @@ import { useCompositor } from '../contexts/CompositorProvider'
  * @typedef {DrawerDivider|DrawerSubheader|DrawerActionItem|DrawerListItem}DrawerEntry
  */
 
-export const useMenuItems = (handleSignOut) => {
+export const useMenuItems = handleSignOut => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
@@ -72,7 +71,6 @@ export const useMenuItems = (handleSignOut) => {
       ({ id, clientId, title, key })
     ), shallowEqual
   )
-  const compositor = useCompositor()
 
   if (isAuthMenu) {
     return {
@@ -125,13 +123,17 @@ export const useMenuItems = (handleSignOut) => {
         text: intl.formatMessage({ id: 'workspace' }),
         leftIcon: <SettingsSystemDaydreamIcon />,
         path: '/workspace',
+        // TODO show clients instead of surfaces, show surfaces as tabs of active client
         entries: userSurfaces.reduce((nestedMenu, { key, title, id, clientId }) => ({
           ...nestedMenu,
           [key]: {
+            // TODO use client icon as left icon
             visible: authorised,
             variant: 'actionItem',
             text: title,
-            onClick: () => {}
+            onClick: () => {
+              // TODO raise all surfaces of selected client & activate surface that was the last to be active
+            }
           }
         }), {})
       },

@@ -63,7 +63,7 @@ const SignIn = React.memo(() => {
 
   if (isEmpty(auth)) {
     return (
-      <Fade in timeout={500}>
+      <Fade in timeout={1000}>
         <div className={classes.wrap}>
           <div className={classes.text}>
             <Logo />

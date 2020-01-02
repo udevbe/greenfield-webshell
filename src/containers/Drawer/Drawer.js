@@ -1,5 +1,5 @@
 import DrawerContent from './DrawerContent'
-import DrawerHeader from './DrawerHeader'
+import { DrawerHeader } from '../../components/Drawer'
 import React from 'react'
 import ResponsiveDrawer from '../../containers/ResponsiveDrawer'
 
