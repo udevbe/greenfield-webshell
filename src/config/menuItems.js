@@ -2,6 +2,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
 import PublicIcon from '@material-ui/icons/Public'
 import GroupIcon from '@material-ui/icons/Group'
+import CloseIcon from '@material-ui/icons/Close'
 import LanguageIcon from '@material-ui/icons/Language'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import React from 'react'
@@ -16,6 +17,7 @@ import { updateTheme } from '../store/themeSource/actions'
 import { updateLocale } from '../store/locale/actions'
 import { useIntl } from 'react-intl'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
+import { useCompositor } from '../contexts/CompositorProvider'
 
 /**
  * @typedef {{
@@ -37,8 +39,10 @@ import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/au
  * @typedef {{
  *   variant: 'actionItem'
  *   onClick: ?function():void,
+ *   onClickSecondary: ?function():void,
  *   text: string,
  *   leftIcon: Component,
+ *   rightIcon: ?Component,
  *   visible: ?boolean
  * }}DrawerActionItem
  */
@@ -59,18 +63,28 @@ import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/au
 
 export const useMenuItems = handleSignOut => {
   const dispatch = useDispatch()
+  const compositor = useCompositor()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
   const uid = useUserId()
+  // FIXME use grants based on db id.
   const webstoreAccess = useGrant(uid, 'read web store applications')
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
   const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
-  const userSurfaces = useSelector(({ compositor }) =>
-    Object.values(compositor.userSurfaces).map(({ id, clientId, title, key }) =>
-      ({ id, clientId, title, key })
-    ), shallowEqual
-  )
+  const userSurfacesByAppId = {}
+  useSelector(({ compositor }) =>
+    Object.values(compositor.userSurfaces).map(({ id, clientId, title, appId, key }) =>
+      ({ id, clientId, title, appId, key })
+    ), shallowEqual).forEach(userSurface => {
+    const appId = !userSurface.appId || userSurface.appId.length === 0 ? `app-${userSurface.clientId}` : userSurface.appId
+    const groupedUserSurfaces = userSurfacesByAppId[appId]
+    if (groupedUserSurfaces) {
+      groupedUserSurfaces.push(userSurface)
+    } else {
+      userSurfacesByAppId[appId] = [userSurface]
+    }
+  })
 
   if (isAuthMenu) {
     return {
@@ -124,16 +138,21 @@ export const useMenuItems = handleSignOut => {
         leftIcon: <SettingsSystemDaydreamIcon />,
         path: '/workspace',
         // TODO show clients instead of surfaces, show surfaces as tabs of active client
-        entries: userSurfaces.reduce((nestedMenu, { key, title, id, clientId }) => ({
+        entries: Object.entries(userSurfacesByAppId).reduce((nestedMenu, [appId, userSurfaces]) => ({
           ...nestedMenu,
-          [key]: {
+          [appId]: {
             // TODO use client icon as left icon
             visible: authorised,
             variant: 'actionItem',
-            text: title,
+            text: appId,
             onClick: () => {
               // TODO raise all surfaces of selected client & activate surface that was the last to be active
-            }
+            },
+            onClickSecondary: () => {
+              const clientId = userSurfaces[0].clientId
+              compositor.actions.closeClient({ id: clientId })
+            },
+            rightIcon: <CloseIcon />
           }
         }), {})
       },
@@ -212,7 +231,7 @@ export const useMenuItems = handleSignOut => {
       },
       install: {
         variant: 'actionItem',
-        visible: !!addToHomeScreenProposalEvent,
+        visible: addToHomeScreenProposalEvent != null,
         onClick: () => addToHomeScreenProposalEvent.prompt(),
         text: intl.formatMessage({ id: 'install' }),
         leftIcon: <VerticalAlignBottomIcon />

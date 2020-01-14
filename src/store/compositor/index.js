@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 /**
- * @typedef {{id:number, clientId: string, title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string}}UserSurface
+ * @typedef {{id:number, clientId: string, title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string, lastActive: number}}UserSurface
  */
 /**
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
@@ -27,8 +27,14 @@ const initialState = {
  * @param {UserSurface}userSurface
  * @return {UserSurface}
  */
-function withUserSurfaceKey (userSurface) {
-  return userSurface ? { ...userSurface, key: `${userSurface.id}@${userSurface.clientId}` } : null
+function withUserSurfaceMetaData (userSurface) {
+  // add key
+  const userSurfaceWithKey = userSurface ? { ...userSurface, key: `${userSurface.id}@${userSurface.clientId}` } : null
+  // add last active timestamp
+  if (userSurfaceWithKey && userSurfaceWithKey.active) {
+    userSurfaceWithKey.lastActive = Date.now()
+  }
+  return userSurfaceWithKey
 }
 
 /**
@@ -68,7 +74,7 @@ const reducers = {
    * @param {Action}action
    */
   createUserSurface: (state, action) => {
-    const userSurface = withUserSurfaceKey(action.payload)
+    const userSurface = withUserSurfaceMetaData(action.payload)
     state.userSurfaces[userSurface.key] = userSurface
   },
   /**
@@ -76,7 +82,7 @@ const reducers = {
    * @param {Action}action
    */
   updateUserSurface: (state, action) => {
-    const userSurface = withUserSurfaceKey(action.payload)
+    const userSurface = withUserSurfaceMetaData(action.payload)
     state.userSurfaces[userSurface.key] = userSurface
   },
   /**
@@ -84,8 +90,14 @@ const reducers = {
    * @param {Action}action
    */
   destroyUserSurface: (state, action) => {
-    const userSurface = withUserSurfaceKey(action.payload)
+    const userSurface = withUserSurfaceMetaData(action.payload)
     delete state.userSurfaces[userSurface.key]
+    if (state.seat.pointerGrab && state.seat.pointerGrab.key === userSurface.key) {
+      state.seat.pointerGrab = null
+    }
+    if (state.seat.keyboardFocus && state.seat.keyboardFocus.key === userSurface.key) {
+      state.seat.keyboardFocus = null
+    }
   },
   /**
    * @param {CompositorState}state
@@ -93,7 +105,10 @@ const reducers = {
    */
   updateUserSeat: (state, action) => {
     const { keyboardFocus, pointerGrab } = action.payload
-    state.seat = { pointerGrab: withUserSurfaceKey(pointerGrab), keyboardFocus: withUserSurfaceKey(keyboardFocus) }
+    state.seat = {
+      pointerGrab: withUserSurfaceMetaData(pointerGrab),
+      keyboardFocus: withUserSurfaceMetaData(keyboardFocus)
+    }
   }
 }
 

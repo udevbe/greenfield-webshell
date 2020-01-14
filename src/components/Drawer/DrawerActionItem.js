@@ -5,6 +5,8 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import IconButton from '@material-ui/core/IconButton'
 
 /**
  * @param {DrawerActionItem}actionItem
@@ -50,6 +52,12 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
     >
       {actionItem.leftIcon && <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>}
       {!useMinified && open && <ListItemText primary={actionItem.text} />}
+      {actionItem.onClickSecondary &&
+        <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
+          <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
+            {actionItem.rightIcon}
+          </IconButton>
+        </ListItemSecondaryAction>}
     </ListItem>
   )
 })

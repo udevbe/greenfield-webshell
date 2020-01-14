@@ -17,6 +17,6 @@
   "start_url": "/workspace",
   "display": "fullscreen",
   "background_color": "#dcdcdc",
-  "theme_color": "#6fae2a",
+  "theme_color": "#dcdcdc",
   "gcm_sender_id": "103953800507"
 }
