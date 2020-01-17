@@ -41,7 +41,6 @@ function withUserSurfaceMetaData (userSurface) {
  * @typedef {{type:string,payload:*}}Action
  */
 const reducers = {
-
   /**
    * @param {CompositorState}state
    */

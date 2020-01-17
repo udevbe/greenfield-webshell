@@ -146,7 +146,7 @@ const Activity = ({
           {/*<Typography variant='h6' color='inherit' noWrap>*/}
           {/*  {headerTitle}*/}
           {/*</Typography>*/}
-          <div className={classes.grow} />
+          {/*<div className={classes.grow} />*/}
           {appBarContent}
         </Toolbar>
       </AppBar>

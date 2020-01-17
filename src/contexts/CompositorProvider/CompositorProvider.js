@@ -67,9 +67,7 @@ const CompositorProvider = React.memo(({ children }) => {
       compositorSession.remoteAppLauncher = remoteAppLauncher
       compositorSession.actions = userShell.actions
 
-      return initPromise.then(() => {
-        compositorSession.globals = Globals.create(session)
-      })
+      return initPromise.then(() => { compositorSession.globals = Globals.create(session) })
     }).then(() => {
       dispatch(compositorInitialized())
       compositorSession.globals.register()

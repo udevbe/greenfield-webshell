@@ -19,32 +19,44 @@ const useStyles = makeStyles(theme => ({
 const UserSurfaceArea = React.memo(() => {
   const classes = useStyles()
   const workspaceRef = useRef(null)
+  const activeUserSurfaceRef = useRef(null)
   const { actions: compositorActions } = useCompositor()
 
-  const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
-  const pointerGrab = useSelector(({ compositor }) => compositor.seat.pointerGrab)
-  const keyboardFocus = useSelector(({ compositor }) => compositor.seat.keyboardFocus)
-  const grabbedUserSurfaceIsActive = useSelector(({ compositor }) => pointerGrab ? compositor.userSurfaces[pointerGrab.key].active : false)
+  // FIXME this logic probably belongs in the compositor store instead of here
+  const currentActiveUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces).reduce((previousValue, currentValue) => {
+    if (currentValue.active && ((previousValue && currentValue.lastActive > previousValue.lastActive) || previousValue === null)) {
+      return currentValue
+    } else {
+      return previousValue
+    }
+  }, null) || null)
+  if (activeUserSurfaceRef.current && currentActiveUserSurface && activeUserSurfaceRef.current.key !== currentActiveUserSurface.key) {
+    compositorActions.notifyInactive(activeUserSurfaceRef.current)
+    compositorActions.setKeyboardFocus(currentActiveUserSurface)
+  } else if (activeUserSurfaceRef.current && currentActiveUserSurface === null) {
+    compositorActions.notifyInactive(activeUserSurfaceRef.current)
+  } else if (activeUserSurfaceRef.current === null && currentActiveUserSurface) {
+    compositorActions.setKeyboardFocus(currentActiveUserSurface)
+  }
+  activeUserSurfaceRef.current = currentActiveUserSurface
 
-  if (pointerGrab && !grabbedUserSurfaceIsActive) {
+  // FIXME this logic probably belongs in the compositor store instead of here
+  const pointerGrabIsActive = useSelector(({ compositor }) => compositor.seat.pointerGrab ? compositor.userSurfaces[compositor.seat.pointerGrab.key].active : false)
+  const pointerGrab = useSelector(({ compositor }) => compositor.seat.pointerGrab)
+  if (!pointerGrabIsActive && pointerGrab) {
     compositorActions.requestActive(pointerGrab)
   }
 
-  // TODO add client/surface state to see if client actually supports keyboard input at all
-  if (grabbedUserSurfaceIsActive && (keyboardFocus === null || pointerGrab.key !== keyboardFocus.key)) {
-    compositorActions.setKeyboardFocus(pointerGrab)
-  }
-
-  if (keyboardFocus && pointerGrab && keyboardFocus.key !== pointerGrab.key) {
-    compositorActions.notifyInactive(keyboardFocus)
-  }
-
+  const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   return (
     <div className={classes.workspace} id='workspace' ref={workspaceRef}>{
-      userSurfaces.map((userSurface) =>
+      userSurfaces.map(userSurface =>
         <UserSurface
-          key={userSurface.key} workspaceRef={workspaceRef}
-          id={userSurface.id} clientId={userSurface.clientId} userSurfaceKey={userSurface.key}
+          key={userSurface.key}
+          workspaceRef={workspaceRef}
+          id={userSurface.id}
+          clientId={userSurface.clientId}
+          active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
         />)
     }
     </div>
