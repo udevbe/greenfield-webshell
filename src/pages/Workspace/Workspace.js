@@ -1,5 +1,4 @@
 import React, { useRef } from 'react'
-import { useIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import UserAppsMenu from '../../containers/UserAppsMenu'
 import { useSelector } from 'react-redux'
@@ -15,7 +14,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Workspace = React.memo(() => {
-  const intl = useIntl()
   const classes = useStyles()
   const mainRef = useRef(null)
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
@@ -25,7 +23,7 @@ const Workspace = React.memo(() => {
   return (
     <Activity
       isLoading={!compositorInitialized}
-      title={intl.formatMessage({ id: 'workspace' })}
+      pageTitle='Greenfield'
       appBarContent={
         <>
           <Tabs

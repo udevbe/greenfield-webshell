@@ -10,23 +10,9 @@ import { useSelector } from 'react-redux'
 import WebAppTile from '../../components/WebStore/WebAppTile'
 
 const useStyles = makeStyles(theme => ({
-  icon: {
-    marginRight: theme.spacing(2)
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6)
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4)
-  },
   cardGrid: {
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8)
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6)
   }
 }))
 
@@ -50,7 +36,8 @@ const WebStore = React.memo(() => {
   const mainRef = useRef(null)
   return (
     <Activity
-      title={intl.formatMessage({ id: 'webstore' })}
+      pageTitle='Greenfield Webstore'
+      appBarTitle={intl.formatMessage({ id: 'webstore' })}
       style={{ maxHeight: '100%' }}
       mainRef={mainRef}
     >

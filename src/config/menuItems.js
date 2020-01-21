@@ -194,6 +194,7 @@ export const useMenuItems = handleSignOut => {
         visible: authorised,
         text: intl.formatMessage({ id: 'settings' }),
         leftIcon: <SettingsIcon />,
+        path: '/settings',
         entries: {
           theme: {
             variant: 'listItem',

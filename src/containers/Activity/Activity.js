@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 
 const Activity = ({
   children,
-  title,
+  appBarTitle,
   pageTitle,
   appBarContent,
   isLoading,
@@ -90,16 +90,6 @@ const Activity = ({
     }
   }
 
-  let headerTitle = ''
-
-  if (typeof title === 'string' || title instanceof String) {
-    headerTitle = title
-  }
-
-  if (pageTitle) {
-    headerTitle = pageTitle
-  }
-
   const smDown = isWidthDown('sm', width)
 
   return (
@@ -108,7 +98,7 @@ const Activity = ({
         <meta name='theme-color' content={theme.palette.primary.main} />
         <meta name='apple-mobile-web-app-status-bar-style' content={theme.palette.primary.main} />
         <meta name='msapplication-navbutton-color' content={theme.palette.primary.main} />
-        <title>{headerTitle}</title>
+        <title>{pageTitle || 'Greenfield'}</title>
       </Helmet>
 
       <AppBar
@@ -143,10 +133,13 @@ const Activity = ({
           </IconButton>
           {!onBackClick && drawer.open && false && <div style={{ marginRight: 32 }} />}
 
-          {/*<Typography variant='h6' color='inherit' noWrap>*/}
-          {/*  {headerTitle}*/}
-          {/*</Typography>*/}
-          {/*<div className={classes.grow} />*/}
+          {
+            appBarTitle &&
+              <Typography variant='h6' color='inherit' noWrap>
+                {appBarTitle}
+              </Typography>
+          }
+
           {appBarContent}
         </Toolbar>
       </AppBar>
