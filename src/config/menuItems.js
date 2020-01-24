@@ -68,7 +68,7 @@ export const useMenuItems = handleSignOut => {
   const authorised = useIsAuthenticated()
   const uid = useUserId()
   // FIXME use grants based on db id.
-  const webstoreAccess = useGrant(uid, 'read web store applications')
+  const webStoreAccess = useGrant(uid, 'read web store applications')
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
   const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
@@ -156,10 +156,10 @@ export const useMenuItems = handleSignOut => {
           }
         }), {})
       },
-      webstore: {
+      webStore: {
         variant: 'actionItem',
-        visible: authorised && webstoreAccess,
-        text: intl.formatMessage({ id: 'webstore' }),
+        visible: authorised && webStoreAccess,
+        text: intl.formatMessage({ id: 'Web Store' }),
         leftIcon: <PublicIcon />,
         path: '/webstore'
       },

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
 import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
@@ -8,6 +7,9 @@ import InfiniteScroll from 'react-infinite-scroller'
 import { useFirebaseConnect } from 'react-redux-firebase'
 import { useSelector } from 'react-redux'
 import WebAppTile from '../../components/WebStore/WebAppTile'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
+import NavigateNextIcon from '@material-ui/icons/NavigateNext'
+import Typography from '@material-ui/core/Typography'
 
 const useStyles = makeStyles(theme => ({
   cardGrid: {
@@ -19,7 +21,6 @@ const useStyles = makeStyles(theme => ({
 const appsListBatchSize = 10
 
 const WebStore = React.memo(() => {
-  const intl = useIntl()
   const [webAppTiles, setWebAppTiles] = useState([])
 
   useFirebaseConnect([{ path: '/apps', storeAs: 'allApps' }])
@@ -36,8 +37,14 @@ const WebStore = React.memo(() => {
   const mainRef = useRef(null)
   return (
     <Activity
-      pageTitle='Greenfield Webstore'
-      appBarTitle={intl.formatMessage({ id: 'webstore' })}
+      pageTitle='Greenfield - Web Store'
+      appBarContent={
+        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+          <Typography color='textPrimary'>
+            Web Store
+          </Typography>
+        </Breadcrumbs>
+      }
       style={{ maxHeight: '100%' }}
       mainRef={mainRef}
     >

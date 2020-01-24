@@ -10,7 +10,17 @@ import { createSlice } from '@reduxjs/toolkit'
  * @typedef {{pointerGrab: ?UserSurface, keyboardFocus: ?UserSurface}}UserSeat
  */
 /**
- * @typedef {{clients: Object.<string,WaylandClient>, initialized: boolean, initializing: boolean, seat: UserSeat, userSurfaces: Object.<string,UserSurface>}}CompositorState
+ * @typedef {{scrollFactor:number, keyboardLayout: ?string}}UserConfiguration
+ */
+/**
+ * @typedef {{
+ * clients: Object.<string,WaylandClient>,
+ * initialized: boolean,
+ * initializing: boolean,
+ * seat: UserSeat,
+ * userSurfaces: Object.<string,UserSurface>,
+ * userConfiguration: UserConfiguration
+ * }}CompositorState
  */
 /**
  * @type {CompositorState}
@@ -19,8 +29,15 @@ const initialState = {
   clients: {},
   initialized: false,
   initializing: false,
-  seat: { pointerGrab: null, keyboardFocus: null },
-  userSurfaces: {}
+  seat: {
+    pointerGrab: null,
+    keyboardFocus: null
+  },
+  userSurfaces: {},
+  userConfiguration: {
+    scrollFactor: 1,
+    keyboardLayoutName: null
+  }
 }
 
 /**
@@ -108,6 +125,13 @@ const reducers = {
       pointerGrab: withUserSurfaceMetaData(pointerGrab),
       keyboardFocus: withUserSurfaceMetaData(keyboardFocus)
     }
+  },
+  /**
+   * @param {CompositorState}state
+   * @param {Action}action
+   */
+  setUserConfiguration: (state, action) => {
+    state.userConfiguration = { ...state.userConfiguration, ...action.payload }
   }
 }
 
@@ -125,6 +149,7 @@ export const {
   createUserSurface,
   updateUserSurface,
   destroyUserSurface,
-  updateUserSeat
+  updateUserSeat,
+  setUserConfiguration
 } = slice.actions
 export default slice.reducer

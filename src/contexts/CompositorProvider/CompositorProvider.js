@@ -24,6 +24,10 @@ const CompositorProvider = React.memo(({ children }) => {
 
   const isInitialized = useSelector(({ compositor }) => compositor.initialized)
   const isInitializing = useSelector(({ compositor }) => compositor.initializing)
+  const userConfiguration = useSelector(({ compositor }) => compositor.userConfiguration)
+  if (isInitialized) {
+    compositorSession.actions.setUserConfiguration(compositorSession.globals, userConfiguration)
+  }
 
   if (!isInitialized && !isInitializing) {
     dispatch(compositorInitializing())

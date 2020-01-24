@@ -23,7 +23,7 @@ const Workspace = React.memo(() => {
   return (
     <Activity
       isLoading={!compositorInitialized}
-      pageTitle='Greenfield'
+      pageTitle='Greenfield - Workspace'
       appBarContent={
         <>
           <Tabs

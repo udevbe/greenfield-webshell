@@ -1,4 +1,3 @@
-import Grow from '@material-ui/core/Grow'
 import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
 import React from 'react'
@@ -27,23 +26,21 @@ const SettingTile = ({ title, description, index, icon, path }) => {
 
   const classes = useSettingTileStyles()
   return (
-    <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
-      <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
-        <Card className={classes.card} elevation={5}>
-          <CardActionArea onClick={navigateTo}>
-            {icon}
-            <CardContent className={classes.cardContent}>
-              <Typography gutterBottom variant='h5' align='center'>
-                {title}
-              </Typography>
-              <Typography gutterBottom vaiant='caption' align='center'>
-                {description}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-    </Grow>
+    <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
+      <Card className={classes.card} elevation={5}>
+        <CardActionArea onClick={navigateTo}>
+          {icon}
+          <CardContent className={classes.cardContent}>
+            <Typography gutterBottom variant='h5' align='center'>
+              {title}
+            </Typography>
+            <Typography gutterBottom vaiant='caption' align='center'>
+              {description}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid>
   )
 }
 
