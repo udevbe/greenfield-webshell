@@ -2,9 +2,9 @@ import { defineMessages } from 'react-intl'
 
 const messages = defineMessages({
   current_locale: 'en-US',
-  blue: 'blue',
+  blue: 'Blue',
   workspace: 'Workspace',
-  webstore: 'Webstore',
+  webstore: 'Web Store',
   app_name: 'Greenfield',
   dashboard: 'Dashboard',
   about: 'About',

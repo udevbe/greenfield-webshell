@@ -53,6 +53,7 @@ const InputSettings = React.memo(() => {
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()
+  // TODO i18n
   return (
     <Activity
       pageTitle='Greenfield - Input Settings'
@@ -75,7 +76,6 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <Keyboard />
             </ListItemIcon>
-            {/* TODO i18n */}
             <ListItemText
               primary='Keyboard'
             />
@@ -106,7 +106,6 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <Mouse />
             </ListItemIcon>
-            {/* TODO i18n */}
             <ListItemText primary='Mouse' />
           </ListItem>
           <Divider variant='fullWidth' />
@@ -115,7 +114,6 @@ const InputSettings = React.memo(() => {
               paddingBottom: 0
             }}
           >
-            {/* TODO i18n */}
             <Typography
               id='scroll-speed-slider'
               gutterBottom={false}
