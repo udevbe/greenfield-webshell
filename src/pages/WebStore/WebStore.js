@@ -40,6 +40,7 @@ const WebStore = React.memo(() => {
   const mainRef = useRef(null)
 
   const goToMain = () => history.push('/')
+  // TODO i18n
   return (
     <Activity
       pageTitle='Greenfield - Web Store'

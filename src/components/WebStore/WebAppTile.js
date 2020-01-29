@@ -15,6 +15,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import { makeStyles } from '@material-ui/core/styles'
+import { useHistory } from 'react-router'
 
 const useWebAppTileStyles = makeStyles(theme => ({
   card: {
@@ -42,6 +43,7 @@ const useWebAppTileStyles = makeStyles(theme => ({
 
 const WebAppTile = React.memo(({ appId, app, index }) => {
   const { title, icon } = app
+  const history = useHistory()
   const [busy, setBusy] = useState(false)
   const firebase = useFirebase()
   const uid = useUserId()
@@ -58,29 +60,27 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     notifyInfo('Application removed')
   }
 
-  const manageApp = async () => {
+  const addApp = async () => {
     try {
       const timer = setTimeout(() => setBusy(true), 500)
-      if (userAppLinkId) {
-        // TODO launch app
-
-      } else {
-        // add
-        await queryAddAppToUser(firebase, appId, uid)
-        // TODO intl
-        // TODO use application name in message
-        notifySuccess('Application added.')
-      }
+      // add
+      await queryAddAppToUser(firebase, appId, uid)
+      // TODO intl
+      // TODO use application name in message
+      notifySuccess('Application added.')
       clearTimeout(timer)
     } catch (e) {
       // TODO error in sentry.io
-      // TODO intl
+      // TODO i18n
       notifyError('Could not add application. Try again later.')
     }
     setBusy(false)
   }
 
+  const goToAboutApp = () => { history.push(`/webstore/${appId}`) }
+
   const classes = useWebAppTileStyles()
+  // TODO i18n
   return (
     <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
       <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
@@ -98,30 +98,30 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
             <Typography gutterBottom vaiant='caption' align='center' />
           </CardContent>
           <CardActions>
-            {userAppLinkIdLoading ? <CircularProgress />
-              : <>
-                <Button
-                  disabled={busy}
-                  size='large'
-                  color='primary'
-                  onClick={() => manageApp()}
-                  variant='contained'
-                >
-                  {userAppLinkId ? 'Launch' : 'Add'}
-                </Button>
-                {
-                  userAppLinkId &&
+            {
+              userAppLinkIdLoading
+                ? <CircularProgress />
+                : <>
                   <Button
                     disabled={busy}
                     size='large'
                     color='primary'
-                    onClick={() => removeApp(false)}
+                    onClick={() => { userAppLinkId ? removeApp() : addApp() }}
                     variant='contained'
                   >
-                      Remove
-                    </Button>
-                }
-                </>}
+                    {userAppLinkId ? 'Remove' : 'Add'}
+                  </Button>
+                  <Button
+                    disabled={busy}
+                    size='large'
+                    color='primary'
+                    onClick={() => goToAboutApp()}
+                    variant='contained'
+                  >
+                    About
+                  </Button>
+                </>
+            }
           </CardActions>
         </Card>
       </Grid>

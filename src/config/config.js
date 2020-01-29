@@ -4,7 +4,6 @@ import grants from './grants'
 import locales from './locales'
 import { GreenfieldIcon } from '../components/Icons'
 import { themes } from './themes'
-import routes from './routes'
 
 const config = {
   // firebase_config: {
@@ -47,8 +46,7 @@ const config = {
   useMenuItems,
   locales,
   themes,
-  grants,
-  routes
+  grants
 }
 
 export default config
