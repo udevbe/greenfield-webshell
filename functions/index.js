@@ -1,24 +1,20 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-admin.initializeApp()
 
-// Gives every new user the 'Demo User' role.
-exports.setDemoUserRole = functions
-  .region('europe-west2')
+const defaultRegion = 'europe-west2'
+
+exports.authUserOnCreateSetDemoUserRole = functions
+  .region(defaultRegion)
   .auth.user().onCreate(async user => {
-    const rolesSnapshot = await admin.database().ref('/roles').once('value')
-    const demoUserRole = Object.entries(rolesSnapshot.val()).find(([_, role]) => role.name === 'Demo User') || null
-    if (demoUserRole) {
-      await admin.database().ref(`/user_roles/${user.uid}/${demoUserRole[0]}`).set(true)
-    }
+    admin.initializeApp()
+    const database = admin.database()
+    require('./src/AuthUserOnCreate').setDemoUserRole(database, user)
   })
 
-// Clean up entries tied to user.
-exports.cleanUpUser = functions
-  .region('europe-west2')
+exports.authUserOnDeleteCleanUpUserData = functions
+  .region(defaultRegion)
   .auth.user().onDelete(async user => {
-    await admin.database().ref(`/admins/${user.uid}`).remove()
-    await admin.database().ref(`/user_roles/${user.uid}`).remove()
-    await admin.database().ref(`/user_apps/by_user_id/${user.uid}`).remove()
-    await admin.database().ref(`/users/${user.uid}`).remove()
+    admin.initializeApp()
+    const database = admin.database()
+    require('./src/AuthUserOnDelete').cleanUpUserData(database, user)
   })
