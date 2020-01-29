@@ -8,8 +8,10 @@ import { useFirebaseConnect } from 'react-redux-firebase'
 import { useSelector } from 'react-redux'
 import WebAppTile from '../../components/WebStore/WebAppTile'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import Typography from '@material-ui/core/Typography'
+import { useHistory } from 'react-router-dom'
+import IconButton from '@material-ui/core/IconButton'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const useStyles = makeStyles(theme => ({
   cardGrid: {
@@ -21,6 +23,7 @@ const useStyles = makeStyles(theme => ({
 const appsListBatchSize = 10
 
 const WebStore = React.memo(() => {
+  const history = useHistory()
   const [webAppTiles, setWebAppTiles] = useState([])
 
   useFirebaseConnect([{ path: '/apps', storeAs: 'allApps' }])
@@ -35,15 +38,22 @@ const WebStore = React.memo(() => {
 
   const classes = useStyles()
   const mainRef = useRef(null)
+
+  const goToMain = () => history.push('/')
   return (
     <Activity
       pageTitle='Greenfield - Web Store'
       appBarContent={
-        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-          <Typography color='textPrimary'>
+        <>
+          <IconButton onClick={goToMain}>
+            <ArrowBackIcon fontSize='large' />
+          </IconButton>
+          <Breadcrumbs aria-label='breadcrumb'>
+            <Typography color='textPrimary'>
             Web Store
-          </Typography>
-        </Breadcrumbs>
+            </Typography>
+          </Breadcrumbs>
+        </>
       }
       style={{ maxHeight: '100%' }}
       mainRef={mainRef}

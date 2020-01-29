@@ -2,9 +2,9 @@ import Activity from '../../containers/Activity'
 import React, { useRef, useState } from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useHistory } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
 import Container from '@material-ui/core/Container'
@@ -19,6 +19,7 @@ import { setUserConfiguration } from '../../store/compositor'
 import TextField from '@material-ui/core/TextField'
 import { useCompositor } from '../../contexts/CompositorProvider'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import IconButton from '@material-ui/core/IconButton'
 
 const useStyles = makeStyles(theme => ({
   spacer: {
@@ -28,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 
 const InputSettings = React.memo(() => {
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const { globals: { seat: { keyboard } } } = useCompositor()
   const isInitializing = useSelector(({ compositor }) => compositor.initializing)
@@ -50,6 +52,7 @@ const InputSettings = React.memo(() => {
   const handleScrollSpeedCommit = value => { dispatch(setUserConfiguration({ scrollFactor: scrollSpeed / 100 })) }
   const handleScrollSpeedLabelUpdate = value => `${value}%`
 
+  const goToSettings = () => history.push('/settings')
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()
@@ -59,14 +62,19 @@ const InputSettings = React.memo(() => {
       pageTitle='Greenfield - Input Settings'
       isLoading={isInitializing}
       appBarContent={
-        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-          <Link underline='hover' color='inherit' component={link} to='/settings'>
-            Settings
-          </Link>
-          <Typography color='textPrimary'>
-            Input
-          </Typography>
-        </Breadcrumbs>
+        <>
+          <IconButton onClick={goToSettings}>
+            <ArrowBackIcon fontSize='large' />
+          </IconButton>
+          <Breadcrumbs aria-label='breadcrumb'>
+            <Link underline='hover' color='inherit' component={link} to='/settings'>
+              Settings
+            </Link>
+            <Typography color='textPrimary'>
+              Input
+            </Typography>
+          </Breadcrumbs>
+        </>
       }
       style={{ maxHeight: '100%' }}
     >

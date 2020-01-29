@@ -3,7 +3,7 @@ import React from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useHistory } from 'react-router-dom'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import { Container, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core'
 import ListItem from '@material-ui/core/ListItem'
@@ -23,6 +23,8 @@ import { useIntl } from 'react-intl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import LanguageIcon from '@material-ui/icons/Language'
 import { updateLocale } from '../../store/locale/actions'
+import IconButton from '@material-ui/core/IconButton'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -36,6 +38,7 @@ const useStyles = makeStyles(theme => ({
 const InputSettings = React.memo(() => {
   const intl = useIntl()
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const currentThemeId = useSelector(({ themeSource }) => themeSource.themeId)
   const onThemeChange = event => dispatch(updateTheme(event.target.value))
@@ -43,6 +46,7 @@ const InputSettings = React.memo(() => {
   const currentLocale = useSelector(({ locale }) => locale)
   const onLocaleChange = event => dispatch(updateLocale(event.target.value))
 
+  const goToSettings = () => history.push('/settings')
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()
@@ -51,14 +55,19 @@ const InputSettings = React.memo(() => {
     <Activity
       pageTitle='Greenfield - Site Settings'
       appBarContent={
-        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-          <Link underline='hover' color='inherit' component={link} to='/settings'>
+        <>
+          <IconButton onClick={goToSettings}>
+            <ArrowBackIcon fontSize='large' />
+          </IconButton>
+          <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+            <Link underline='hover' color='inherit' component={link} to='/settings'>
             Settings
-          </Link>
-          <Typography color='textPrimary'>
+            </Link>
+            <Typography color='textPrimary'>
             Site
-          </Typography>
-        </Breadcrumbs>
+            </Typography>
+          </Breadcrumbs>
+        </>
       }
       style={{ maxHeight: '100%' }}
     >

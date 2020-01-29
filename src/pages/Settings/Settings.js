@@ -7,8 +7,10 @@ import Keyboard from '@material-ui/icons/Keyboard'
 import Flag from '@material-ui/icons/Flag'
 import { makeStyles } from '@material-ui/core/styles'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import Typography from '@material-ui/core/Typography'
+import { useHistory } from 'react-router-dom'
+import IconButton from '@material-ui/core/IconButton'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const useStyles = makeStyles(theme => ({
   cardGrid: {
@@ -18,16 +20,24 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Settings = React.memo(() => {
+  const history = useHistory()
+  const goToMain = () => history.push('/')
+
   const classes = useStyles()
   return (
     <Activity
       pageTitle='Greenfield - Settings'
       appBarContent={
-        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-          <Typography color='textPrimary'>
+        <>
+          <IconButton onClick={goToMain}>
+            <ArrowBackIcon fontSize='large' />
+          </IconButton>
+          <Breadcrumbs aria-label='breadcrumb'>
+            <Typography color='textPrimary'>
             Settings
-          </Typography>
-        </Breadcrumbs>
+            </Typography>
+          </Breadcrumbs>
+        </>
       }
       style={{ maxHeight: '100%' }}
     >

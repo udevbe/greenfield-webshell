@@ -3,21 +3,17 @@ import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydrea
 import PublicIcon from '@material-ui/icons/Public'
 import GroupIcon from '@material-ui/icons/Group'
 import CloseIcon from '@material-ui/icons/Close'
-import LanguageIcon from '@material-ui/icons/Language'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import React from 'react'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
-import StyleIcon from '@material-ui/icons/Style'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
-import allLocales from './locales'
-import { themes } from './themes'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { updateTheme } from '../store/themeSource/actions'
-import { updateLocale } from '../store/locale/actions'
+import { shallowEqual, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
 import { useCompositor } from '../contexts/CompositorProvider'
+import Flag from '@material-ui/icons/Flag'
+import Keyboard from '@material-ui/icons/Keyboard'
 
 /**
  * @typedef {{
@@ -62,7 +58,6 @@ import { useCompositor } from '../contexts/CompositorProvider'
  */
 
 export const useMenuItems = handleSignOut => {
-  const dispatch = useDispatch()
   const compositor = useCompositor()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
@@ -196,37 +191,17 @@ export const useMenuItems = handleSignOut => {
         leftIcon: <SettingsIcon />,
         path: '/settings',
         entries: {
-          theme: {
-            variant: 'listItem',
-            text: intl.formatMessage({ id: 'theme' }),
-            leftIcon: <StyleIcon />,
-            entries: themes.reduce((menuList, { id, color }) => {
-              return {
-                ...menuList,
-                [id]: {
-                  variant: 'actionItem',
-                  visible: authorised,
-                  text: intl.formatMessage({ id }),
-                  onClick: () => dispatch(updateTheme(id)),
-                  leftIcon: <StyleIcon style={{ color }} />
-                }
-              }
-            }, {})
+          input: {
+            variant: 'actionItem',
+            text: intl.formatMessage({ id: 'input' }),
+            path: '/settings/input',
+            leftIcon: <Keyboard />
           },
-          locale: {
-            variant: 'listItem',
-            text: intl.formatMessage({ id: 'language' }),
-            leftIcon: <LanguageIcon />,
-            entries: allLocales.reduce((menuList, { locale }) => ({
-              ...menuList,
-              [locale]: {
-                variant: 'actionItem',
-                visible: true,
-                text: intl.formatMessage({ id: locale }),
-                onClick: () => dispatch(updateLocale(locale)),
-                leftIcon: <LanguageIcon />
-              }
-            }), {})
+          site: {
+            variant: 'actionItem',
+            text: intl.formatMessage({ id: 'site' }),
+            path: '/settings/site',
+            leftIcon: <Flag />
           }
         }
       },
