@@ -44,7 +44,7 @@ const Image = ({
     return {
       root: {
         backgroundColor: color,
-        paddingTop: '100%', // 16:9
+        paddingTop: '100%',
         position: 'relative',
         ...style
       },
