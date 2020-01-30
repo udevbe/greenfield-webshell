@@ -21,17 +21,20 @@ import CardMedia from '@material-ui/core/CardMedia'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import Image from '../../components/Image'
 import { useSelector } from 'react-redux'
+import Skeleton from '@material-ui/lab/Skeleton'
 
 const useStyles = makeStyles({
   card: {
-    marginTop: 20
+    marginTop: 20,
+    maxWidth: 800
   }
 })
 
 const AboutApp = React.memo(() => {
   const history = useHistory()
   const { appid } = useParams()
-  const [busy, setBusy] = useState(false)
+  const [addAppBusy, setAddAppBusy] = useState(false)
+  const [aboutTxt, setAboutTxt] = useState(null)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appid)
@@ -42,6 +45,46 @@ const AboutApp = React.memo(() => {
   const notifyInfo = useNotifyInfo()
   const notifyError = useNotifyError()
 
+  // download about text file
+  app && firebase.storage().refFromURL(app.about).getDownloadURL().then(aboutURL => {
+    const xhr = new window.XMLHttpRequest()
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === window.XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          try {
+            const aboutTxt = xhr.responseText
+            setAboutTxt(aboutTxt)
+          } catch (e) {
+            console.error('\tname: ' + e.name + ' message: ' + e.message + ' text: ' + e.text)
+            console.error('error object stack: ')
+            console.error(e.stack)
+            throw new Error('Could not launch web application.')
+          }
+        } else {
+          console.error(`Could not download web application. ${xhr.status}: ${xhr.statusText}`)
+          throw new Error('Could not download web application.')
+        }
+      }
+    }
+    xhr.open('GET', aboutURL)
+    xhr.send()
+  }).catch(function (error) {
+    // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
+    switch (error.code) {
+      case 'storage/object-not-found':
+        notifyError(`${app.title} about text could not be found on server.`)
+        break
+      case 'storage/unauthorized':
+        notifyError(`Not authorized to read about ${app.title}.`)
+        break
+      case 'storage/unknown':
+      default:
+        notifyError(`${app.title} failed to retrieve about text. ${error.message}`)
+        break
+    }
+  })
+
   const removeApp = async () => {
     await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
     // TODO intl
@@ -51,7 +94,7 @@ const AboutApp = React.memo(() => {
 
   const addApp = async () => {
     try {
-      const timer = setTimeout(() => setBusy(true), 500)
+      const timer = setTimeout(() => setAddAppBusy(true), 500)
       // add
       await queryAddAppToUser(firebase, appid, uid)
       // TODO intl
@@ -63,7 +106,7 @@ const AboutApp = React.memo(() => {
       // TODO i18n
       notifyError('Could not add application. Try again later.')
     }
-    setBusy(false)
+    setAddAppBusy(false)
   }
 
   const goToWebStore = () => history.push('/webstore')
@@ -106,17 +149,15 @@ const AboutApp = React.memo(() => {
                 <Typography gutterBottom variant='h6' align='center'>
                   {app.title}
                 </Typography>
-                <Typography gutterBottom vaiant='caption' align='center'>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-              ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-              mollit anim id est laborum.
+                <Typography gutterBottom vaiant='caption' style={{ whiteSpace: 'pre-line' }}>
+                  {
+                    aboutTxt || <> <Skeleton /> <Skeleton /> <Skeleton /> </>
+                  }
                 </Typography>
               </CardContent>
               <CardActions>
                 <Button
-                  disabled={busy}
+                  disabled={addAppBusy}
                   size='large'
                   color='primary'
                   onClick={() => { userAppLinkId ? removeApp() : addApp() }}
