@@ -42,9 +42,9 @@ const useWebAppTileStyles = makeStyles(theme => ({
 }))
 
 const WebAppTile = React.memo(({ appId, app, index }) => {
-  const { title, icon } = app
   const history = useHistory()
   const [busy, setBusy] = useState(false)
+  const [icon, setIcon] = useState(null)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appId)
@@ -52,6 +52,12 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
   const notifySuccess = useNotifySuccess()
   const notifyInfo = useNotifyInfo()
   const notifyError = useNotifyError()
+
+  if (app && icon === null) {
+    firebase.storage().refFromURL(app.icon).getDownloadURL().then(iconURL =>
+      setIcon(iconURL)
+    )
+  }
 
   const removeApp = async () => {
     await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
@@ -87,13 +93,13 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
         <Card className={classes.card} elevation={5}>
           {busy && <div className={classes.overlay}><CircularProgress /></div>}
           <CardMedia
-            title={title}
+            title={app.title}
           >
-            <Image src={icon} alt={title} />
+            <Image src={icon} alt={app.title} />
           </CardMedia>
           <CardContent className={classes.cardContent}>
             <Typography gutterBottom variant='h6' align='center'>
-              {title}
+              {app.title}
             </Typography>
             <Typography gutterBottom vaiant='caption' align='center' />
           </CardContent>

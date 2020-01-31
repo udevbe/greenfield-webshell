@@ -31,9 +31,15 @@ export const ApplicationLauncher = React.memo(({ application: { icon, title, url
     setLaunchedClientId(null)
   }
 
+  const [appIcon, setAppIcon] = useState(null)
   const compositor = useCompositor()
   const firebase = useFirebase()
   const notifyError = useNotifyError()
+
+  if (appIcon === null) {
+    firebase.storage().refFromURL(icon).getDownloadURL().then(iconURL => setAppIcon(iconURL))
+  }
+
   const onLaunchApplication = () => {
     if (launchedClient) {
       // TODO raise this client's surfaces
@@ -74,7 +80,7 @@ export const ApplicationLauncher = React.memo(({ application: { icon, title, url
       <CardActionArea onClick={onLaunchApplication}>
         <Card className={classes.card} key={appId} elevation={3}>
           <CardMedia title={title}>
-            <Image src={icon} alt={title} />
+            <Image src={appIcon} alt={title} />
           </CardMedia>
         </Card>
         <Typography

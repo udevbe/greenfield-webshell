@@ -22,6 +22,8 @@ import makeStyles from '@material-ui/core/styles/makeStyles'
 import Image from '../../components/Image'
 import { useSelector } from 'react-redux'
 import Skeleton from '@material-ui/lab/Skeleton'
+import Markdown from '../../components/Markdown/Markdown'
+import { fetchAppStorageProperty } from '../../utils/appStorage'
 
 const useStyles = makeStyles({
   card: {
@@ -35,6 +37,7 @@ const AboutApp = React.memo(() => {
   const { appid } = useParams()
   const [addAppBusy, setAddAppBusy] = useState(false)
   const [aboutTxt, setAboutTxt] = useState(null)
+  const [icon, setIcon] = useState(null)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appid)
@@ -45,45 +48,29 @@ const AboutApp = React.memo(() => {
   const notifyInfo = useNotifyInfo()
   const notifyError = useNotifyError()
 
-  // download about text file
-  app && firebase.storage().refFromURL(app.about).getDownloadURL().then(aboutURL => {
-    const xhr = new window.XMLHttpRequest()
+  if (app && icon === null) {
+    firebase.storage().refFromURL(app.icon).getDownloadURL().then(iconURL => setIcon(iconURL))
+  }
 
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === window.XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          try {
-            const aboutTxt = xhr.responseText
-            setAboutTxt(aboutTxt)
-          } catch (e) {
-            console.error('\tname: ' + e.name + ' message: ' + e.message + ' text: ' + e.text)
-            console.error('error object stack: ')
-            console.error(e.stack)
-            throw new Error('Could not launch web application.')
-          }
-        } else {
-          console.error(`Could not download web application. ${xhr.status}: ${xhr.statusText}`)
-          throw new Error('Could not download web application.')
-        }
+  if (app && aboutTxt === null) {
+    fetchAppStorageProperty(firebase, app.about).then(aboutText => {
+      setAboutTxt(aboutText)
+    }).catch(error => {
+      // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
+      switch (error.code) {
+        case 'storage/object-not-found':
+          notifyError(`${app.title} about text could not be found on server.`)
+          break
+        case 'storage/unauthorized':
+          notifyError(`Not authorized to read about ${app.title}.`)
+          break
+        case 'storage/unknown':
+        default:
+          notifyError(`${app.title} failed to retrieve about text. ${error.message}`)
+          break
       }
-    }
-    xhr.open('GET', aboutURL)
-    xhr.send()
-  }).catch(function (error) {
-    // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
-    switch (error.code) {
-      case 'storage/object-not-found':
-        notifyError(`${app.title} about text could not be found on server.`)
-        break
-      case 'storage/unauthorized':
-        notifyError(`Not authorized to read about ${app.title}.`)
-        break
-      case 'storage/unknown':
-      default:
-        notifyError(`${app.title} failed to retrieve about text. ${error.message}`)
-        break
-    }
-  })
+    })
+  }
 
   const removeApp = async () => {
     await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
@@ -137,11 +124,11 @@ const AboutApp = React.memo(() => {
     >
       {
         app &&
-          <Container>
+        <Container>
             <Card className={classes.card} elevation={3}>
               <CardMedia>
                 <Image
-                  src={app.icon}
+                  src={icon}
                   alt={app.title}
                 />
               </CardMedia>
@@ -149,11 +136,9 @@ const AboutApp = React.memo(() => {
                 <Typography gutterBottom variant='h6' align='center'>
                   {app.title}
                 </Typography>
-                <Typography gutterBottom vaiant='caption' style={{ whiteSpace: 'pre-line' }}>
-                  {
-                    aboutTxt || <> <Skeleton /> <Skeleton /> <Skeleton /> </>
-                  }
-                </Typography>
+                {
+                  aboutTxt ? <Markdown>{aboutTxt}</Markdown> : <> <Skeleton /> <Skeleton /> <Skeleton /> </>
+                }
               </CardContent>
               <CardActions>
                 <Button
