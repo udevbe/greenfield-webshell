@@ -15,6 +15,12 @@
       "**/src/**",
       "**/public/**",
       "greenfield-dev-38bf7-3fe670d31a90.json"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }
