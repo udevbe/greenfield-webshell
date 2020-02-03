@@ -14,6 +14,7 @@ import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/au
 import { useCompositor } from '../contexts/CompositorProvider'
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
+import { ListItemText } from '@material-ui/core'
 
 /**
  * @typedef {{
@@ -103,6 +104,7 @@ export const useMenuItems = handleSignOut => {
     }
   }
 
+  // TODO i18n
   return {
     variant: 'listItem',
     visible: authorised,
@@ -133,23 +135,36 @@ export const useMenuItems = handleSignOut => {
         leftIcon: <SettingsSystemDaydreamIcon />,
         path: '/workspace',
         // TODO show clients instead of surfaces, show surfaces as tabs of active client
-        entries: Object.entries(userSurfacesByAppId).reduce((nestedMenu, [appId, userSurfaces]) => ({
-          ...nestedMenu,
-          [appId]: {
-            // TODO use client icon as left icon
-            visible: authorised,
-            variant: 'actionItem',
-            text: appId,
-            onClick: () => {
-              // TODO raise all surfaces of selected client & activate surface that was the last to be active
-            },
-            onClickSecondary: () => {
-              const clientId = userSurfaces[0].clientId
-              compositor.actions.closeClient({ id: clientId })
-            },
-            rightIcon: <CloseIcon />
+        entries: Object.entries(userSurfacesByAppId).length === 0 ? {
+          noRunningApps: {
+            variant: 'infoItem',
+            component:
+          <ListItemText
+            unselectable
+            multiline
+            primary='Running applications appear here.'
+            secondary='To launch an application, press the raster icon in the top right corner.'
+          />,
+            visible: true
           }
-        }), {})
+        }
+          : Object.entries(userSurfacesByAppId).reduce((nestedMenu, [appId, userSurfaces]) => ({
+            ...nestedMenu,
+            [appId]: {
+              // TODO use client icon as left icon
+              visible: authorised,
+              variant: 'actionItem',
+              text: appId,
+              onClick: () => {
+                // TODO raise all surfaces of selected client & activate surface that was the last to be active
+              },
+              onClickSecondary: () => {
+                const clientId = userSurfaces[0].clientId
+                compositor.actions.closeClient({ id: clientId })
+              },
+              rightIcon: <CloseIcon />
+            }
+          }), {})
       },
       webStore: {
         variant: 'actionItem',

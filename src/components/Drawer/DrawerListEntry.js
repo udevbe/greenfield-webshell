@@ -3,6 +3,7 @@ import DrawerListSubheader from './DrawerListSubheader'
 import DrawerActionItem from './DrawerActionItem'
 import React from 'react'
 import DrawerListItem from './DrawerListItem'
+import DrawerInfoItem from './DrawerInfoItem'
 
 /**
  * @param {DrawerEntry}drawerEntry
@@ -21,6 +22,8 @@ const DrawerListEntry = React.memo(({ drawerEntry, drawerPathSegment, selected }
       return <DrawerActionItem actionItem={drawerEntry} selected={selected} />
     case 'listItem':
       return <DrawerListItem listItem={drawerEntry} drawerPathSegment={drawerPathSegment} />
+    case 'infoItem':
+      return <DrawerInfoItem infoItem={drawerEntry} />
     default:
       return null
   }
