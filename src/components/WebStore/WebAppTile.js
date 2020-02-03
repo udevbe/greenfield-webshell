@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useFirebase } from 'react-redux-firebase'
 import { useUserId } from '../../utils/auth'
 import { useUserAppLinkId, useUserAppLinkIdLoading } from '../../database/hooks'
-import { queryAddAppToUser, queryRemoveAppFromUser } from '../../database/queries'
-import { useNotifyError, useNotifyInfo, useNotifySuccess } from '../../utils/notify'
+import { queryRemoveAppFromUser } from '../../database/queries'
+import { useNotifyInfo } from '../../utils/notify'
 import Typography from '@material-ui/core/Typography'
 import Grow from '@material-ui/core/Grow'
 import Grid from '@material-ui/core/Grid'
@@ -43,15 +43,12 @@ const useWebAppTileStyles = makeStyles(theme => ({
 
 const WebAppTile = React.memo(({ appId, app, index }) => {
   const history = useHistory()
-  const [busy, setBusy] = useState(false)
   const [icon, setIcon] = useState(null)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appId)
   const userAppLinkIdLoading = useUserAppLinkIdLoading(uid)
-  const notifySuccess = useNotifySuccess()
   const notifyInfo = useNotifyInfo()
-  const notifyError = useNotifyError()
 
   if (app && icon === null) {
     firebase.storage().refFromURL(app.icon).getDownloadURL().then(iconURL =>
@@ -66,23 +63,6 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     notifyInfo('Application removed')
   }
 
-  const addApp = async () => {
-    try {
-      const timer = setTimeout(() => setBusy(true), 500)
-      // add
-      await queryAddAppToUser(firebase, appId, uid)
-      // TODO intl
-      // TODO use application name in message
-      notifySuccess('Application added.')
-      clearTimeout(timer)
-    } catch (e) {
-      // TODO error in sentry.io
-      // TODO i18n
-      notifyError('Could not add application. Try again later.')
-    }
-    setBusy(false)
-  }
-
   const goToAboutApp = () => { history.push(`/webstore/${appId}`) }
 
   const classes = useWebAppTileStyles()
@@ -91,7 +71,6 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
       <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
         <Card className={classes.card} elevation={5}>
-          {busy && <div className={classes.overlay}><CircularProgress /></div>}
           <CardMedia
             title={app.title}
           >
@@ -109,23 +88,24 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
                 ? <CircularProgress />
                 : <>
                   <Button
-                    disabled={busy}
-                    size='large'
-                    color='primary'
-                    onClick={() => { userAppLinkId ? removeApp() : addApp() }}
-                    variant='contained'
-                  >
-                    {userAppLinkId ? 'Remove' : 'Add'}
-                  </Button>
-                  <Button
-                    disabled={busy}
                     size='large'
                     color='primary'
                     onClick={() => goToAboutApp()}
                     variant='contained'
                   >
-                    About
+                    Details
                   </Button>
+                  {
+                    userAppLinkId &&
+                      <Button
+                        size='large'
+                        color='primary'
+                        onClick={removeApp}
+                        variant='contained'
+                      >
+                      Remove
+                      </Button>
+                  }
                 </>
             }
           </CardActions>

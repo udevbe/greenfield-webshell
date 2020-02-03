@@ -4,7 +4,6 @@ import IconButton from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
-import Container from '@material-ui/core/Container'
 import { useHistory } from 'react-router'
 import Link from '@material-ui/core/Link'
 import { Link as RouterLink, useParams } from 'react-router-dom'
@@ -24,15 +23,17 @@ import { useSelector } from 'react-redux'
 import Skeleton from '@material-ui/lab/Skeleton'
 import Markdown from '../../components/Markdown/Markdown'
 import { fetchAppStorageProperty } from '../../utils/appStorage'
+import Grid from '@material-ui/core/Grid'
+import { CardHeader } from '@material-ui/core'
+import Divider from '@material-ui/core/Divider'
 
 const useStyles = makeStyles({
   card: {
-    marginTop: 20,
-    maxWidth: 800
+    margin: 20
   }
 })
 
-const AboutApp = React.memo(() => {
+const AppDetails = React.memo(() => {
   const history = useHistory()
   const { appid } = useParams()
   const [addAppBusy, setAddAppBusy] = useState(false)
@@ -144,38 +145,54 @@ const AboutApp = React.memo(() => {
     >
       {
         appTitle &&
-        <Container>
-            <Card className={classes.card} elevation={3}>
-              <CardMedia>
-                <Image
-                  src={icon}
-                  alt={appTitle}
-                />
-              </CardMedia>
-              <CardContent className={classes.cardContent}>
-                <Typography gutterBottom variant='h6' align='center'>
-                  {appTitle}
-                </Typography>
-                {
-                  aboutTxt ? <Markdown>{aboutTxt}</Markdown> : <> <Skeleton /> <Skeleton /> <Skeleton /> </>
-                }
-              </CardContent>
-              <CardActions>
-                <Button
-                  disabled={addAppBusy}
-                  size='large'
-                  color='primary'
-                  onClick={() => { userAppLinkId ? removeApp() : addApp() }}
-                  variant='contained'
+          <Grid
+            container
+            spacing={0}
+            direction='column'
+            alignItems='center'
+            justify='center'
+            style={{ minHeight: '90vh' }}
+          >
+            <Grid item xs={8}>
+              <Card className={classes.card} elevation={3}>
+                <CardMedia style={{
+                  maxWidth: 448
+                }}
                 >
-                  {userAppLinkId ? 'Remove' : 'Add'}
-                </Button>
-              </CardActions>
-            </Card>
-          </Container>
+                  <Image
+                    color='rgba(0,0,0,0)'
+                    src={icon}
+                    alt={appTitle}
+                  />
+                </CardMedia>
+                <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant='h5' align='center'>
+                    {appTitle}
+                  </Typography>
+                  {
+                    aboutTxt ? <Markdown>{aboutTxt}</Markdown> : <> <Skeleton /> <Skeleton /> <Skeleton /> </>
+                  }
+                </CardContent>
+                <Divider />
+
+                <CardActions>
+                  <Button
+                    disabled={addAppBusy}
+                    size='large'
+                    color='primary'
+                    onClick={() => { userAppLinkId ? removeApp() : addApp() }}
+                    variant='contained'
+                    fullWidth
+                  >
+                    {userAppLinkId ? 'Remove' : 'Add'}
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          </Grid>
       }
     </Activity>
   )
 })
 
-export default AboutApp
+export default AppDetails

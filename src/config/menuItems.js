@@ -140,7 +140,7 @@ export const useMenuItems = handleSignOut => {
             variant: 'infoItem',
             component:
           <ListItemText
-            unselectable
+            unselectable={'on'}
             multiline
             secondary='Running applications appear here.'
             inset

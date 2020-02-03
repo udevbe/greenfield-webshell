@@ -12,7 +12,7 @@ const getAppRoutes = () => {
 
   const Workspace = lazy(() => import('../../pages/Workspace'))
   const WebStore = lazy(() => import('../../pages/WebStore/WebStore'))
-  const AboutApp = lazy(() => import('../../pages/WebStore/AboutApp'))
+  const AboutApp = lazy(() => import('../../pages/WebStore/AppDetails'))
 
   const Settings = lazy(() => import('../../pages/Settings'))
   const SiteSettings = lazy(() => import('../../pages/Settings/SiteSettings'))

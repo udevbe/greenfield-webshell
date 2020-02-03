@@ -58,7 +58,8 @@ const Workspace = React.memo(() => {
             width: '100%',
             height: '100%',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             <Typography variant='subtitle1'>
               No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
