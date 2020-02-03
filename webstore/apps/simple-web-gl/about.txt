@@ -1,0 +1,4 @@
+
+# Simple-Web-GL — Demonstrates offscreen WebGL application
+
+**Simple-Web-GL** is a pure JavaScript application running in a sandboxed WebWorker. It demonstrates how an application running inside the browser can use an offscreen WebGL canvas.

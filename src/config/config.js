@@ -16,14 +16,14 @@ const config = {
   //   appId: '1:645736998883:web:41c075261b36e1683222d6'
   // },
   firebase_config: {
-    apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',
-    authDomain: 'greenfield-dev-38bf7.firebaseapp.com',
-    databaseURL: 'https://greenfield-dev-38bf7.firebaseio.com',
-    projectId: 'greenfield-dev-38bf7',
-    storageBucket: 'greenfield-dev-38bf7.appspot.com',
-    messagingSenderId: '479563718289',
-    appId: '1:479563718289:web:ec8b3b518c27499943a930',
-    measurementId: 'G-84RFF1PNSR'
+    apiKey: 'AIzaSyDHi2ozsjYZvAk_4cc5ZbCbLjlE-fWnc9Q',
+    authDomain: 'greenfield-preview.firebaseapp.com',
+    databaseURL: 'https://greenfield-preview.firebaseio.com',
+    projectId: 'greenfield-preview',
+    storageBucket: 'greenfield-preview.appspot.com',
+    messagingSenderId: '213447278801',
+    appId: '1:213447278801:web:56460a58be75b16168c5f0',
+    measurementId: 'G-V42XC9PBP5'
   },
   firebase_config_dev: {
     apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',

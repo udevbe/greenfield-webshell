@@ -41,32 +41,52 @@ const AboutApp = React.memo(() => {
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appid)
-  useFirebaseConnect([{ path: `/apps/${appid}`, storeAs: 'aboutApp' }])
-  const app = useSelector(({ firebase }) => firebase.data.aboutApp || null)
+  useFirebaseConnect([{ path: `/apps/${appid}`, storeAs: `about/${appid}` }])
+  const appIconURL = useSelector(({ firebase }) => {
+    if (firebase.data.about && firebase.data.about[appid]) {
+      return firebase.data.about[appid].icon
+    } else {
+      return null
+    }
+  })
+  const appAboutURL = useSelector(({ firebase }) => {
+    if (firebase.data.about && firebase.data.about[appid]) {
+      return firebase.data.about[appid].about
+    } else {
+      return null
+    }
+  })
+  const appTitle = useSelector(({ firebase }) => {
+    if (firebase.data.about && firebase.data.about[appid]) {
+      return firebase.data.about[appid].title
+    } else {
+      return null
+    }
+  })
 
   const notifySuccess = useNotifySuccess()
   const notifyInfo = useNotifyInfo()
   const notifyError = useNotifyError()
 
-  if (app && icon === null) {
-    firebase.storage().refFromURL(app.icon).getDownloadURL().then(iconURL => setIcon(iconURL))
+  if (appIconURL) {
+    firebase.storage().refFromURL(appIconURL).getDownloadURL().then(iconURL => setIcon(iconURL))
   }
 
-  if (app && aboutTxt === null) {
-    fetchAppStorageProperty(firebase, app.about).then(aboutText => {
+  if (appAboutURL) {
+    fetchAppStorageProperty(firebase, appAboutURL).then(aboutText => {
       setAboutTxt(aboutText)
     }).catch(error => {
       // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
       switch (error.code) {
         case 'storage/object-not-found':
-          notifyError(`${app.title} about text could not be found on server.`)
+          notifyError(`${appTitle} about text could not be found on server.`)
           break
         case 'storage/unauthorized':
-          notifyError(`Not authorized to read about ${app.title}.`)
+          notifyError(`Not authorized to read about ${appTitle}.`)
           break
         case 'storage/unknown':
         default:
-          notifyError(`${app.title} failed to retrieve about text. ${error.message}`)
+          notifyError(`${appTitle} failed to retrieve about text. ${error.message}`)
           break
       }
     })
@@ -120,21 +140,21 @@ const AboutApp = React.memo(() => {
         </>
       }
       style={{ maxHeight: '100%' }}
-      isLoading={app === null}
+      isLoading={appTitle === null}
     >
       {
-        app &&
+        appTitle &&
         <Container>
             <Card className={classes.card} elevation={3}>
               <CardMedia>
                 <Image
                   src={icon}
-                  alt={app.title}
+                  alt={appTitle}
                 />
               </CardMedia>
               <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant='h6' align='center'>
-                  {app.title}
+                  {appTitle}
                 </Typography>
                 {
                   aboutTxt ? <Markdown>{aboutTxt}</Markdown> : <> <Skeleton /> <Skeleton /> <Skeleton /> </>

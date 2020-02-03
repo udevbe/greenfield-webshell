@@ -3,7 +3,9 @@
     "origin": [
       "http://localhost:5000/",
       "http://localhost:3000/",
-      "https://preview.greenfield.app"
+      "https://preview.greenfield.app",
+      "https://greenfield-preview.firebaseapp.com",
+      "https://greenfield-preview.web.app/"
     ],
     "method": [
       "GET"

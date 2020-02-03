@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "greenfield-dev-38bf7"
+    "default": "greenfield-dev-38bf7",
+    "preview": "greenfield-preview"
   }
 }

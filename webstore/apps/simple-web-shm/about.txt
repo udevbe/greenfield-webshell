@@ -1,0 +1,4 @@
+
+# Simple-Web-SHM — Demonstrates a simple JavaScript application
+
+**Simple-Web-SHM** is a pure JavaScript application running in a sandboxed WebWorker. It demonstrates how an application running inside the browser can use a simple byte buffer to render it's content.

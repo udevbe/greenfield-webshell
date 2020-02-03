@@ -8,11 +8,13 @@
   "hosting": {
     "public": "build",
     "ignore": [
+      "webstore",
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
       "**/src/**",
-      "**/public/**"
+      "**/public/**",
+      "greenfield-dev-38bf7-3fe670d31a90.json"
     ]
   }
 }
