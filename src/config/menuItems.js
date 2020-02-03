@@ -142,8 +142,8 @@ export const useMenuItems = handleSignOut => {
           <ListItemText
             unselectable
             multiline
-            primary='Running applications appear here.'
-            secondary='To launch an application, press the raster icon in the top right corner.'
+            secondary='Running applications appear here.'
+            inset
           />,
             visible: true
           }

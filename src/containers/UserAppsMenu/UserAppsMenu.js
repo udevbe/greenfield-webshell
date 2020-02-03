@@ -55,7 +55,7 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
           paper: classes.menuPaper
         }}
       >
-        <Container className={classes.container} maxWidth='lg'>
+        <Container className={classes.container} maxWidth='lg' onClick={handleClose}>
           {isLoading
             ? <CircularProgress />
             : userAppIds.length === 0
@@ -67,7 +67,12 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
                     className={classes.noAppsText}
                   >
                     {/* TODO intl */}
-                    No applications here. Visit the <Link component={WebstoreLink} to='/webstore'>Webstore</Link> and add some!
+                    No applications here. Visit the <Link
+                    component={WebstoreLink} to='/webstore'
+                    underline='always'
+                    color='secondary'
+                  >Webstore
+                    </Link> and add some!
                   </Typography>
                 </Box>
               )

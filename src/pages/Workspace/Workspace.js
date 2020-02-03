@@ -6,6 +6,9 @@ import UserSurfaceArea from '../../containers/Workspace/UserSurfaceArea'
 import UserSurfaceTab from '../../components/Workspace/UserSurfaceTab'
 import Tabs from '@material-ui/core/Tabs'
 import { makeStyles } from '@material-ui/styles'
+import Typography from '@material-ui/core/Typography'
+import AppsIcon from '@material-ui/icons/Apps'
+import Container from '@material-ui/core/Container'
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -20,6 +23,7 @@ const Workspace = React.memo(() => {
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   const activeUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces)
     .find(userSurface => userSurface.active))
+  // TODO i18n
   return (
     <Activity
       isLoading={!compositorInitialized}
@@ -48,7 +52,20 @@ const Workspace = React.memo(() => {
       }
       mainRef={mainRef}
     >
-      <UserSurfaceArea />
+      {
+        userSurfaces.length === 0
+          ? <Container style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <Typography variant='subtitle1'>
+              No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
+            </Typography>
+          </Container>
+          : <UserSurfaceArea />
+      }
     </Activity>
   )
 })
