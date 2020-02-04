@@ -14,7 +14,9 @@ const reducers = {
    * @param {AddToHomeScreenState}state
    * @param {Action}action
    */
-  saveInstallProposalEvent: (state, action) => { state.proposalEvent = action.payload.proposalEvent },
+  saveInstallProposalEvent: (state, action) => {
+    state.proposalEvent = action.payload
+  },
   /**
    * @param {AddToHomeScreenState}state
    */

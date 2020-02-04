@@ -140,9 +140,9 @@ export const useMenuItems = handleSignOut => {
             variant: 'infoItem',
             component:
           <ListItemText
-            unselectable={'on'}
+            unselectable='on'
             multiline
-            secondary='Running applications appear here.'
+            secondary='Running applications will appear here.'
             inset
           />,
             visible: true

@@ -24,7 +24,6 @@ import Skeleton from '@material-ui/lab/Skeleton'
 import Markdown from '../../components/Markdown/Markdown'
 import { fetchAppStorageProperty } from '../../utils/appStorage'
 import Grid from '@material-ui/core/Grid'
-import { CardHeader } from '@material-ui/core'
 import Divider from '@material-ui/core/Divider'
 
 const useStyles = makeStyles({

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useEffect } from 'react'
 import config from '../../config'
 import { Router } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
@@ -8,12 +8,43 @@ import { CssBaseline } from '@material-ui/core'
 import Helmet from 'react-helmet'
 import { Route, Switch } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
+import { useDispatch } from 'react-redux'
+import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
 
 const history = createBrowserHistory()
 
 const Root = lazy(() => import('../Root'))
 const SignIn = lazy(() => import('../../pages/SignIn'))
 const FirebaseProvider = lazy(() => import('./FirebaseProvider'))
+
+const AppBody = () => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const beforeInstallPromptEventHandler = event => {
+      event.preventDefault()
+      dispatch(saveInstallProposalEvent(event))
+    }
+    window.addEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
+    return () => window.removeEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
+  })
+
+  return (
+    <Router history={history}>
+      <Suspense fallback={<LoadingComponent />}>
+        <FirebaseProvider>
+          <Switch>
+            <Route path='/signin' exact strict>
+              <SignIn />
+            </Route>
+            <Route>
+              <Root />
+            </Route>
+          </Switch>
+        </FirebaseProvider>
+      </Suspense>
+    </Router>
+  )
+}
 
 const App = () => {
   return (
@@ -34,26 +65,16 @@ const App = () => {
             <link rel='preload' href='https://fonts.googleapis.com/css?family=Roboto:300,400,500' as='font' />
             <link rel='preload' href='https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500' as='font' />
             <link rel='stylesheet' type='text/css' href='index.css' />
-            <link rel='stylesheet' type='text/css' href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css' />
+            <link
+              rel='stylesheet' type='text/css'
+              href='https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css'
+            />
             <link rel='dns-prefetch' href='https://fonts.googleapis.com' />
             <link rel='preconnect' href='https://fonts.googleapis.com' />
             <link rel='dns-prefetch' href='https://cdn.firebase.com' />
             <link rel='preconnect' href='https://cdn.firebase.com' />
           </Helmet>
-          <Router history={history}>
-            <Suspense fallback={<LoadingComponent />}>
-              <FirebaseProvider>
-                <Switch>
-                  <Route path='/signin' exact strict>
-                    <SignIn />
-                  </Route>
-                  <Route>
-                    <Root />
-                  </Route>
-                </Switch>
-              </FirebaseProvider>
-            </Suspense>
-          </Router>
+          <AppBody />
         </AppProviders>
       </StoreProvider>
     </React.StrictMode>
