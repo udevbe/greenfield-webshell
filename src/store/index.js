@@ -13,7 +13,8 @@ const persistConfig = {
     'simpleValues',
     'addToHomeScreen',
     'compositor',
-    'notification'
+    'notification',
+    'serviceWorker'
   ]
 }
 

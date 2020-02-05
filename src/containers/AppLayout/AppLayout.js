@@ -3,6 +3,7 @@ import React from 'react'
 import Routes from '../../containers/Routes'
 import { makeStyles } from '@material-ui/styles'
 import Notification from '../../components/Notification'
+import UpdateNotification from '../../components/Notification/UpdateNotification'
 
 const useStyles = makeStyles({
   body: {
@@ -31,6 +32,7 @@ export const AppLayout = React.memo(() => {
     <div className={classes.body}>
       <div className={classes.root}>
         <Notification />
+        <UpdateNotification />
         <Drawer />
         <Routes />
       </div>

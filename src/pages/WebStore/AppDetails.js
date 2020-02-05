@@ -146,13 +146,13 @@ const AppDetails = React.memo(() => {
         appTitle &&
           <Grid
             container
-            spacing={0}
+            spacing={2}
             direction='column'
             alignItems='center'
             justify='center'
             style={{ minHeight: '90vh' }}
           >
-            <Grid item xs={8}>
+            <Grid item xs={12}>
               <Card className={classes.card} elevation={3}>
                 <CardMedia style={{
                   maxWidth: 448

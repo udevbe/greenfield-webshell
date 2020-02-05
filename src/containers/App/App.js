@@ -10,6 +10,8 @@ import { Route, Switch } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 import { useDispatch } from 'react-redux'
 import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
+import * as serviceWorker from '../../utils/serviceWorker'
+import { registrationSuccess, updateAvailable } from '../../store/serviceworker'
 
 const history = createBrowserHistory()
 
@@ -17,16 +19,27 @@ const Root = lazy(() => import('../Root'))
 const SignIn = lazy(() => import('../../pages/SignIn'))
 const FirebaseProvider = lazy(() => import('./FirebaseProvider'))
 
-const AppBody = () => {
+const AppBody = React.memo(() => {
   const dispatch = useDispatch()
+
   useEffect(() => {
     const beforeInstallPromptEventHandler = event => {
       event.preventDefault()
       dispatch(saveInstallProposalEvent(event))
     }
     window.addEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
+
+    navigator.serviceWorker.ready.then(registration => {
+      dispatch(registrationSuccess(registration))
+      setInterval(() => registration.update(), 5000)
+    })
+
+    serviceWorker.register({
+      onUpdate: registration => dispatch(updateAvailable(registration))
+    })
+
     return () => window.removeEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
-  })
+  }, [dispatch])
 
   return (
     <Router history={history}>
@@ -44,7 +57,7 @@ const AppBody = () => {
       </Suspense>
     </Router>
   )
-}
+})
 
 const App = () => {
   return (
@@ -59,7 +72,8 @@ const App = () => {
               content='Greenfield. A fully distributed cloud desktop. Run applications remotely from physically different machines, or run them directly inside your browser. All at the same time.'
             />
             <meta name='theme-color' content='#dcdcdc' />
-            <link rel='manifest' href='/manifest.json' />
+            <meta name='mobile-web-app-capable' content='yes' />
+            <link rel='manifest' href='manifest.json' />
             <link rel='subresource' href='logo.png' />
             <link rel='subresource' href='index.css' />
             <link rel='preload' href='https://fonts.googleapis.com/css?family=Roboto:300,400,500' as='font' />

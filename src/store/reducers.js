@@ -9,6 +9,7 @@ import { combineReducers } from 'redux'
 import addToHomeScreen from './addToHomeScreen'
 import compositor from './compositor'
 import notification from './notification'
+import serviceWorker from './serviceworker'
 
 export default combineReducers({
   firebase,
@@ -20,5 +21,6 @@ export default combineReducers({
   themeSource,
   addToHomeScreen,
   compositor,
-  notification
+  notification,
+  serviceWorker
 })
