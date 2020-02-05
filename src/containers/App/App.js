@@ -29,14 +29,18 @@ const AppBody = React.memo(() => {
     }
     window.addEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
 
-    navigator.serviceWorker.ready.then(registration => {
-      dispatch(registrationSuccess(registration))
-      setInterval(() => registration.update(), 5000)
-    })
-
-    serviceWorker.register({
-      onUpdate: registration => dispatch(updateAvailable(registration))
-    })
+    const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
+    if (iOS) {
+      serviceWorker.register()
+    } else {
+      navigator.serviceWorker.ready.then(registration => {
+        dispatch(registrationSuccess(registration))
+        setInterval(() => registration.update(), 5000)
+      })
+      serviceWorker.register({
+        onUpdate: registration => dispatch(updateAvailable(registration))
+      })
+    }
 
     return () => window.removeEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
   }, [dispatch])

@@ -68,7 +68,7 @@ const SignIn = React.memo(() => {
           <div className={classes.text}>
             <Logo />
             <Typography variant='h6' color='textSecondary' noWrap>
-              The Cloud Desktop...
+              The Cloud Desktop.
             </Typography>
             <AuthUI />
           </div>
