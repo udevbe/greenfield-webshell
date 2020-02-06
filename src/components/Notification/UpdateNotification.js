@@ -35,7 +35,7 @@ const UpdateNotification = React.memo(() => {
       message='A new version is available.'
       action={
         <>
-          <Button color='secondary' size='small' onClick={doUpdate}>Update</Button>
+          <Button color='secondary' size='small' onClick={doUpdate}>Refresh</Button>
           <IconButton size='medium' aria-label='close' color='inherit' onClick={handleClose}>
             <CloseIcon fontSize='default' />
           </IconButton>

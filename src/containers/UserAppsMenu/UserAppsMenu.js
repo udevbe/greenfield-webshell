@@ -70,7 +70,7 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
                     No applications here. Visit the <Link
                     component={WebstoreLink} to='/webstore'
                     underline='always'
-                    color='secondary'
+                    color='inherit'
                   >Webstore
                     </Link> and add some!
                   </Typography>

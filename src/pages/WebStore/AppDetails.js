@@ -146,7 +146,6 @@ const AppDetails = React.memo(() => {
         appTitle &&
           <Grid
             container
-            spacing={2}
             direction='column'
             alignItems='center'
             justify='center'
