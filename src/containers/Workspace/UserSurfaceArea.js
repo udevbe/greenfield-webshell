@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import UserSurface from '../../components/Workspace/UserSurface'
 import makeStyles from '@material-ui/core/styles/makeStyles'
@@ -8,19 +8,26 @@ const useStyles = makeStyles(theme => ({
   workspace: {
     width: '100%',
     height: '100%',
-    backgroundImage: 'url(./pattern_light.png)',
-    backgroundSize: 'auto',
-    backgroundRepeat: 'repeat',
+    // backgroundImage: 'url(./pattern_light.png)',
+    // backgroundSize: 'auto',
+    // backgroundRepeat: 'repeat',
     overflow: 'hidden',
     position: 'relative'
   }
 }))
 
-const UserSurfaceArea = React.memo(() => {
+const UserSurfaceArea = React.memo(({}) => {
+  const sceneId = 'main-workspace'
+
   const classes = useStyles()
-  const workspaceRef = useRef(null)
-  const activeUserSurfaceRef = useRef(null)
   const { actions: compositorActions } = useCompositor()
+
+  const workspaceRef = useCallback(htmlCanvasElement => {
+    if (htmlCanvasElement !== null) {
+      compositorActions.initScene(sceneId, htmlCanvasElement)
+    }
+  }, [])
+  const activeUserSurfaceRef = useRef(null)
 
   // FIXME this logic probably belongs in the compositor store instead of here
   const currentActiveUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces).reduce((previousValue, currentValue) => {
@@ -49,17 +56,17 @@ const UserSurfaceArea = React.memo(() => {
 
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   return (
-    <div className={classes.workspace} id='workspace' ref={workspaceRef}>{
+    <canvas className={classes.workspace} ref={workspaceRef}>{
       userSurfaces.map(userSurface =>
         <UserSurface
           key={userSurface.key}
-          workspaceRef={workspaceRef}
+          sceneId={sceneId}
           id={userSurface.id}
           clientId={userSurface.clientId}
           active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
         />)
     }
-    </div>
+    </canvas>
   )
 })
 

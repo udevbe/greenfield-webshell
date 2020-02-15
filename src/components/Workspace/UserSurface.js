@@ -1,26 +1,24 @@
 import React, { useEffect, useRef } from 'react'
 import { useCompositor } from '../../contexts/CompositorProvider'
 
-const UserSurface = React.memo(({ workspaceRef, id, clientId, active }) => {
+const UserSurface = React.memo(({ id, clientId, active, sceneId }) => {
   const { actions: compositorActions } = useCompositor()
   const mainViewRef = useRef(null)
 
   useEffect(() => {
-    const mainView = compositorActions.createView({ id, clientId })
+    const mainView = compositorActions.createView({ id, clientId }, sceneId)
     mainViewRef.current = mainView
 
-    mainView.attachTo(workspaceRef.current)
     compositorActions.requestActive({ id, clientId })
 
     return () => {
-      mainView.detach()
       mainView.destroy()
       mainViewRef.current = null
     }
-  }, [compositorActions, id, clientId, workspaceRef])
+  }, [compositorActions, id, clientId, sceneId])
 
   if (mainViewRef.current && active) {
-    mainViewRef.current.raise()
+    compositorActions.raise({ id, clientId }, sceneId)
   }
 
   return null
