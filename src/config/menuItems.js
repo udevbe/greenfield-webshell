@@ -141,7 +141,6 @@ export const useMenuItems = handleSignOut => {
             component:
           <ListItemText
             unselectable='on'
-            multiline
             secondary='Running applications will appear here.'
             inset
           />,
@@ -169,7 +168,7 @@ export const useMenuItems = handleSignOut => {
       webStore: {
         variant: 'actionItem',
         visible: authorised && webStoreAccess,
-        text: intl.formatMessage({ id: 'Web Store' }),
+        text: intl.formatMessage({ id: 'web_store' }),
         leftIcon: <PublicIcon />,
         path: '/webstore'
       },

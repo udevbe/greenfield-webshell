@@ -25,7 +25,15 @@ export default () => {
     reducer: persistedReducer,
     middleware: getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, actionTypes.LOGIN]
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,
+          ...Object.values(actionTypes)
+        ]
       }
     })
   })

@@ -56,16 +56,23 @@ const UserSurfaceArea = React.memo(({}) => {
 
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   return (
-    <canvas className={classes.workspace} ref={workspaceRef}>{
-      userSurfaces.map(userSurface =>
-        <UserSurface
-          key={userSurface.key}
-          sceneId={sceneId}
-          id={userSurface.id}
-          clientId={userSurface.clientId}
-          active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
-        />)
-    }
+    <canvas
+      className={classes.workspace}
+      ref={workspaceRef}
+      onMouseMove={event => compositorActions.input.pointerMove(event, sceneId)}
+      onMouseUp={event => compositorActions.input.buttonUp(event, sceneId)}
+      onMouseDown={event => compositorActions.input.buttonDown(event, sceneId)}
+      onWheel={event => compositorActions.input.axis(event, sceneId)}
+    >{
+        userSurfaces.map(userSurface =>
+          <UserSurface
+            key={userSurface.key}
+            sceneId={sceneId}
+            id={userSurface.id}
+            clientId={userSurface.clientId}
+            active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
+          />)
+      }
     </canvas>
   )
 })
