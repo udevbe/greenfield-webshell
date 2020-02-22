@@ -1,32 +1,44 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import UserSurface from '../../components/Workspace/UserSurface'
-import makeStyles from '@material-ui/core/styles/makeStyles'
 import { useCompositor } from '../../contexts/CompositorProvider'
 
-const useStyles = makeStyles(theme => ({
-  workspace: {
-    width: '100%',
-    height: '100%',
-    // backgroundImage: 'url(./pattern_light.png)',
-    // backgroundSize: 'auto',
-    // backgroundRepeat: 'repeat',
-    overflow: 'hidden',
-    position: 'relative'
-  }
-}))
+const canvas = document.createElement('canvas')
+canvas.style.width = '100%'
+canvas.style.height = '100%'
+// backgroundImage: 'url(./pattern_light.png)',
+// backgroundSize: 'auto',
+// backgroundRepeat: 'repeat',
+canvas.style.overflow = 'hidden'
+canvas.style.position = 'relative'
 
-const UserSurfaceArea = React.memo(({}) => {
+const LocalScene = React.memo(({ mainRef }) => {
   const sceneId = 'main-workspace'
-
-  const classes = useStyles()
   const { actions: compositorActions } = useCompositor()
 
-  const workspaceRef = useCallback(htmlCanvasElement => {
-    if (htmlCanvasElement !== null) {
-      compositorActions.initScene(sceneId, htmlCanvasElement)
+  const workspaceRef = useRef(canvas)
+  useEffect(() => {
+    const workspaceElement = /** @type  {HTMLElement} */workspaceRef.current
+    const mainElement = /** @type  {HTMLElement} */mainRef.current
+
+    compositorActions.initScene(sceneId, workspaceElement)
+    workspaceElement.onpointermove = event => compositorActions.input.pointerMove(event, sceneId)
+    workspaceElement.onpointerdown = event => {
+      workspaceElement.setPointerCapture(event.pointerId)
+      compositorActions.input.buttonDown(event, sceneId)
     }
-  }, [])
+    workspaceElement.onpointerup = event => {
+      compositorActions.input.buttonUp(event, sceneId)
+      workspaceElement.releasePointerCapture(event.pointerId)
+    }
+    workspaceElement.onwheel = event => compositorActions.input.axis(event, sceneId)
+
+    // if (workspaceElement.parentElement !== mainElement) {
+    mainElement.appendChild(workspaceElement)
+    // }
+    return () => { mainElement.removeChild(workspaceElement) }
+  }, [workspaceRef, mainRef, compositorActions])
+
   const activeUserSurfaceRef = useRef(null)
 
   // FIXME this logic probably belongs in the compositor store instead of here
@@ -56,25 +68,15 @@ const UserSurfaceArea = React.memo(({}) => {
 
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   return (
-    <canvas
-      className={classes.workspace}
-      ref={workspaceRef}
-      onMouseMove={event => compositorActions.input.pointerMove(event, sceneId)}
-      onMouseUp={event => compositorActions.input.buttonUp(event, sceneId)}
-      onMouseDown={event => compositorActions.input.buttonDown(event, sceneId)}
-      onWheel={event => compositorActions.input.axis(event, sceneId)}
-    >{
-        userSurfaces.map(userSurface =>
-          <UserSurface
-            key={userSurface.key}
-            sceneId={sceneId}
-            id={userSurface.id}
-            clientId={userSurface.clientId}
-            active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
-          />)
-      }
-    </canvas>
+    userSurfaces.map(userSurface =>
+      <UserSurface
+        key={userSurface.key}
+        sceneId={sceneId}
+        id={userSurface.id}
+        clientId={userSurface.clientId}
+        active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
+      />)
   )
 })
 
-export default UserSurfaceArea
+export default LocalScene

@@ -8,7 +8,7 @@ import Tabs from '@material-ui/core/Tabs'
 import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
-import UserSurfaceArea from '../../containers/Workspace/UserSurfaceArea'
+import LocalScene from '../../containers/Workspace/LocalScene'
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -66,12 +66,12 @@ const Workspace = React.memo(() => {
           <>
             <Backdrop open className={classes.backdrop}>
               <Typography variant='subtitle1'>
-        No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
+                No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
               </Typography>
             </Backdrop>
           </>
       }
-      <UserSurfaceArea />
+      <LocalScene mainRef={mainRef} />
     </Activity>
   )
 })
