@@ -13,11 +13,22 @@ import {
   updateUserSurface
 } from '../../store/compositor'
 import { showNotification } from '../../store/notification'
+import { createLocalWorkspace } from '../../store/workspace'
 
 const importCompositorModule = import('compositor-module')
 const compositorSession = { globals: null, webAppLauncher: null, remoteAppLauncher: null, actions: null }
 
 window.GREENFIELD_DEBUG = process.env.NODE_ENV === 'development'
+
+/**
+ * @returns {string}
+ * @private
+ */
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
 
 const CompositorProvider = React.memo(({ children }) => {
   const dispatch = useDispatch()
@@ -25,6 +36,7 @@ const CompositorProvider = React.memo(({ children }) => {
   const isInitialized = useSelector(({ compositor }) => compositor.initialized)
   const isInitializing = useSelector(({ compositor }) => compositor.initializing)
   const userConfiguration = useSelector(({ compositor }) => compositor.userConfiguration)
+
   if (isInitialized && userConfiguration) {
     compositorSession.actions.setUserConfiguration(userConfiguration)
   }
@@ -68,7 +80,20 @@ const CompositorProvider = React.memo(({ children }) => {
 
         compositorSession.webAppLauncher = webAppLauncher
         compositorSession.remoteAppLauncher = remoteAppLauncher
-        compositorSession.actions = userShell.actions
+        compositorSession.actions = {
+          ...userShell.actions,
+          createScene: name => {
+            const id = uuidv4()
+            const canvas = document.createElement('canvas')
+            canvas.style.display = 'none'
+            canvas.id = id
+            document.body.appendChild(canvas)
+            compositorSession.actions.initScene(id, canvas)
+            dispatch(createLocalWorkspace({ name, id }))
+          }
+        }
+
+        compositorSession.actions.createScene('default')
 
         dispatch(compositorInitialized())
         session.globals.register()

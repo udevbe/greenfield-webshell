@@ -8,7 +8,7 @@ import Tabs from '@material-ui/core/Tabs'
 import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
-import LocalScene from '../../containers/Workspace/LocalScene'
+import LocalWorkspace from '../../containers/Workspace/LocalScene'
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -21,17 +21,23 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     padding: 5,
     textAlign: 'center',
-    top: '90%'
+    top: '90%',
+    bottom: '5%'
   }
 }))
 
 const Workspace = React.memo(() => {
   const classes = useStyles()
   const mainRef = useRef(null)
+
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
   const activeUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces)
     .find(userSurface => userSurface.active))
+
+  const { scenes, activeSceneId } = useSelector(({ workspace }) => workspace)
+  // TODO map scenes from store.
+
   // TODO i18n
   return (
     <Activity
@@ -71,7 +77,10 @@ const Workspace = React.memo(() => {
             </Backdrop>
           </>
       }
-      <LocalScene mainRef={mainRef} />
+      {
+        compositorInitialized && activeSceneId &&
+          <LocalWorkspace mainRef={mainRef} sceneId={activeSceneId} />
+      }
     </Activity>
   )
 })

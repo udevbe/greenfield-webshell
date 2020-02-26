@@ -3,41 +3,54 @@ import { useSelector } from 'react-redux'
 import UserSurface from '../../components/Workspace/UserSurface'
 import { useCompositor } from '../../contexts/CompositorProvider'
 
-const canvas = document.createElement('canvas')
-canvas.style.width = '100%'
-canvas.style.height = '100%'
-// backgroundImage: 'url(./pattern_light.png)',
-// backgroundSize: 'auto',
-// backgroundRepeat: 'repeat',
-canvas.style.overflow = 'hidden'
-canvas.style.position = 'relative'
+const configureCanvas = canvas => {
+  canvas.style.display = 'inline'
+  canvas.style.width = '100%'
+  canvas.style.height = '100%'
+  canvas.style.overflow = 'hidden'
+  canvas.style.position = 'relative'
+  canvas.style.float = 'left'
 
-const LocalScene = React.memo(({ mainRef }) => {
-  const sceneId = 'main-workspace'
+  return canvas
+}
+
+const captureInputEvents = (canvas, compositorActions, sceneId) => {
+  canvas.onpointermove = event => compositorActions.input.pointerMove(event, sceneId)
+  canvas.onpointerdown = event => {
+    canvas.setPointerCapture(event.pointerId)
+    compositorActions.input.buttonDown(event, sceneId)
+  }
+  canvas.onpointerup = event => {
+    compositorActions.input.buttonUp(event, sceneId)
+    canvas.releasePointerCapture(event.pointerId)
+  }
+  canvas.onwheel = event => compositorActions.input.axis(event, sceneId)
+}
+
+const LocalScene = React.memo(({ mainRef, sceneId }) => {
   const { actions: compositorActions } = useCompositor()
 
-  const workspaceRef = useRef(canvas)
   useEffect(() => {
-    const workspaceElement = /** @type  {HTMLElement} */workspaceRef.current
     const mainElement = /** @type  {HTMLElement} */mainRef.current
+    const element = document.getElementById(sceneId)
 
-    compositorActions.initScene(sceneId, workspaceElement)
-    workspaceElement.onpointermove = event => compositorActions.input.pointerMove(event, sceneId)
-    workspaceElement.onpointerdown = event => {
-      workspaceElement.setPointerCapture(event.pointerId)
-      compositorActions.input.buttonDown(event, sceneId)
-    }
-    workspaceElement.onpointerup = event => {
-      compositorActions.input.buttonUp(event, sceneId)
-      workspaceElement.releasePointerCapture(event.pointerId)
-    }
-    workspaceElement.onwheel = event => compositorActions.input.axis(event, sceneId)
+    captureInputEvents(element, compositorActions, sceneId)
 
-    // if (workspaceElement.parentElement !== mainElement) {
-    mainElement.appendChild(workspaceElement)
-    // }
-    return () => { mainElement.removeChild(workspaceElement) }
-  }, [workspaceRef, mainRef, compositorActions])
+    const resizeListener = () => compositorActions.refreshScene(sceneId, element)
+
+    if (element.parentElement !== mainElement) {
+      configureCanvas(element)
+      mainElement.appendChild(element)
+      compositorActions.refreshScene(sceneId, element)
+      window.addEventListener('resize', resizeListener)
+    }
+
+    return () => {
+      window.removeEventListener('resize', resizeListener)
+      element.style.display = 'none'
+      document.body.appendChild(element)
+    }
+  }, [mainRef, sceneId, compositorActions])
 
   const activeUserSurfaceRef = useRef(null)
 
