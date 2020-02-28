@@ -15,7 +15,7 @@ import Mouse from '@material-ui/icons/Mouse'
 import { ListItemIcon, ListItemText } from '@material-ui/core'
 import { Keyboard } from '@material-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { setUserConfiguration } from '../../store/compositor'
+import { updateUserConfiguration } from '../../store/compositor'
 import TextField from '@material-ui/core/TextField'
 import { useCompositor } from '../../contexts/CompositorProvider'
 import Autocomplete from '@material-ui/lab/Autocomplete'
@@ -44,12 +44,12 @@ const InputSettings = React.memo(() => {
       return ''
     }
   })
-  const handleKeyboardLayoutChange = (event, value) => { dispatch(setUserConfiguration({ keyboardLayoutName: value })) }
+  const handleKeyboardLayoutChange = (event, value) => { dispatch(updateUserConfiguration({ keyboardLayoutName: value })) }
 
   const scrollFactor = useSelector(({ compositor }) => compositor.userConfiguration.scrollFactor)
   const [scrollSpeed, setScrollSpeed] = useState(scrollFactor * 100)
   const handleScrollSpeedUpdate = value => { setScrollSpeed(value) }
-  const handleScrollSpeedCommit = value => { dispatch(setUserConfiguration({ scrollFactor: scrollSpeed / 100 })) }
+  const handleScrollSpeedCommit = value => { dispatch(updateUserConfiguration({ scrollFactor: scrollSpeed / 100 })) }
   const handleScrollSpeedLabelUpdate = value => `${value}%`
 
   const goToSettings = () => history.push('/settings')

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 /**
- * @typedef {{name: string, id: string, type: 'local', element: HTMLCanvasElement}}SceneState
+ * @typedef {{name: string, id: string, type: 'local'}}SceneState
  */
 /**
  * @typedef {{scenes: Object.<string, SceneState>, activeSceneId: string}}WorkspaceState
@@ -34,11 +34,10 @@ const reducers = {
    * @param {Action}action
    */
   destroyWorkspace: (state, action) => {
-    const { id, compositorActions } = action.payload
+    const { id } = action.payload
     delete state.scenes[id]
     const sceneIds = Object.keys(state.scenes)
     state.activeSceneId = sceneIds.length ? sceneIds[0] : null
-    compositorActions.destroyScene(id)
   }
 }
 

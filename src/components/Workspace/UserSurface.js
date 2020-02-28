@@ -8,7 +8,6 @@ const UserSurface = React.memo(({ id, clientId, active, sceneId }) => {
   useEffect(() => {
     const mainView = compositorActions.createView({ id, clientId }, sceneId)
     mainViewRef.current = mainView
-
     compositorActions.requestActive({ id, clientId })
 
     return () => {

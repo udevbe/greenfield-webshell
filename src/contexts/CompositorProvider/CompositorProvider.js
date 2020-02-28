@@ -90,6 +90,10 @@ const CompositorProvider = React.memo(({ children }) => {
             document.body.appendChild(canvas)
             compositorSession.actions.initScene(id, canvas)
             dispatch(createLocalWorkspace({ name, id }))
+          },
+          createSceneView: (userSurface, sceneId) => {
+            dispatch(createUserSurfaceView(userSurface, sceneId))
+            compositorSession.actions.createView(userSurface, sceneId)
           }
         }
 

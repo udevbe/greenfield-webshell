@@ -32,23 +32,23 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
 
   useEffect(() => {
     const mainElement = /** @type  {HTMLElement} */mainRef.current
-    const element = document.getElementById(sceneId)
+    const sceneElement = document.getElementById(sceneId)
 
-    captureInputEvents(element, compositorActions, sceneId)
+    captureInputEvents(sceneElement, compositorActions, sceneId)
 
-    const resizeListener = () => compositorActions.refreshScene(sceneId, element)
+    const resizeListener = () => compositorActions.refreshScene(sceneId, sceneElement)
 
-    if (element.parentElement !== mainElement) {
-      configureCanvas(element)
-      mainElement.appendChild(element)
-      compositorActions.refreshScene(sceneId, element)
+    if (sceneElement.parentElement !== mainElement) {
+      configureCanvas(sceneElement)
+      mainElement.appendChild(sceneElement)
+      compositorActions.refreshScene(sceneId, sceneElement)
       window.addEventListener('resize', resizeListener)
     }
 
     return () => {
       window.removeEventListener('resize', resizeListener)
-      element.style.display = 'none'
-      document.body.appendChild(element)
+      sceneElement.style.display = 'none'
+      document.body.appendChild(sceneElement)
     }
   }, [mainRef, sceneId, compositorActions])
 
@@ -72,7 +72,7 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
   }
   activeUserSurfaceRef.current = currentActiveUserSurface
 
-  // FIXME this logic probably belongs in the compositor store instead of here
+  // FIXME this logic probably belongs in a compositor middleware instead of here
   const pointerGrabIsActive = useSelector(({ compositor }) => compositor.seat.pointerGrab ? compositor.userSurfaces[compositor.seat.pointerGrab.key].active : false)
   const pointerGrab = useSelector(({ compositor }) => compositor.seat.pointerGrab)
   if (!pointerGrabIsActive && pointerGrab) {
@@ -80,16 +80,18 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
   }
 
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
-  return (
-    userSurfaces.map(userSurface =>
-      <UserSurface
-        key={userSurface.key}
-        sceneId={sceneId}
-        id={userSurface.id}
-        clientId={userSurface.clientId}
-        active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
-      />)
-  )
+  userSurfaces.map(userSurface => {
+
+
+    // return <UserSurface
+    //   key={userSurface.key}
+    //   sceneId={sceneId}
+    //   id={userSurface.id}
+    //   clientId={userSurface.clientId}
+    //   active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
+    // />
+  })
+  return null
 })
 
 export default LocalScene
