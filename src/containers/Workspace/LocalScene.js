@@ -1,7 +1,15 @@
 import React, { useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
-import UserSurface from '../../components/Workspace/UserSurface'
-import { useCompositor } from '../../contexts/CompositorProvider'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  inputAxis,
+  inputButtonDown,
+  inputButtonUp,
+  inputPointerMove,
+  notifyUserSurfaceInactive,
+  refreshScene,
+  requestUserSurfaceActive,
+  userSurfaceKeyboardFocus
+} from '../../store/compositor'
 
 const configureCanvas = canvas => {
   canvas.style.display = 'inline'
@@ -14,34 +22,29 @@ const configureCanvas = canvas => {
   return canvas
 }
 
-const captureInputEvents = (canvas, compositorActions, sceneId) => {
-  canvas.onpointermove = event => compositorActions.input.pointerMove(event, sceneId)
-  canvas.onpointerdown = event => {
-    canvas.setPointerCapture(event.pointerId)
-    compositorActions.input.buttonDown(event, sceneId)
-  }
-  canvas.onpointerup = event => {
-    compositorActions.input.buttonUp(event, sceneId)
-    canvas.releasePointerCapture(event.pointerId)
-  }
-  canvas.onwheel = event => compositorActions.input.axis(event, sceneId)
-}
-
 const LocalScene = React.memo(({ mainRef, sceneId }) => {
-  const { actions: compositorActions } = useCompositor()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const mainElement = /** @type  {HTMLElement} */mainRef.current
     const sceneElement = document.getElementById(sceneId)
 
-    captureInputEvents(sceneElement, compositorActions, sceneId)
-
-    const resizeListener = () => compositorActions.refreshScene(sceneId, sceneElement)
+    sceneElement.onpointermove = event => dispatch(inputPointerMove({ event, sceneId }))
+    sceneElement.onpointerdown = event => {
+      sceneElement.setPointerCapture(event.pointerId)
+      dispatch(inputButtonDown({ event, sceneId }))
+    }
+    sceneElement.onpointerup = event => {
+      dispatch(inputButtonUp({ event, sceneId }))
+      sceneElement.releasePointerCapture(event.pointerId)
+    }
+    sceneElement.onwheel = event => dispatch(inputAxis({ event, sceneId }))
+    const resizeListener = () => dispatch(refreshScene(sceneId))
 
     if (sceneElement.parentElement !== mainElement) {
       configureCanvas(sceneElement)
       mainElement.appendChild(sceneElement)
-      compositorActions.refreshScene(sceneId, sceneElement)
+      dispatch(refreshScene(sceneId))
       window.addEventListener('resize', resizeListener)
     }
 
@@ -50,11 +53,11 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
       sceneElement.style.display = 'none'
       document.body.appendChild(sceneElement)
     }
-  }, [mainRef, sceneId, compositorActions])
+  }, [mainRef, sceneId, dispatch])
 
-  const activeUserSurfaceRef = useRef(null)
+  const activeUserSurfaceKeyRef = useRef(null)
 
-  // FIXME this logic probably belongs in the compositor store instead of here
+  // TODO move "keyboard focus follows active surface" to middleware
   const currentActiveUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces).reduce((previousValue, currentValue) => {
     if (currentValue.active && ((previousValue && currentValue.lastActive > previousValue.lastActive) || previousValue === null)) {
       return currentValue
@@ -62,35 +65,23 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
       return previousValue
     }
   }, null) || null)
-  if (activeUserSurfaceRef.current && currentActiveUserSurface && activeUserSurfaceRef.current.key !== currentActiveUserSurface.key) {
-    compositorActions.notifyInactive(activeUserSurfaceRef.current)
-    compositorActions.setKeyboardFocus(currentActiveUserSurface)
-  } else if (activeUserSurfaceRef.current && currentActiveUserSurface === null) {
-    compositorActions.notifyInactive(activeUserSurfaceRef.current)
-  } else if (activeUserSurfaceRef.current === null && currentActiveUserSurface) {
-    compositorActions.setKeyboardFocus(currentActiveUserSurface)
+  if (activeUserSurfaceKeyRef.current && currentActiveUserSurface && activeUserSurfaceKeyRef.current !== currentActiveUserSurface.key) {
+    dispatch(notifyUserSurfaceInactive(activeUserSurfaceKeyRef.current))
+    dispatch(userSurfaceKeyboardFocus(currentActiveUserSurface.key))
+  } else if (activeUserSurfaceKeyRef.current && currentActiveUserSurface === null) {
+    dispatch(notifyUserSurfaceInactive(activeUserSurfaceKeyRef.current))
+  } else if (activeUserSurfaceKeyRef.current === null && currentActiveUserSurface) {
+    dispatch(userSurfaceKeyboardFocus(currentActiveUserSurface.key))
   }
-  activeUserSurfaceRef.current = currentActiveUserSurface
+  activeUserSurfaceKeyRef.current = currentActiveUserSurface ? currentActiveUserSurface.key : null
 
-  // FIXME this logic probably belongs in a compositor middleware instead of here
+  // TODO move "surface with pointer grab becomes active" to middleware
   const pointerGrabIsActive = useSelector(({ compositor }) => compositor.seat.pointerGrab ? compositor.userSurfaces[compositor.seat.pointerGrab.key].active : false)
   const pointerGrab = useSelector(({ compositor }) => compositor.seat.pointerGrab)
   if (!pointerGrabIsActive && pointerGrab) {
-    compositorActions.requestActive(pointerGrab)
+    dispatch(requestUserSurfaceActive(pointerGrab))
   }
 
-  const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
-  userSurfaces.map(userSurface => {
-
-
-    // return <UserSurface
-    //   key={userSurface.key}
-    //   sceneId={sceneId}
-    //   id={userSurface.id}
-    //   clientId={userSurface.clientId}
-    //   active={activeUserSurfaceRef.current && activeUserSurfaceRef.current.key === userSurface.key}
-    // />
-  })
   return null
 })
 

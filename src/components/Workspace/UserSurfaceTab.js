@@ -1,15 +1,14 @@
 import React from 'react'
 import Tab from '@material-ui/core/Tab'
-import { useCompositor } from '../../contexts/CompositorProvider'
+import { useDispatch } from 'react-redux'
+import { requestUserSurfaceActive } from '../../store/compositor'
 
-const UserSurfaceTab = React.memo(({ userSurfaceId, clientId, userSurfaceTitle, value }) => {
-  const { actions: compositorActions } = useCompositor()
+const UserSurfaceTab = React.memo(({ userSurfaceTitle, value }) => {
+  const dispatch = useDispatch()
 
-  const requestActive = () => { compositorActions.requestActive({ id: userSurfaceId, clientId }) }
+  const requestActive = () => { dispatch(requestUserSurfaceActive(value)) }
 
-  return (
-    <Tab label={userSurfaceTitle} onClick={requestActive} value={value} />
-  )
+  return <Tab label={userSurfaceTitle} onClick={requestActive} value={value} />
 })
 
 export default UserSurfaceTab

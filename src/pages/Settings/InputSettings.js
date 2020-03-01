@@ -17,7 +17,6 @@ import { Keyboard } from '@material-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserConfiguration } from '../../store/compositor'
 import TextField from '@material-ui/core/TextField'
-import { useCompositor } from '../../contexts/CompositorProvider'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import IconButton from '@material-ui/core/IconButton'
 
@@ -31,15 +30,15 @@ const InputSettings = React.memo(() => {
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const { globals: { seat: { keyboard } } } = useCompositor()
-  const isInitializing = useSelector(({ compositor }) => compositor.initializing)
+  const nrmlvoEntries = useSelector(({ compositor }) => compositor.seat.keyboard.nrmlvoEntries)
+  const defaultNrmlvo = useSelector(({ compositor }) => compositor.seat.keyboard.defaultNrmlvo)
   const isInitialized = useSelector(({ compositor }) => compositor.initialized)
 
   const keyboardLayoutNames = useRef(null)
-  keyboardLayoutNames.current = isInitialized ? keyboard.nrmlvoEntries.map(nrmlvo => nrmlvo.name) : []
+  keyboardLayoutNames.current = isInitialized ? nrmlvoEntries.map(nrmlvo => nrmlvo.name) : []
   const keyboardLayoutName = useSelector(({ compositor }) => {
     if (isInitialized) {
-      return compositor.userConfiguration.keyboardLayoutName || keyboard.defaultNrmlvo.name
+      return compositor.userConfiguration.keyboardLayoutName || defaultNrmlvo.name
     } else {
       return ''
     }
@@ -60,7 +59,7 @@ const InputSettings = React.memo(() => {
   return (
     <Activity
       pageTitle='Greenfield - Input Settings'
-      isLoading={isInitializing}
+      isLoading={!isInitialized}
       appBarContent={
         <>
           <IconButton onClick={goToSettings}>
@@ -91,7 +90,7 @@ const InputSettings = React.memo(() => {
           <Divider variant='fullWidth' />
           <ListItem>
             <Autocomplete
-              loading={isInitializing}
+              loading={!isInitialized}
               id='keyboard-layout'
               disableClearable
               options={keyboardLayoutNames.current}

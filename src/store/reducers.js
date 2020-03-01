@@ -9,7 +9,6 @@ import { combineReducers } from 'redux'
 import addToHomeScreen from './addToHomeScreen'
 import compositor from './compositor'
 import notification from './notification'
-import workspace from './workspace'
 import serviceWorker from './serviceworker'
 
 export default combineReducers({
@@ -23,6 +22,5 @@ export default combineReducers({
   addToHomeScreen,
   compositor,
   notification,
-  workspace,
   serviceWorker
 })

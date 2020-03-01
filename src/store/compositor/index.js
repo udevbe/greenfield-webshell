@@ -13,7 +13,14 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
  */
 /**
- * @typedef {{pointerGrab: ?string, keyboardFocus: ?string}}UserSeat
+ * Keyboard keymap information ie keyboard layout
+ * @typedef {{name: string, rules: string, model: string, layout: string, variant: string, options: string}}nrmlvo
+ */
+/**
+ * @typedef {{nrmlvoEntries: nrmlvo[], defaultNrmlvo: nrmlvo}}UserKeyboard
+ */
+/**
+ * @typedef {{pointerGrab: ?string, keyboardFocus: ?string, userKeyboard: UserKeyboard}}UserSeat
  */
 /**
  * @typedef {{scrollFactor:number, keyboardLayout: ?string}}UserConfiguration
@@ -22,7 +29,6 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{
  * clients: Object.<string,WaylandClient>,
  * initialized: boolean,
- * initializing: boolean,
  * seat: UserSeat,
  * userSurfaces: Object.<string,UserSurface>,
  * userConfiguration: UserConfiguration,
@@ -36,10 +42,13 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
 const initialState = {
   clients: {},
   initialized: false,
-  initializing: false,
   seat: {
     pointerGrab: null,
-    keyboardFocus: null
+    keyboardFocus: null,
+    keyboard: {
+      nrmlvoEntries: [],
+      defaultNrmlvo: null
+    }
   },
   userSurfaces: {},
   userConfiguration: {
@@ -56,14 +65,9 @@ const initialState = {
 const reducers = {
   /**
    * @param {CompositorState}state
+   * @param {Action}action
    */
-  compositorInitializing: (state) => { state.initializing = true },
-
-  /**
-   * @param {CompositorState}state
-   */
-  compositorInitialized: (state) => {
-    state.initializing = false
+  initializeCompositor: (state, action) => {
     state.initialized = true
   },
 
@@ -121,8 +125,8 @@ const reducers = {
    * @param {Action}action
    */
   updateUserSeat: (state, action) => {
-    const { keyboardFocus, pointerGrab } = action.payload
-    state.seat = { pointerGrab, keyboardFocus }
+    const { keyboardFocus, pointerGrab, keyboard } = action.payload
+    state.seat = { pointerGrab, keyboardFocus, keyboard }
   },
 
   /**
@@ -187,7 +191,7 @@ const reducers = {
 export const raiseUserSurfaceView = createAction('raiseUserSurfaceView')
 
 /**
- * @type {function(payload: UserSurface):string}
+ * @type {function(payload: string):string}
  */
 export const requestUserSurfaceActive = createAction('requestUserSurfaceActive')
 
@@ -222,14 +226,26 @@ export const inputKey = createAction('key')
 export const refreshScene = createAction('refreshScene')
 
 /**
- * @type {function(payload: UserSurface):string}
+ * @type {function(payload: string):string}
  */
 export const notifyUserSurfaceInactive = createAction('notifyUserSurfaceInactive')
 
 /**
- * @type {function(payload: UserSurface):string}
+ * @type {function(payload: string):string}
  */
 export const userSurfaceKeyboardFocus = createAction('userSurfaceKeyboardFocus')
+
+/**
+ * @type {function(payload: string):string}
+ */
+export const terminateClient = createAction('terminateClient')
+
+/**
+ * @type {function(payload: {url: string, type: 'web'|'remote'}):string}
+ */
+export const launchApp = createAction('launchApp')
+
+// TODO application launching
 
 const slice = createSlice({
   reducers,
@@ -238,8 +254,7 @@ const slice = createSlice({
 })
 
 export const {
-  compositorInitializing,
-  compositorInitialized,
+  initializeCompositor,
 
   createClient,
   destroyClient,
@@ -258,4 +273,5 @@ export const {
   destroyScene,
   makeSceneActive
 } = slice.actions
+
 export default slice.reducer

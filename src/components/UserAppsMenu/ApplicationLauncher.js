@@ -2,10 +2,9 @@ import React, { useState } from 'react'
 import { Card, CardActionArea, CardMedia, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Image from '../Image'
-import { useCompositor } from '../../contexts/CompositorProvider'
 import { useFirebase } from 'react-redux-firebase'
-import { useNotifyError } from '../../utils/notify'
-import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { launchApp } from '../../store/compositor'
 
 const useStyles = makeStyles({
   root: {
@@ -24,55 +23,16 @@ const useStyles = makeStyles({
   }
 })
 
-export const ApplicationLauncher = React.memo(({ application: { icon, title, url, type }, appId }) => {
-  const [launchedClientId, setLaunchedClientId] = useState(null)
-  const launchedClient = useSelector(({ compositor }) => launchedClientId ? compositor.clients[launchedClientId] : null)
-  if (launchedClientId && !launchedClient) {
-    setLaunchedClientId(null)
-  }
-
+export const ApplicationLauncher = React.memo(({ application: { icon, title }, appId }) => {
   const [appIcon, setAppIcon] = useState(null)
-  const compositor = useCompositor()
+  const dispatch = useDispatch()
   const firebase = useFirebase()
-  const notifyError = useNotifyError()
 
   if (appIcon === null) {
     firebase.storage().refFromURL(icon).getDownloadURL().then(iconURL => setAppIcon(iconURL))
   }
 
-  const onLaunchApplication = () => {
-    if (launchedClient) {
-      // TODO raise this client's surfaces
-      return
-    }
-    if (compositor.remoteAppLauncher && type === 'remote') {
-      compositor.remoteAppLauncher.launch(new URL(url), appId).then(client => {
-        setLaunchedClientId(client.id)
-      }).catch(function (error) {
-        notifyError(`${title} failed to launch. ${error.message}`)
-      })
-    } else if (compositor.webAppLauncher && type === 'web') {
-      firebase.storage().refFromURL(url).getDownloadURL().then(downloadURL => {
-        compositor.webAppLauncher.launch(new URL(downloadURL)).then(client => {
-          setLaunchedClientId(client)
-        })
-      }).catch(function (error) {
-        // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case 'storage/object-not-found':
-            notifyError(`${title} application could not be found on server.`)
-            break
-          case 'storage/unauthorized':
-            notifyError(`Not authorized to launch ${title}.`)
-            break
-          case 'storage/unknown':
-          default:
-            notifyError(`${title} failed to launch. ${error.message}`)
-            break
-        }
-      })
-    }
-  }
+  const onLaunchApplication = () => dispatch(launchApp({ appId, firebase }))
 
   const classes = useStyles()
   return (

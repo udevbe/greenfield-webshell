@@ -8,13 +8,13 @@ import React from 'react'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
-import { shallowEqual, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
-import { useCompositor } from '../contexts/CompositorProvider'
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
 import { ListItemText } from '@material-ui/core'
+import { terminateClient } from '../store/compositor'
 
 /**
  * @typedef {{
@@ -59,7 +59,7 @@ import { ListItemText } from '@material-ui/core'
  */
 
 export const useMenuItems = handleSignOut => {
-  const compositor = useCompositor()
+  const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
   const uid = useUserId()
@@ -159,7 +159,7 @@ export const useMenuItems = handleSignOut => {
               },
               onClickSecondary: () => {
                 const clientId = userSurfaces[0].clientId
-                compositor.actions.closeClient({ id: clientId })
+                dispatch(terminateClient(clientId))
               },
               rightIcon: <CloseIcon />
             }

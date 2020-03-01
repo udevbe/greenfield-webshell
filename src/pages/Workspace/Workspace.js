@@ -35,7 +35,7 @@ const Workspace = React.memo(() => {
   const activeUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces)
     .find(userSurface => userSurface.active))
 
-  const { scenes, activeSceneId } = useSelector(({ workspace }) => workspace)
+  const activeSceneId = useSelector(({ compositor }) => compositor.activeSceneId)
   // TODO map scenes from store.
 
   // TODO i18n
@@ -51,12 +51,10 @@ const Workspace = React.memo(() => {
             value={activeUserSurface ? activeUserSurface.key : false}
           >
             {
-              userSurfaces.map(({ key, id, clientId, title }) => (
+              userSurfaces.map(({ key, title }) => (
                 <UserSurfaceTab
                   key={key}
                   value={key}
-                  userSurfaceId={id}
-                  clientId={clientId}
                   userSurfaceTitle={title}
                 />
               ))
@@ -69,8 +67,8 @@ const Workspace = React.memo(() => {
     >
       {
         userSurfaces.length === 0 &&
-          <>
-            <Backdrop open className={classes.backdrop}>
+        <>
+            <Backdrop open className={classes.backdrop} timeout={5000}>
               <Typography variant='subtitle1'>
                 No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
               </Typography>
@@ -78,8 +76,7 @@ const Workspace = React.memo(() => {
           </>
       }
       {
-        compositorInitialized && activeSceneId &&
-          <LocalWorkspace mainRef={mainRef} sceneId={activeSceneId} />
+        activeSceneId && <LocalWorkspace mainRef={mainRef} sceneId={activeSceneId} />
       }
     </Activity>
   )
