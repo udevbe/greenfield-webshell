@@ -1,10 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  inputAxis,
-  inputButtonDown,
-  inputButtonUp,
-  inputPointerMove,
   notifyUserSurfaceInactive,
   refreshScene,
   requestUserSurfaceActive,
@@ -28,17 +24,6 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
   useEffect(() => {
     const mainElement = /** @type  {HTMLElement} */mainRef.current
     const sceneElement = document.getElementById(sceneId)
-
-    sceneElement.onpointermove = event => dispatch(inputPointerMove({ event, sceneId }))
-    sceneElement.onpointerdown = event => {
-      sceneElement.setPointerCapture(event.pointerId)
-      dispatch(inputButtonDown({ event, sceneId }))
-    }
-    sceneElement.onpointerup = event => {
-      dispatch(inputButtonUp({ event, sceneId }))
-      sceneElement.releasePointerCapture(event.pointerId)
-    }
-    sceneElement.onwheel = event => dispatch(inputAxis({ event, sceneId }))
     const resizeListener = () => dispatch(refreshScene(sceneId))
 
     if (sceneElement.parentElement !== mainElement) {
@@ -76,7 +61,7 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
   activeUserSurfaceKeyRef.current = currentActiveUserSurface ? currentActiveUserSurface.key : null
 
   // TODO move "surface with pointer grab becomes active" to middleware
-  const pointerGrabIsActive = useSelector(({ compositor }) => compositor.seat.pointerGrab ? compositor.userSurfaces[compositor.seat.pointerGrab.key].active : false)
+  const pointerGrabIsActive = useSelector(({ compositor }) => compositor.seat.pointerGrab ? compositor.userSurfaces[compositor.seat.pointerGrab].active : false)
   const pointerGrab = useSelector(({ compositor }) => compositor.seat.pointerGrab)
   if (!pointerGrabIsActive && pointerGrab) {
     dispatch(requestUserSurfaceActive(pointerGrab))

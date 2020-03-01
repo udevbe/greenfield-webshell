@@ -116,8 +116,8 @@ const reducers = {
    * @param {Action}action
    */
   destroyUserSurface: (state, action) => {
-    const userSurface = action.payload
-    delete state.userSurfaces[userSurface.key]
+    const userSurfaceKey = action.payload
+    delete state.userSurfaces[userSurfaceKey]
   },
 
   /**
@@ -194,31 +194,6 @@ export const raiseUserSurfaceView = createAction('raiseUserSurfaceView')
  * @type {function(payload: string):string}
  */
 export const requestUserSurfaceActive = createAction('requestUserSurfaceActive')
-
-/**
- * @type {function(payload: {event: MouseEvent, sceneId: string}):string}
- */
-export const inputPointerMove = createAction('pointerMove')
-
-/**
- * @type {function(payload: {event: MouseEvent, sceneId: string}):string}
- */
-export const inputButtonDown = createAction('buttonDown')
-
-/**
- * @type {function(payload: {event: MouseEvent, sceneId: string}):string}
- */
-export const inputButtonUp = createAction('buttonUp')
-
-/**
- * @type {function(payload: {event: WheelEvent, sceneId: string}):string}
- */
-export const inputAxis = createAction('axis')
-
-/**
- * @type {function(payload: {event: KeyEvent, down: boolean}):string}
- */
-export const inputKey = createAction('key')
 
 /**
  * @type {function(payload: string):string}
