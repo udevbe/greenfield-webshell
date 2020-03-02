@@ -13,7 +13,6 @@ import {
   launchApp,
   makeSceneActive,
   notifyUserSurfaceInactive,
-  raiseUserSurfaceView,
   refreshScene,
   requestUserSurfaceActive,
   terminateClient,
@@ -179,26 +178,15 @@ class CompositorMiddleWare {
   /**
    * @param store
    * @param {function(action:*):*}next
-   * @param {{payload:UserSurfaceView}}action
-   * @return {*}
-   */
-  [raiseUserSurfaceView] (store, next, action) {
-    const { userSurfaceKey, sceneId } = action.payload
-    const userSurface = store.getState().compositor.userSurfaces[userSurfaceKey]
-    this._session.userShell.actions.raise(userSurface, sceneId)
-    return next(action)
-  }
-
-  /**
-   * @param store
-   * @param {function(action:*):*}next
    * @param {{payload:string}}action
    * @return {*}
    */
   [requestUserSurfaceActive] (store, next, action) {
     const userSurfaceKey = action.payload
-    const userSurface = store.getState().compositor.userSurfaces[userSurfaceKey]
+    const compositorState = store.getState().compositor
+    const userSurface = compositorState.userSurfaces[userSurfaceKey]
     this._session.userShell.actions.requestActive(userSurface)
+    this._session.userShell.actions.raise(userSurface, compositorState.activeSceneId)
     return next(action)
   }
 
@@ -223,8 +211,10 @@ class CompositorMiddleWare {
   [notifyUserSurfaceInactive] (store, next, action) {
     const userSurfaceKey = action.payload
     const userSurface = store.getState().compositor.userSurfaces[userSurfaceKey]
-    this._session.userShell.actions.notifyInactive(userSurface)
-    return next(action)
+    if (userSurface) {
+      this._session.userShell.actions.notifyInactive(userSurface)
+      return next(action)
+    }
   }
 
   /**
@@ -300,6 +290,7 @@ class CompositorMiddleWare {
     const sceneId = store.getState().compositor.activeSceneId
     const result = next(action)
     store.dispatch(createUserSurfaceView({ userSurfaceKey: userSurface.key, sceneId }))
+    store.dispatch(requestUserSurfaceActive(userSurface.key))
     return result
   }
 

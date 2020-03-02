@@ -185,10 +185,6 @@ const reducers = {
 }
 
 // actions handled by compositor middleware
-/**
- * @type {function(payload: UserSurfaceView):string}
- */
-export const raiseUserSurfaceView = createAction('raiseUserSurfaceView')
 
 /**
  * @type {function(payload: string):string}

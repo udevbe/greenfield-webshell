@@ -7,15 +7,16 @@ import {
   userSurfaceKeyboardFocus
 } from '../../store/compositor'
 
-const configureCanvas = canvas => {
-  canvas.style.display = 'inline'
-  canvas.style.width = '100%'
-  canvas.style.height = '100%'
-  canvas.style.overflow = 'hidden'
-  canvas.style.position = 'relative'
-  canvas.style.float = 'left'
+const configureSceneElement = sceneElement => {
+  sceneElement.style.display = 'inline'
+  sceneElement.style.width = '100%'
+  sceneElement.style.height = '100%'
+  sceneElement.style.overflow = 'hidden'
+  sceneElement.style.position = 'relative'
+  sceneElement.style.float = 'left'
+  sceneElement.focus()
 
-  return canvas
+  return sceneElement
 }
 
 const LocalScene = React.memo(({ mainRef, sceneId }) => {
@@ -27,7 +28,7 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
     const resizeListener = () => dispatch(refreshScene(sceneId))
 
     if (sceneElement.parentElement !== mainElement) {
-      configureCanvas(sceneElement)
+      configureSceneElement(sceneElement)
       mainElement.appendChild(sceneElement)
       dispatch(refreshScene(sceneId))
       window.addEventListener('resize', resizeListener)

@@ -5,9 +5,7 @@ import { requestUserSurfaceActive } from '../../store/compositor'
 
 const UserSurfaceTab = React.memo(({ userSurfaceTitle, value }) => {
   const dispatch = useDispatch()
-
   const requestActive = () => { dispatch(requestUserSurfaceActive(value)) }
-
   return <Tab label={userSurfaceTitle} onClick={requestActive} value={value} />
 })
 
