@@ -253,6 +253,8 @@ class CompositorMiddleWare {
       canvas.onwheel = event => this._session.userShell.actions.input.axis(event, id)
       canvas.onkeydown = event => this._session.userShell.actions.input.key(event, true)
       canvas.onkeyup = event => this._session.userShell.actions.input.key(event, false)
+      canvas.onmouseover = () => canvas.focus()
+      canvas.tabIndex = 1
 
       canvas.style.display = 'none'
       canvas.id = id

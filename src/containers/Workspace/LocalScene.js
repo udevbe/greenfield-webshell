@@ -14,7 +14,6 @@ const configureSceneElement = sceneElement => {
   sceneElement.style.overflow = 'hidden'
   sceneElement.style.position = 'relative'
   sceneElement.style.float = 'left'
-  sceneElement.focus()
 
   return sceneElement
 }
@@ -33,6 +32,7 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
       dispatch(refreshScene(sceneId))
       window.addEventListener('resize', resizeListener)
     }
+    sceneElement.focus()
 
     return () => {
       window.removeEventListener('resize', resizeListener)
