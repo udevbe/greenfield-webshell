@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'flex-start',
     height: '100vh'
   },
   appBar: {

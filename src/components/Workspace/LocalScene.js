@@ -10,25 +10,26 @@ import {
 const configureSceneElement = sceneElement => {
   sceneElement.style.display = 'inline'
   sceneElement.style.width = '100%'
-  sceneElement.style.height = '100%'
+  // sceneElement.style.height = '100%'
   sceneElement.style.overflow = 'hidden'
-  sceneElement.style.position = 'relative'
-  sceneElement.style.float = 'left'
+  sceneElement.style.flex = 1
+  sceneElement.style.order = 100
+  sceneElement.style.outline = 'none'
 
   return sceneElement
 }
 
-const LocalScene = React.memo(({ mainRef, sceneId }) => {
+const LocalScene = React.memo(({ contentRef, sceneId }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const mainElement = /** @type  {HTMLElement} */mainRef.current
+    const contentElement = /** @type  {HTMLElement} */contentRef.current
     const sceneElement = document.getElementById(sceneId)
     const resizeListener = () => dispatch(refreshScene(sceneId))
 
-    if (sceneElement.parentElement !== mainElement) {
+    if (sceneElement.parentElement !== contentElement) {
       configureSceneElement(sceneElement)
-      mainElement.appendChild(sceneElement)
+      contentElement.appendChild(sceneElement)
       dispatch(refreshScene(sceneId))
       window.addEventListener('resize', resizeListener)
     }
@@ -39,7 +40,7 @@ const LocalScene = React.memo(({ mainRef, sceneId }) => {
       sceneElement.style.display = 'none'
       document.body.appendChild(sceneElement)
     }
-  }, [mainRef, sceneId, dispatch])
+  }, [contentRef, dispatch, sceneId])
 
   const activeUserSurfaceKeyRef = useRef(null)
 

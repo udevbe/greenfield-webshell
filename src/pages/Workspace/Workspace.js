@@ -8,11 +8,24 @@ import Tabs from '@material-ui/core/Tabs'
 import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
-import LocalWorkspace from '../../containers/Workspace/LocalScene'
+import LocalScene from '../../components/Workspace/LocalScene'
+import SceneTabs from '../../components/Workspace/SceneTabs'
 
 const useStyles = makeStyles(theme => ({
-  grow: {
+  tabsTop: {
     flex: '1 1 auto'
+  },
+  content: {
+    height: '100%',
+    width: '100%',
+    position: 'relative',
+    float: 'left',
+    display: 'flex',
+    alignItems: 'stretch',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    flexGrow: 1,
+    overflow: 'hidden'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -29,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 const Workspace = React.memo(() => {
   const classes = useStyles()
   const mainRef = useRef(null)
+  const contentRef = useRef(null)
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
@@ -46,7 +60,7 @@ const Workspace = React.memo(() => {
       appBarContent={
         <>
           <Tabs
-            className={classes.grow}
+            className={classes.tabsTop}
             variant='fullWidth'
             value={activeUserSurface ? activeUserSurface.key : false}
           >
@@ -68,7 +82,7 @@ const Workspace = React.memo(() => {
       {
         userSurfaces.length === 0 &&
         <>
-            <Backdrop open className={classes.backdrop} timeout={5000}>
+            <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
               <Typography variant='subtitle1'>
                 No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
               </Typography>
@@ -76,7 +90,13 @@ const Workspace = React.memo(() => {
           </>
       }
       {
-        activeSceneId && <LocalWorkspace mainRef={mainRef} sceneId={activeSceneId} />
+        <>
+          <div className={classes.content} ref={contentRef}>
+            <LocalScene contentRef={contentRef} sceneId={activeSceneId} />
+            {/* TODO create bottom tabs bar component to create, destroy, update & switch scenes */}
+            <SceneTabs />
+          </div>
+        </>
       }
     </Activity>
   )
