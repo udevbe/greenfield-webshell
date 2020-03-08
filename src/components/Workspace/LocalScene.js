@@ -23,6 +23,10 @@ const LocalScene = React.memo(({ contentRef, sceneId }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    if (sceneId === null) {
+      return
+    }
+
     const contentElement = /** @type  {HTMLElement} */contentRef.current
     const sceneElement = document.getElementById(sceneId)
     const resizeListener = () => dispatch(refreshScene(sceneId))

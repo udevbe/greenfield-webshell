@@ -28,14 +28,14 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden'
   },
   backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer - 1,
     boxSizing: 'border-box',
     color: '#fff',
     margin: '0 auto',
     padding: 5,
     textAlign: 'center',
-    top: '90%',
-    bottom: '5%'
+    top: 65,
+    height: 80
   }
 }))
 
@@ -81,7 +81,7 @@ const Workspace = React.memo(() => {
     >
       {
         userSurfaces.length === 0 &&
-        <>
+          <>
             <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
               <Typography variant='subtitle1'>
                 No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
