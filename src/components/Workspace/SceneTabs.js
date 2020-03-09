@@ -9,6 +9,7 @@ import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
+import EditScene from './EditScene'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,10 +34,14 @@ const useStyles = makeStyles(theme => ({
 
 const SceneTabs = React.memo(() => {
   const dispatch = useDispatch()
+
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
+  const [editSceneOpen, setEditSceneOpen] = React.useState(false)
+
   const scenes = useSelector(({ compositor }) => compositor.scenes)
   const activeSceneId = useSelector(({ compositor }) => compositor.activeSceneId)
 
+  const handleEditSceneClose = () => setEditSceneOpen(false)
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
@@ -45,9 +50,7 @@ const SceneTabs = React.memo(() => {
   const shareScene = () => {
     // TODO
   }
-  const editScene = () => {
-    // TODO
-  }
+  const editScene = () => setEditSceneOpen(true)
   const activateScene = id => dispatch(makeSceneActive(id))
 
   const sceneActionOptions = [
@@ -60,6 +63,7 @@ const SceneTabs = React.memo(() => {
   const classes = useStyles()
   return (
     <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
+      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}

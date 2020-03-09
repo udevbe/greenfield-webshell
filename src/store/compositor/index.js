@@ -174,6 +174,11 @@ const reducers = {
     delete state.scenes[id]
   },
 
+  updateScene: (state, action) => {
+    const scene = action.payload
+    state.scenes[scene.id] = scene
+  },
+
   /**
    * @param {CompositorState}state
    * @param {Action}action
@@ -242,6 +247,7 @@ export const {
   destroyUserSurfaceView,
 
   createScene,
+  updateScene,
   destroyScene,
   makeSceneActive
 } = slice.actions
