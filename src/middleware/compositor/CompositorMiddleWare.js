@@ -275,15 +275,16 @@ class CompositorMiddleWare {
   [destroyScene] (store, next, action) {
     const id = action.payload
     const compositorState = store.getState().compositor
-    const sceneIds = Object.keys(compositorState.scenes)
-    if (id === compositorState.activeSceneId && sceneIds.length > 1) {
-      // TODO we probably want the previously active scene, so we should probably keep a timestamp of when a scene was last active and find the highest.
-      const newActiveSceneId = sceneIds[sceneIds.length - 1]
+    const scenes = Object.values(compositorState.scenes)
+    if (id === compositorState.activeSceneId && scenes.length > 1) {
+      const newActiveSceneId = scenes
+        .filter(scene => scene.id !== id)
+        .reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
       store.dispatch(makeSceneActive(newActiveSceneId))
+      next(action)
 
       const canvas = document.getElementById(id)
       canvas.parentElement.removeChild(canvas)
-      next(action)
       this._session.userShell.actions.destroyScene(id)
     }
   }

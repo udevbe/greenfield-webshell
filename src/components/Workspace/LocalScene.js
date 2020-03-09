@@ -6,6 +6,23 @@ import {
   requestUserSurfaceActive,
   userSurfaceKeyboardFocus
 } from '../../store/compositor'
+import SceneTabs from './SceneTabs'
+import { makeStyles } from '@material-ui/styles'
+
+const useStyles = makeStyles(theme => ({
+  content: {
+    height: '100%',
+    width: '100%',
+    position: 'relative',
+    float: 'left',
+    display: 'flex',
+    alignItems: 'stretch',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    flexGrow: 1,
+    overflow: 'hidden'
+  }
+}))
 
 const configureSceneElement = sceneElement => {
   sceneElement.style.display = 'inline'
@@ -19,8 +36,9 @@ const configureSceneElement = sceneElement => {
   return sceneElement
 }
 
-const LocalScene = React.memo(({ contentRef, sceneId }) => {
+const LocalScene = React.memo(({ sceneId }) => {
   const dispatch = useDispatch()
+  const contentRef = useRef(null)
 
   useEffect(() => {
     if (sceneId === null) {
@@ -73,7 +91,12 @@ const LocalScene = React.memo(({ contentRef, sceneId }) => {
     dispatch(requestUserSurfaceActive(pointerGrab))
   }
 
-  return null
+  const classes = useStyles()
+  return (
+    <div className={classes.content} ref={contentRef}>
+      <SceneTabs />
+    </div>
+  )
 })
 
 export default LocalScene

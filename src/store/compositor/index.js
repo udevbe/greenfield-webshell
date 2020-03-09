@@ -7,7 +7,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{userSurfaceKey:string, sceneId: string}}UserSurfaceView
  */
 /**
- * @typedef {{name: string, id: string, type: 'local', views: UserSurfaceView[]}}Scene
+ * @typedef {{name: string, id: string, type: 'local', lastActive: number, views: UserSurfaceView[]}}Scene
  */
 /**
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
@@ -181,6 +181,7 @@ const reducers = {
   makeSceneActive: (state, action) => {
     const id = action.payload
     state.activeSceneId = id
+    Object.values(state.scenes).find(scene => scene.id === id).lastActive = Date.now()
   }
 }
 

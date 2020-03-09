@@ -9,7 +9,6 @@ import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
 import LocalScene from '../../components/Workspace/LocalScene'
-import SceneTabs from '../../components/Workspace/SceneTabs'
 
 const useStyles = makeStyles(theme => ({
   tabsTop: {
@@ -42,7 +41,6 @@ const useStyles = makeStyles(theme => ({
 const Workspace = React.memo(() => {
   const classes = useStyles()
   const mainRef = useRef(null)
-  const contentRef = useRef(null)
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
   const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
@@ -81,23 +79,13 @@ const Workspace = React.memo(() => {
     >
       {
         userSurfaces.length === 0 &&
-          <>
-            <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
-              <Typography variant='subtitle1'>
-                No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
-              </Typography>
-            </Backdrop>
-          </>
+          <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
+            <Typography variant='subtitle1'>
+              No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
+            </Typography>
+          </Backdrop>
       }
-      {
-        <>
-          <div className={classes.content} ref={contentRef}>
-            <LocalScene contentRef={contentRef} sceneId={activeSceneId} />
-            {/* TODO create bottom tabs bar component to create, destroy, update & switch scenes */}
-            <SceneTabs />
-          </div>
-        </>
-      }
+      <LocalScene sceneId={activeSceneId} />
     </Activity>
   )
 })
