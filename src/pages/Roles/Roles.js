@@ -5,13 +5,13 @@ import { Divider, Fab, List, ListItem, ListItemText } from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar/Scrollbar'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { useHistory } from 'react-router-dom'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
+import { push } from 'connected-react-router'
 
 export const Roles = React.memo(() => {
-  const history = useHistory()
+  const dispatch = useDispatch()
   const intl = useIntl()
   const firebase = useFirebase()
 
@@ -20,7 +20,7 @@ export const Roles = React.memo(() => {
 
   const handleCreateClick = () => {
     const newRole = firebase.ref('/roles').push()
-    newRole.update({ name: 'New Role' }).then(() => history.push(`/roles/edit/${newRole.key}/main`))
+    newRole.update({ name: 'New Role' }).then(() => dispatch(push(`/roles/edit/${newRole.key}/main`)))
   }
 
   const renderItem = i => {
@@ -31,7 +31,7 @@ export const Roles = React.memo(() => {
       <div key={key}>
         <ListItem
           key={i}
-          onClick={() => history.push(`/roles/edit/${key}/main`)}
+          onClick={() => dispatch(push(`/roles/edit/${key}/main`))}
           id={i}
         >
           <AltIconAvatar icon={<AccountBox />} />

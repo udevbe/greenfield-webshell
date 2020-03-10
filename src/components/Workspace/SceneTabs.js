@@ -4,12 +4,13 @@ import Tab from '@material-ui/core/Tab'
 import { makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { Add, Delete, Edit, Share } from '@material-ui/icons'
-import { createScene, destroyScene, makeSceneActive } from '../../store/compositor'
+import { createScene, destroyScene } from '../../store/compositor'
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
+import { push } from 'connected-react-router'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,13 +46,19 @@ const SceneTabs = React.memo(() => {
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
-  const addScene = () => dispatch(createScene({ name: 'new scene', type: 'local' }))
-  const removeScene = () => dispatch(destroyScene(activeSceneId))
+  const addScene = () => {
+    const sceneId = dispatch(createScene({ name: 'new scene', type: 'local' }))
+    dispatch(push(`/workspace/${sceneId}`))
+  }
+  const removeScene = () => {
+    const newActiveSceneId = dispatch(destroyScene(activeSceneId))
+    dispatch(push(`/workspace/${newActiveSceneId}`))
+  }
   const shareScene = () => {
     // TODO
   }
   const editScene = () => setEditSceneOpen(true)
-  const activateScene = id => dispatch(makeSceneActive(id))
+  const activateScene = id => dispatch(push(`/workspace/${id}`))
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,

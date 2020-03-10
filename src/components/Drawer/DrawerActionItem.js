@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
+import { push } from 'connected-react-router'
 
 /**
  * @param {DrawerActionItem}actionItem
@@ -15,7 +16,6 @@ import IconButton from '@material-ui/core/IconButton'
  * @constructor
  */
 const DrawerActionItem = React.memo(({ actionItem, selected }) => {
-  const history = useHistory()
   const params = useParams()
   const dispatch = useDispatch()
 
@@ -35,7 +35,7 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
     }
 
     if (actionItem.path && actionItem.path !== params.path) {
-      history.push(actionItem.path)
+      dispatch(push(actionItem.path))
     }
   }
 

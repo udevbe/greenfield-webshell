@@ -9,10 +9,12 @@ import Tabs from '@material-ui/core/Tabs'
 import UserForm from '../../components/Forms/UserForm'
 import UserRoles from '../../containers/Users/UserRoles'
 import { useIntl } from 'react-intl'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
 import { useIsAdmin, useIsAdminLoading } from '../../utils/auth'
+import { push } from 'connected-react-router'
+import { useDispatch } from 'react-redux'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,14 +35,14 @@ const useStyles = makeStyles(theme => ({
 
 export const User = React.memo(() => {
   const { uid, editType } = useParams()
-  const history = useHistory()
+  const dispatch = useDispatch()
   const intl = useIntl()
   const firebase = useFirebase()
   const isAdmin = useIsAdmin(uid)
   const loading = useIsAdminLoading(uid)
   const [isLoading, setIsLoading] = useState(loading)
 
-  const handleTabActive = (e, value) => history.push(`/users/edit/${uid}/${value}`)
+  const handleTabActive = (e, value) => dispatch(push(`/users/edit/${uid}/${value}`))
 
   const handleAdminChange = (e, isInputChecked) => {
     if (isInputChecked) {
@@ -54,7 +56,7 @@ export const User = React.memo(() => {
   return (
     <Activity
       isLoading={isLoading}
-      onBackClick={() => history.push('/users')}
+      onBackClick={() => dispatch(push('/users'))}
       title={intl.formatMessage({ id: 'edit_user' })}
     >
       <Scrollbar style={{ height: '100%' }}>

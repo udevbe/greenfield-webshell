@@ -2,6 +2,7 @@
 import React, { lazy } from 'react'
 import RestrictedRoute from '../../containers/RestrictedRoute'
 import { Route } from 'react-router-dom'
+import WorkspaceScene from '../../pages/Workspace/WorkspaceScene'
 
 const getAppRoutes = () => {
   const User = lazy(() => import('../../pages/Users/User'))
@@ -30,6 +31,7 @@ const getAppRoutes = () => {
 
     <RestrictedRoute type='private' path='/' exact component={Workspace} />,
     <RestrictedRoute type='private' path='/workspace' exact component={Workspace} />,
+    <RestrictedRoute type='private' path='/workspace/:sceneId' exact component={WorkspaceScene} />,
     <RestrictedRoute type='private' path='/webstore' exact component={WebStore} />,
     <RestrictedRoute type='private' path='/webstore/:appid' exact component={AboutApp} />,
     <RestrictedRoute type='private' path='/settings' exact component={Settings} />,

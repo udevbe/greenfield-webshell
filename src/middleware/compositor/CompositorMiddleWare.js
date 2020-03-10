@@ -1,5 +1,6 @@
 import CompositorModule from './CompositorModule'
 import { showNotification } from '../../store/notification'
+import { createMatchSelector } from 'connected-react-router'
 import {
   createClient,
   createScene,
@@ -91,6 +92,7 @@ class CompositorMiddleWare {
      * @private
      */
     this._session = null
+    this._workSpaceSceneIdMatchSelector = createMatchSelector({ path: '/workspace/:sceneId' })
   }
 
   _linkUserShellEvents (store) {
@@ -261,10 +263,10 @@ class CompositorMiddleWare {
       document.body.appendChild(canvas)
       this._session.userShell.actions.initScene(id, canvas)
       action.payload.id = id
+      next(action)
+      store.dispatch(makeSceneActive(action.payload.id))
+      return id
     }
-    const result = next(action)
-    store.dispatch(makeSceneActive(action.payload.id))
-    return result
   }
 
   /**
@@ -286,6 +288,7 @@ class CompositorMiddleWare {
       const canvas = document.getElementById(id)
       canvas.parentElement.removeChild(canvas)
       this._session.userShell.actions.destroyScene(id)
+      return newActiveSceneId
     }
   }
 

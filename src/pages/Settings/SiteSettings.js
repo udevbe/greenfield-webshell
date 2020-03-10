@@ -3,7 +3,7 @@ import React from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
-import { Link as RouterLink, useHistory } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import { Container, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core'
 import ListItem from '@material-ui/core/ListItem'
@@ -16,6 +16,7 @@ import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
 import { updateTheme } from '../../store/themeSource/actions'
 import { useDispatch, useSelector } from 'react-redux'
+import { push } from 'connected-react-router'
 
 import { themes } from '../../config/themes'
 import allLocales from '../../config/locales'
@@ -38,7 +39,6 @@ const useStyles = makeStyles(theme => ({
 const InputSettings = React.memo(() => {
   const intl = useIntl()
   const dispatch = useDispatch()
-  const history = useHistory()
 
   const currentThemeId = useSelector(({ themeSource }) => themeSource.themeId)
   const onThemeChange = event => dispatch(updateTheme(event.target.value))
@@ -46,7 +46,7 @@ const InputSettings = React.memo(() => {
   const currentLocale = useSelector(({ locale }) => locale)
   const onLocaleChange = event => dispatch(updateLocale(event.target.value))
 
-  const goToSettings = () => history.push('/settings')
+  const goToSettings = () => dispatch(push('/settings'))
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()
