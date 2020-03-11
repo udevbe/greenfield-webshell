@@ -55,8 +55,7 @@ const initialState = {
     scrollFactor: 1,
     keyboardLayoutName: null
   },
-  scenes: {},
-  activeSceneId: null
+  scenes: {}
 }
 
 /**
@@ -183,9 +182,8 @@ const reducers = {
    * @param {CompositorState}state
    * @param {Action}action
    */
-  makeSceneActive: (state, action) => {
+  markSceneLastActive: (state, action) => {
     const id = action.payload
-    state.activeSceneId = id
     Object.values(state.scenes).find(scene => scene.id === id).lastActive = Date.now()
   }
 }
@@ -249,7 +247,7 @@ export const {
   createScene,
   updateScene,
   destroyScene,
-  makeSceneActive
+  markSceneLastActive
 } = slice.actions
 
 export default slice.reducer

@@ -10,7 +10,8 @@ import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
 import LocalScene from '../../components/Workspace/LocalScene'
 import { useParams } from 'react-router'
-import { makeSceneActive } from '../../store/compositor'
+import { markSceneLastActive } from '../../store/compositor'
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   tabsTop: {
@@ -49,10 +50,16 @@ const WorkspaceScene = React.memo(() => {
   const activeUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces)
     .find(userSurface => userSurface.active))
   const sceneExists = useSelector(({ compositor }) => compositor.scenes[sceneId] != null)
-  const activeSceneId = useSelector(({ compositor }) => compositor.activeSceneId)
+  const lastActiveSceneId = useSelector(({ compositor }) => {
+    if (sceneExists) {
+      return Object.values(compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
+    } else {
+      return null
+    }
+  })
 
-  if (sceneExists && activeSceneId !== sceneId) {
-    dispatch(makeSceneActive(sceneId))
+  if (sceneExists && lastActiveSceneId !== sceneId) {
+    dispatch(markSceneLastActive(sceneId))
   }
 
   // TODO i18n
@@ -96,7 +103,7 @@ const WorkspaceScene = React.memo(() => {
         !sceneExists &&
           <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
-              Scene with id {sceneId} does not exist.
+              Scene does not exist. <Link to='/workspace'>Go back.</Link>
             </Typography>
           </Backdrop>
       }

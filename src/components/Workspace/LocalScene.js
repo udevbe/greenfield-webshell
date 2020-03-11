@@ -94,7 +94,7 @@ const LocalScene = React.memo(({ sceneId }) => {
   const classes = useStyles()
   return (
     <div className={classes.content} ref={contentRef}>
-      <SceneTabs />
+      <SceneTabs sceneId={sceneId} />
     </div>
   )
 })

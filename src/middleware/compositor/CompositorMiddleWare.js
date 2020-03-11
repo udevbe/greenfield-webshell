@@ -12,7 +12,7 @@ import {
   destroyUserSurfaceView,
   initializeCompositor,
   launchApp,
-  makeSceneActive,
+  markSceneLastActive,
   notifyUserSurfaceInactive,
   refreshScene,
   requestUserSurfaceActive,
@@ -188,7 +188,8 @@ class CompositorMiddleWare {
     const compositorState = store.getState().compositor
     const userSurface = compositorState.userSurfaces[userSurfaceKey]
     this._session.userShell.actions.requestActive(userSurface)
-    this._session.userShell.actions.raise(userSurface, compositorState.activeSceneId)
+    const lastActiveSceneId = Object.values(store.getState().compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
+    this._session.userShell.actions.raise(userSurface, lastActiveSceneId)
     return next(action)
   }
 
@@ -264,7 +265,7 @@ class CompositorMiddleWare {
       this._session.userShell.actions.initScene(id, canvas)
       action.payload.id = id
       next(action)
-      store.dispatch(makeSceneActive(action.payload.id))
+      store.dispatch(markSceneLastActive(action.payload.id))
       return id
     }
   }
@@ -278,18 +279,15 @@ class CompositorMiddleWare {
     const id = action.payload
     const compositorState = store.getState().compositor
     const scenes = Object.values(compositorState.scenes)
-    if (id === compositorState.activeSceneId && scenes.length > 1) {
-      const newActiveSceneId = scenes
-        .filter(scene => scene.id !== id)
-        .reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
-      store.dispatch(makeSceneActive(newActiveSceneId))
-      next(action)
 
-      const canvas = document.getElementById(id)
-      canvas.parentElement.removeChild(canvas)
-      this._session.userShell.actions.destroyScene(id)
-      return newActiveSceneId
-    }
+    const newActiveSceneId = scenes
+      .filter(scene => scene.id !== id)
+      .reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
+    const canvas = document.getElementById(id)
+    canvas.parentElement.removeChild(canvas)
+    this._session.userShell.actions.destroyScene(id)
+    next(action)
+    return newActiveSceneId
   }
 
   /**
@@ -300,7 +298,7 @@ class CompositorMiddleWare {
   [createUserSurface] (store, next, action) {
     action.payload = CompositorMiddleWare._updateLastActiveTimeStamp(action.payload)
     const userSurface = action.payload
-    const sceneId = store.getState().compositor.activeSceneId
+    const sceneId = Object.values(store.getState().compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
     const result = next(action)
     store.dispatch(createUserSurfaceView({ userSurfaceKey: userSurface.key, sceneId }))
     store.dispatch(requestUserSurfaceActive(userSurface.key))

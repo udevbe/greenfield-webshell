@@ -33,14 +33,13 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const SceneTabs = React.memo(() => {
+const SceneTabs = React.memo(({ sceneId }) => {
   const dispatch = useDispatch()
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
   const [editSceneOpen, setEditSceneOpen] = React.useState(false)
 
   const scenes = useSelector(({ compositor }) => compositor.scenes)
-  const activeSceneId = useSelector(({ compositor }) => compositor.activeSceneId)
 
   const handleEditSceneClose = () => setEditSceneOpen(false)
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
@@ -51,7 +50,7 @@ const SceneTabs = React.memo(() => {
     dispatch(push(`/workspace/${sceneId}`))
   }
   const removeScene = () => {
-    const newActiveSceneId = dispatch(destroyScene(activeSceneId))
+    const newActiveSceneId = dispatch(destroyScene(sceneId))
     dispatch(push(`/workspace/${newActiveSceneId}`))
   }
   const shareScene = () => {
@@ -70,12 +69,12 @@ const SceneTabs = React.memo(() => {
   const classes = useStyles()
   return (
     <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
-      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} />
+      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} sceneId={sceneId} />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}
           variant='fullWidth'
-          value={activeSceneId}
+          value={sceneId}
           classes={{
             indicator: classes.tabIndicator
           }}

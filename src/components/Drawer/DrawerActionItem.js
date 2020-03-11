@@ -1,4 +1,4 @@
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { setDrawerMobileOpen } from '../../store/drawer'
 import ListItem from '@material-ui/core/ListItem'
@@ -53,7 +53,7 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
       {actionItem.leftIcon && <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>}
       {!useMinified && open && <ListItemText primary={actionItem.text} />}
       {actionItem.onClickSecondary &&
-        <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
+      <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
           <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
             {actionItem.rightIcon}
           </IconButton>

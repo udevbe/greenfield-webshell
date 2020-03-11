@@ -10,12 +10,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateScene } from '../../store/compositor'
 
 // TODO i18n
-const EditScene = React.memo(({ open, handleClose }) => {
+const EditScene = React.memo(({ open, handleClose, sceneId }) => {
   const dispatch = useDispatch()
-  const activeScene = useSelector(({ compositor }) => {
-    const activeSceneId = compositor.activeSceneId
-    return compositor.scenes[activeSceneId]
-  })
+  const activeScene = useSelector(({ compositor }) => compositor.scenes[sceneId])
 
   const [sceneName, setSceneName] = useState(activeScene.name)
 

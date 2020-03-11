@@ -4,13 +4,12 @@ import React from 'react'
 
 const Workspace = () => {
   const { sceneId } = useParams()
-  const activeSceneId = useSelector(({ compositor }) => compositor.activeSceneId)
+  // TODO use reselect
+  const lastActiveSceneId = useSelector(({ compositor }) => Object.values(compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id)
   if (sceneId == null) {
-    return <Redirect to={`/workspace/${activeSceneId}`} />
-  } else if (sceneId !== activeSceneId) {
-    return <Redirect to={`/workspace/${sceneId}`} />
+    return <Redirect to={`/workspace/${lastActiveSceneId}`} push />
   } else {
-    return <Redirect to={`/workspace/${activeSceneId}`} />
+    return <Redirect to={`/workspace/${sceneId}`} push />
   }
 }
 
