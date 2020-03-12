@@ -1,6 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
-import { push } from 'connected-react-router'
+import { useHistory, useParams } from 'react-router-dom'
 import { pushDrawerPath, setDrawerMobileOpen } from '../../store/drawer'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -16,9 +15,10 @@ import React from 'react'
  * @return {React.Component}
  * @constructor
  */
-const DrawerListItem = ({ listItem: { path, leftIcon, text }, drawerPathSegment }) => {
+const DrawerListItem = ({ listItem, drawerPathSegment }) => {
   const dispatch = useDispatch()
   const params = useParams()
+  const history = useHistory()
   const {
     mobileOpen,
     useMinified,
@@ -30,12 +30,12 @@ const DrawerListItem = ({ listItem: { path, leftIcon, text }, drawerPathSegment 
   }), shallowEqual)
 
   const handleItemPath = () => {
-    if (path && mobileOpen) {
+    if (listItem.path && mobileOpen) {
       dispatch(setDrawerMobileOpen(false))
     }
 
-    if (path && path !== params.path) {
-      dispatch(push(path))
+    if (listItem.path && listItem.path !== params.path) {
+      history.push(listItem.path)
     }
   }
 
@@ -44,8 +44,8 @@ const DrawerListItem = ({ listItem: { path, leftIcon, text }, drawerPathSegment 
       button
       onClick={() => { handleItemPath() }}
     >
-      {leftIcon && <ListItemIcon>{leftIcon}</ListItemIcon>}
-      {!useMinified && open && <ListItemText primary={text} />}
+      {listItem.leftIcon && <ListItemIcon>{listItem.leftIcon}</ListItemIcon>}
+      {!useMinified && open && <ListItemText primary={listItem.text} />}
       {!useMinified && open && (
         <ListItemSecondaryAction onClick={() => dispatch(pushDrawerPath(drawerPathSegment))}>
           <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>

@@ -13,16 +13,15 @@ import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
 import { GoogleIcon } from '../../components/Icons'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { isLoaded, useFirebaseConnect } from 'react-redux-firebase'
-import { push } from 'connected-react-router'
 
 const Users = React.memo(() => {
   const { select } = useParams()
   const isSelecting = select || false
-  const dispatch = useDispatch()
+  const history = useHistory()
   const intl = useIntl()
   useFirebaseConnect([{ path: '/users' }])
   const users = useSelector(state => state.firebase.ordered.users)
@@ -44,7 +43,7 @@ const Users = React.memo(() => {
     const userEntry = users[index]
     const user = userEntry.value
     const userKey = userEntry.key
-    const handleRowClick = () => dispatch(push(isSelecting ? `/${isSelecting}/${userKey}` : `/users/edit/${userKey}/profile`))
+    const handleRowClick = () => history.push(isSelecting ? `/${isSelecting}/${userKey}` : `/users/edit/${userKey}/profile`)
 
     return (
       <div key={key}>

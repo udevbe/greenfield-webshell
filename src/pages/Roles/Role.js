@@ -24,10 +24,9 @@ import classNames from 'classnames'
 import { useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { setDialogIsOpen } from '../../store/dialogs/actions'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
-import { goBack, push } from 'connected-react-router'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,6 +50,7 @@ const emptyValues = { name: '', description: '' }
 // TODO use redux-form?
 export const Role = React.memo(() => {
   const intl = useIntl()
+  const history = useHistory()
   const dispatch = useDispatch()
   const params = useParams()
   const editType = params.editType ? params.editType : 'data'
@@ -81,8 +81,8 @@ export const Role = React.memo(() => {
     return obj
   }
 
-  const submit = () => firebase.database().ref(`roles/${uid}`).update(clean(values)).then(() => dispatch(push('/roles')))
-  const handleTabActive = (e, value) => dispatch(push(`/roles/edit/${uid}/${value}`))
+  const submit = () => firebase.database().ref(`roles/${uid}`).update(clean(values)).then(() => history.push('/roles'))
+  const handleTabActive = (e, value) => history.push(`/roles/edit/${uid}/${value}`)
   const handleValueChange = (name, value) => setValues({ ...values, [name]: value })
 
   useFirebaseConnect([{ path: 'role_grants' }])
@@ -97,7 +97,7 @@ export const Role = React.memo(() => {
         firebase.database().ref().child(`/roles/${uid}`).remove()
       ]).then(() => {
         handleClose()
-        dispatch(goBack())
+        history.goBack()
       })
     }
   }
@@ -132,7 +132,7 @@ export const Role = React.memo(() => {
           )}
         </div>
       }
-      onBackClick={() => dispatch(push('/roles'))}
+      onBackClick={() => history.push('/roles')}
       title={intl.formatMessage({ id: 'edit_role' })}
     >
       <Scrollbar style={{ height: '100%' }}>

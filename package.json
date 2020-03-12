@@ -23,7 +23,6 @@
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "compositor-module": "file:../greenfield/compositor-module",
-    "connected-react-router": "^6.7.0",
     "firebase": "^7.9.3",
     "history": "^4.10.1",
     "intl": "^1.2.5",

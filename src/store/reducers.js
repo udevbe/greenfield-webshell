@@ -10,9 +10,8 @@ import addToHomeScreen from './addToHomeScreen'
 import compositor from './compositor'
 import notification from './notification'
 import serviceWorker from './serviceworker'
-import { connectRouter } from 'connected-react-router'
 
-const createRootReducer = history => combineReducers({
+export default combineReducers({
   firebase,
   dialogs,
   locale,
@@ -23,8 +22,5 @@ const createRootReducer = history => combineReducers({
   addToHomeScreen,
   compositor,
   notification,
-  serviceWorker,
-  router: connectRouter(history)
+  serviceWorker
 })
-
-export default createRootReducer

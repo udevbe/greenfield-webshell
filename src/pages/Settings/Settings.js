@@ -8,10 +8,9 @@ import Flag from '@material-ui/icons/Flag'
 import { makeStyles } from '@material-ui/core/styles'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
+import { useHistory } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import { push } from 'connected-react-router'
-import { useDispatch } from 'react-redux'
 
 const useStyles = makeStyles(theme => ({
   cardGrid: {
@@ -21,8 +20,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Settings = React.memo(() => {
-  const dispatch = useDispatch()
-  const goToMain = () => dispatch(push('/'))
+  const history = useHistory()
+  const goToMain = () => history.push('/')
 
   const classes = useStyles()
   return (

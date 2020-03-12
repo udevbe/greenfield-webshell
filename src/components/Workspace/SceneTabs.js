@@ -10,7 +10,7 @@ import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
-import { push } from 'connected-react-router'
+import { useHistory } from 'react-router'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const SceneTabs = React.memo(({ sceneId }) => {
+  const history = useHistory()
   const dispatch = useDispatch()
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
@@ -47,17 +48,17 @@ const SceneTabs = React.memo(({ sceneId }) => {
 
   const addScene = () => {
     const sceneId = dispatch(createScene({ name: 'new scene', type: 'local' }))
-    dispatch(push(`/workspace/${sceneId}`))
+    history.push(`/workspace/${sceneId}`)
   }
   const removeScene = () => {
     const newActiveSceneId = dispatch(destroyScene(sceneId))
-    dispatch(push(`/workspace/${newActiveSceneId}`))
+    history.push(`/workspace/${newActiveSceneId}`)
   }
   const shareScene = () => {
     // TODO
   }
   const editScene = () => setEditSceneOpen(true)
-  const activateScene = id => dispatch(push(`/workspace/${id}`))
+  const activateScene = id => history.push(`/workspace/${id}`)
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,

@@ -15,8 +15,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import { makeStyles } from '@material-ui/core/styles'
-import { push } from 'connected-react-router'
-import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router'
 
 const useWebAppTileStyles = makeStyles(theme => ({
   card: {
@@ -43,7 +42,7 @@ const useWebAppTileStyles = makeStyles(theme => ({
 }))
 
 const WebAppTile = React.memo(({ appId, app, index }) => {
-  const dispatch = useDispatch()
+  const history = useHistory()
   const [icon, setIcon] = useState(null)
   const firebase = useFirebase()
   const uid = useUserId()
@@ -64,7 +63,7 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     notifyInfo('Application removed')
   }
 
-  const goToAboutApp = () => { dispatch(push(`/webstore/${appId}`)) }
+  const goToAboutApp = () => { history.push(`/webstore/${appId}`) }
 
   const classes = useWebAppTileStyles()
   // TODO i18n

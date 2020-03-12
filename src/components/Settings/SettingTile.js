@@ -5,8 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import CardActionArea from '@material-ui/core/CardActionArea'
-import { useDispatch } from 'react-redux'
-import { push } from 'connected-react-router'
+import { useHistory } from 'react-router'
 
 const useSettingTileStyles = makeStyles(theme => ({
   card: {
@@ -21,9 +20,9 @@ const useSettingTileStyles = makeStyles(theme => ({
 }))
 
 const SettingTile = ({ title, description, index, icon, path }) => {
-  const dispatch = useDispatch()
+  const history = useHistory()
 
-  const navigateTo = () => dispatch(push(path))
+  const navigateTo = () => history.push(path)
 
   const classes = useSettingTileStyles()
   return (

@@ -2,7 +2,7 @@ import Activity from '../../containers/Activity'
 import React, { useRef, useState } from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useHistory } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import List from '@material-ui/core/List'
@@ -19,7 +19,6 @@ import { updateUserConfiguration } from '../../store/compositor'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import IconButton from '@material-ui/core/IconButton'
-import { push } from 'connected-react-router'
 
 const useStyles = makeStyles(theme => ({
   spacer: {
@@ -29,6 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 const InputSettings = React.memo(() => {
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const nrmlvoEntries = useSelector(({ compositor }) => compositor.seat.keyboard.nrmlvoEntries)
   const defaultNrmlvo = useSelector(({ compositor }) => compositor.seat.keyboard.defaultNrmlvo)
@@ -51,7 +51,7 @@ const InputSettings = React.memo(() => {
   const handleScrollSpeedCommit = value => { dispatch(updateUserConfiguration({ scrollFactor: scrollSpeed / 100 })) }
   const handleScrollSpeedLabelUpdate = value => `${value}%`
 
-  const goToSettings = () => dispatch(push('/settings'))
+  const goToSettings = () => history.push('/settings')
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()

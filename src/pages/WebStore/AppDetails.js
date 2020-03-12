@@ -4,6 +4,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
+import { useHistory } from 'react-router'
 import Link from '@material-ui/core/Link'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import Card from '@material-ui/core/Card'
@@ -18,13 +19,12 @@ import { useNotifyError, useNotifyInfo, useNotifySuccess } from '../../utils/not
 import CardMedia from '@material-ui/core/CardMedia'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import Image from '../../components/Image'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Skeleton from '@material-ui/lab/Skeleton'
 import Markdown from '../../components/Markdown/Markdown'
 import { fetchAppStorageProperty } from '../../utils/appStorage'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
-import { push } from 'connected-react-router'
 
 const useStyles = makeStyles({
   card: {
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 })
 
 const AppDetails = React.memo(() => {
-  const dispatch = useDispatch()
+  const history = useHistory()
   const { appid } = useParams()
   const [addAppBusy, setAddAppBusy] = useState(false)
   const [aboutTxt, setAboutTxt] = useState(null)
@@ -116,7 +116,7 @@ const AppDetails = React.memo(() => {
     setAddAppBusy(false)
   }
 
-  const goToWebStore = () => dispatch(push('/webstore'))
+  const goToWebStore = () => history.push('/webstore')
   const link = React.forwardRef((props, ref) =>
     <RouterLink innerRef={ref} {...props} />)
   const classes = useStyles()

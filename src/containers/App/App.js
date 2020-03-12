@@ -1,5 +1,7 @@
 import React, { lazy, Suspense, useEffect } from 'react'
 import config from '../../config'
+import { Router } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 import AppProviders from './AppProviders'
 import StoreProvider from './StoreProvider'
 import { CssBaseline } from '@material-ui/core'
@@ -10,6 +12,8 @@ import { useDispatch } from 'react-redux'
 import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
 import * as serviceWorker from '../../utils/serviceWorker'
 import { registrationSuccess, updateAvailable } from '../../store/serviceworker'
+
+const history = createBrowserHistory()
 
 const Root = lazy(() => import('../Root'))
 const SignIn = lazy(() => import('../../pages/SignIn'))
@@ -42,18 +46,20 @@ const AppBody = React.memo(() => {
   }, [dispatch])
 
   return (
-    <Suspense fallback={<LoadingComponent />}>
-      <FirebaseProvider>
-        <Switch>
-          <Route path='/signin' exact strict>
-            <SignIn />
-          </Route>
-          <Route>
-            <Root />
-          </Route>
-        </Switch>
-      </FirebaseProvider>
-    </Suspense>
+    <Router history={history}>
+      <Suspense fallback={<LoadingComponent />}>
+        <FirebaseProvider>
+          <Switch>
+            <Route path='/signin' exact strict>
+              <SignIn />
+            </Route>
+            <Route>
+              <Root />
+            </Route>
+          </Switch>
+        </FirebaseProvider>
+      </Suspense>
+    </Router>
   )
 })
 
