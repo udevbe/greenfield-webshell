@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   notifyUserSurfaceInactive,
@@ -20,7 +20,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     flexGrow: 1,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    backgroundColor: '#43464B'
   }
 }))
 
@@ -40,7 +41,7 @@ const LocalScene = React.memo(({ sceneId }) => {
   const dispatch = useDispatch()
   const contentRef = useRef(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (sceneId === null) {
       return
     }

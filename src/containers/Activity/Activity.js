@@ -3,7 +3,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft'
 import IconButton from '@material-ui/core/IconButton'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import MenuIcon from '@material-ui/icons/Menu'
-import React from 'react'
+import React, { useState } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
@@ -68,7 +68,9 @@ const Activity = ({
   const width = useWidth(theme)
   const intl = useIntl()
   const drawer = useSelector(state => state.drawer, shallowEqual)
-  const isOffline = useSelector(({ connection }) => (connection ? !connection.isConnected : false), shallowEqual)
+  const [isOffline, setIsOffline] = useState(!window.navigator.onLine)
+  window.onoffline = () => setIsOffline(true)
+  window.ononline = () => setIsOffline(false)
   const {
     mobileOpen,
     open
@@ -136,7 +138,7 @@ const Activity = ({
 
           {
             appBarTitle &&
-              <Typography variant='h6' color='inherit' noWrap>
+            <Typography variant='h6' color='inherit' noWrap>
                 {appBarTitle}
               </Typography>
           }

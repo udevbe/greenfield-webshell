@@ -15,7 +15,8 @@ import { useHistory } from 'react-router'
 const useStyles = makeStyles(theme => ({
   root: {
     marginTop: 'auto',
-    order: 999
+    order: 999,
+    backgroundColor: theme.palette.background.default
   },
   sceneTabsContainer: {
     display: 'flex'

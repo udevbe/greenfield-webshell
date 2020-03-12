@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
+import { useHistory } from 'react-router'
 
 /**
  * @param {DrawerActionItem}actionItem

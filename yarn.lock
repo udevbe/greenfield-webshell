@@ -1129,10 +1129,10 @@
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/analytics-types/-/analytics-types-0.2.7.tgz#70c3c3c9c8941e73c516cd38fabd02b18f912c6a"
   integrity sha1-cMPDyciUHnPFFs04+r0CsY+RLGo=
 
-"@firebase/analytics@0.2.15":
-  version "0.2.15"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/analytics/-/analytics-0.2.15.tgz#d98751d8ca55180fc41d4f4e148444d01deaa4dd"
-  integrity sha1-2YdR2MpVGA/EHU9OFIRE0B3qpN0=
+"@firebase/analytics@0.2.16":
+  version "0.2.16"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/analytics/-/analytics-0.2.16.tgz#641f1a8f5207dce93b452d89527356a2ac97d194"
+  integrity sha1-ZB8aj1IH3Ok7RS2JUnNWoqyX0ZQ=
   dependencies:
     "@firebase/analytics-types" "0.2.7"
     "@firebase/component" "0.1.6"
@@ -1203,18 +1203,18 @@
     faye-websocket "0.11.3"
     tslib "1.10.0"
 
-"@firebase/firestore-types@1.9.2":
-  version "1.9.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/firestore-types/-/firestore-types-1.9.2.tgz#ef70890b3e1c9a401640431d6e1087c73fc2714b"
-  integrity sha1-73CJCz4cmkAWQEMdbhCHxz/CcUs=
+"@firebase/firestore-types@1.10.0":
+  version "1.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/firestore-types/-/firestore-types-1.10.0.tgz#3818138f53782ff8a654341af6671b96496a150b"
+  integrity sha1-OBgTj1N4L/imVDQa9mcblklqFQs=
 
-"@firebase/firestore@1.11.2":
-  version "1.11.2"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/firestore/-/firestore-1.11.2.tgz#c51afaface0e65cce9ace63a97d939fafb012e49"
-  integrity sha1-xRr6+s4OZczprOY6l9k5+vsBLkk=
+"@firebase/firestore@1.12.0":
+  version "1.12.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/@firebase/firestore/-/firestore-1.12.0.tgz#98fe0adfa94d79ebf9489f118789cff68ac2790f"
+  integrity sha1-mP4K36lNeev5SJ8Rh4nP9orCeQ8=
   dependencies:
     "@firebase/component" "0.1.6"
-    "@firebase/firestore-types" "1.9.2"
+    "@firebase/firestore-types" "1.10.0"
     "@firebase/logger" "0.1.36"
     "@firebase/util" "0.2.41"
     "@firebase/webchannel-wrapper" "0.2.36"
@@ -6350,17 +6350,17 @@ find-up@^2.0.0, find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-firebase@^7.9.3:
-  version "7.9.3"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/firebase/-/firebase-7.9.3.tgz#6dd411571d0b481e1b2485125da5153615fb7bd2"
-  integrity sha1-bdQRVx0LSB4bJIUSXaUVNhX7e9I=
+firebase@^7.10.0:
+  version "7.10.0"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/firebase/-/firebase-7.10.0.tgz#1df4d42f30ce6de97d7327f468911f51416e4fdd"
+  integrity sha1-HfTULzDObel9cyf0aJEfUUFuT90=
   dependencies:
-    "@firebase/analytics" "0.2.15"
+    "@firebase/analytics" "0.2.16"
     "@firebase/app" "0.5.5"
     "@firebase/app-types" "0.5.2"
     "@firebase/auth" "0.13.6"
     "@firebase/database" "0.5.22"
-    "@firebase/firestore" "1.11.2"
+    "@firebase/firestore" "1.12.0"
     "@firebase/functions" "0.4.36"
     "@firebase/installations" "0.4.4"
     "@firebase/messaging" "0.6.8"
@@ -7441,7 +7441,7 @@ intl-messageformat-parser@^4.1.0:
   dependencies:
     "@formatjs/intl-unified-numberformat" "^3.2.0"
 
-intl-messageformat@^8.1.0:
+intl-messageformat@^8.2.1:
   version "8.2.1"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/intl-messageformat/-/intl-messageformat-8.2.1.tgz#11a539ad7ba815c511d8dafdda66e80fb2e5609d"
   integrity sha1-EaU5rXuoFcUR2Nr92mboD7LlYJ0=
@@ -9558,7 +9558,7 @@ node-notifier@^5.4.2:
     shellwords "^0.1.1"
     which "^1.3.0"
 
-node-pre-gyp@*, node-pre-gyp@^0.14.0:
+node-pre-gyp@^0.14.0:
   version "0.14.0"
   resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/node-pre-gyp/-/node-pre-gyp-0.14.0.tgz#9a0596533b877289bcad4e143982ca3d904ddc83"
   integrity sha1-mgWWUzuHcom8rU4UOYLKPZBN3IM=
@@ -11686,10 +11686,10 @@ react-inspector@^4.0.0:
     prop-types "^15.6.1"
     storybook-chromatic "^2.2.2"
 
-react-intl@^4.0.0:
-  version "4.0.0"
-  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-intl/-/react-intl-4.0.0.tgz#95f31f3eef44607b3d879cf392febc7b897d03e9"
-  integrity sha1-lfMfPu9EYHs9h5zzkv68e4l9A+k=
+react-intl@^4.1.1:
+  version "4.1.1"
+  resolved "https://artifactory.persgroep.cloud/artifactory/api/npm/npm/react-intl/-/react-intl-4.1.1.tgz#f6e409f6fb114740d603db9fe35881252cd78944"
+  integrity sha1-9uQJ9vsRR0DWA9uf41iBJSzXiUQ=
   dependencies:
     "@formatjs/intl-displaynames" "^1.2.1"
     "@formatjs/intl-listformat" "^1.4.1"
@@ -11700,7 +11700,7 @@ react-intl@^4.0.0:
     "@types/invariant" "^2.2.31"
     hoist-non-react-statics "^3.3.2"
     intl-format-cache "^4.2.21"
-    intl-messageformat "^8.1.0"
+    intl-messageformat "^8.2.1"
     intl-messageformat-parser "^4.1.0"
     shallow-equal "^1.2.1"
 

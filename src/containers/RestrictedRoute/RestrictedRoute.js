@@ -2,20 +2,14 @@ import React from 'react'
 import { Redirect, Route, useLocation } from 'react-router'
 import { useIsAuthenticated } from '../../utils/auth'
 
-export const RestrictedRoute = ({
+export const RestrictedRoute = React.memo(({
   type,
-  component: Component,
-  componentProps,
   ...rest
 }) => {
   const location = useLocation()
   const authorized = useIsAuthenticated()
   if (authorized || (type === 'public')) {
-    return (
-      <Route {...rest}>
-        <Component {...componentProps} />
-      </Route>
-    )
+    return <Route {...rest} />
   } else {
     return (
       <Redirect
@@ -29,6 +23,6 @@ export const RestrictedRoute = ({
       />
     )
   }
-}
+})
 
 export default RestrictedRoute

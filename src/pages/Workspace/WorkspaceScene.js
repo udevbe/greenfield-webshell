@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     padding: 5,
     textAlign: 'center',
-    top: 65,
+    top: '45%',
     height: 80
   }
 }))
@@ -93,7 +93,7 @@ const WorkspaceScene = React.memo(() => {
     >
       {
         sceneExists && userSurfaces.length === 0 &&
-          <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
+        <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
               No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
             </Typography>
@@ -101,12 +101,13 @@ const WorkspaceScene = React.memo(() => {
       }
       {
         !sceneExists &&
-          <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
+        <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
               Scene does not exist. <Link to='/workspace'>Go back.</Link>
             </Typography>
           </Backdrop>
       }
+      {/* TODO render all scenes stacked and update order using the scene tabs. This fixes the flash when creating a new scene. */}
       {sceneExists && <LocalScene sceneId={sceneId} />}
     </Activity>
   )

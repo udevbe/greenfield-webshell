@@ -1,6 +1,5 @@
 import CompositorModule from './CompositorModule'
 import { showNotification } from '../../store/notification'
-import { createMatchSelector } from 'connected-react-router'
 import {
   createClient,
   createScene,
@@ -92,7 +91,6 @@ class CompositorMiddleWare {
      * @private
      */
     this._session = null
-    this._workSpaceSceneIdMatchSelector = createMatchSelector({ path: '/workspace/:sceneId' })
   }
 
   _linkUserShellEvents (store) {
