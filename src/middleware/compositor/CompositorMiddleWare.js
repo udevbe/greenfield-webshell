@@ -146,7 +146,7 @@ class CompositorMiddleWare {
   }
 
   _createDefaultWorkspace (store) {
-    store.dispatch(createScene({ name: 'default', type: 'local' }))
+    store.dispatch(createScene({ name: 'default', type: 'local', sharing: 'private' }))
   }
 
   /**
@@ -170,6 +170,8 @@ class CompositorMiddleWare {
         this._restoreUserConfiguration(store)
 
         this._session.globals.register()
+
+        action.payload = this._session.compositorSessionId
         next(action)
       })
     }

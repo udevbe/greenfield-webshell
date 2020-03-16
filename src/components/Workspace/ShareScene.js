@@ -2,36 +2,34 @@ import React from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
-import TextField from '@material-ui/core/TextField'
 import DialogContentText from '@material-ui/core/DialogContentText'
+import { Switch } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateScene } from '../../store/compositor'
 
-// TODO i18n
-const EditScene = React.memo(({ open, handleClose, sceneId }) => {
+const ShareScene = ({ open, handleClose, sceneId }) => {
   const dispatch = useDispatch()
   const scene = useSelector(({ compositor }) => compositor.scenes[sceneId])
 
+  // TODO i18n
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-      <DialogTitle id='form-dialog-title'>Update Scene</DialogTitle>
+      <DialogTitle id='form-dialog-title'>Share Scene</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          To change this scene's name, please enter a new name here.
+          Toggle the button below to make this this scene available to other users.
         </DialogContentText>
-        <TextField
-          autoFocus
-          margin='dense'
-          id='name'
-          label='Scene Name'
-          type='text'
-          fullWidth
-          value={scene.name}
-          onChange={e => dispatch(updateScene({ ...scene, name: e.target.value }))}
+        <Switch
+          checked={scene.sharing === 'public'}
+          onChange={event => dispatch(updateScene({ ...scene, sharing: event.target.checked ? 'public' : 'private' }))}
+          value='public'
+          color='primary'
+          inputProps={{ 'aria-label': 'Scene charing checkbox' }}
         />
       </DialogContent>
+      }
     </Dialog>
   )
-})
+}
 
-export default EditScene
+export default ShareScene

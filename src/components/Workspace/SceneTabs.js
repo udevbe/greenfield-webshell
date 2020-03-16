@@ -11,6 +11,7 @@ import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
 import { useHistory } from 'react-router'
+import ShareScene from './ShareScene'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,30 +41,30 @@ const SceneTabs = React.memo(({ sceneId }) => {
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
   const [editSceneOpen, setEditSceneOpen] = React.useState(false)
+  const [shareSceneOpen, setShareSceneOpen] = React.useState(false)
 
   const scenes = useSelector(({ compositor }) => compositor.scenes)
 
   const handleEditSceneClose = () => setEditSceneOpen(false)
+  const handleShareSceneClose = () => setShareSceneOpen(false)
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
   const addScene = () => {
-    const sceneId = dispatch(createScene({ name: 'new scene', type: 'local' }))
+    const sceneId = dispatch(createScene({ name: 'new scene', type: 'local', sharing: 'private' }))
     history.push(`/workspace/${sceneId}`)
   }
   const removeScene = () => {
     const newActiveSceneId = dispatch(destroyScene(sceneId))
     history.push(`/workspace/${newActiveSceneId}`)
   }
-  const shareScene = () => {
-    // TODO
-  }
   const editScene = () => setEditSceneOpen(true)
+  const shareScene = () => setShareSceneOpen(true)
   const activateScene = id => history.push(`/workspace/${id}`)
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,
-    { icon: <Share />, name: 'Share This Scene', action: shareScene },
+    scenes[sceneId].type === 'local' ? { icon: <Share />, name: 'Share This Scene', action: shareScene } : null,
     { icon: <Edit />, name: 'Edit This Scene', action: editScene },
     { icon: <Add />, name: 'Add New Scene', action: addScene }
   ]
@@ -72,6 +73,7 @@ const SceneTabs = React.memo(({ sceneId }) => {
   return (
     <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
       <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} sceneId={sceneId} />
+      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} sceneId={sceneId} />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}

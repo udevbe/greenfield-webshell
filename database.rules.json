@@ -51,6 +51,10 @@
         ".read": "$uid === auth.uid || root.child('admins').child(auth.uid).val() === true",
         ".write": "$uid === auth.uid || root.child('admins').child(auth.uid).val() === true"
       }
+    },
+    "scenes": {
+      ".read": "auth.uid !== null",
+      ".write": "root.child('admins').child(auth.uid).val() === true"
     }
   }
 }

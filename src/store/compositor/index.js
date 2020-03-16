@@ -33,7 +33,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * userSurfaces: Object.<string,UserSurface>,
  * userConfiguration: UserConfiguration,
  * scenes: Object.<string, Scene>,
- * activeSceneId: ?string
+ * sessionId: string
  * }}CompositorState
  */
 /**
@@ -55,7 +55,8 @@ const initialState = {
     scrollFactor: 1,
     keyboardLayoutName: null
   },
-  scenes: {}
+  scenes: {},
+  sessionId: null
 }
 
 /**
@@ -67,6 +68,7 @@ const reducers = {
    * @param {Action}action
    */
   initializeCompositor: (state, action) => {
+    state.sessionId = action.payload
     state.initialized = true
   },
 
