@@ -5,13 +5,13 @@ import DialogContent from '@material-ui/core/DialogContent'
 import TextField from '@material-ui/core/TextField'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateScene } from '../../store/compositor'
+import { changeSceneName } from '../../store/compositor'
 
-// TODO i18n
 const EditScene = React.memo(({ open, handleClose, sceneId }) => {
   const dispatch = useDispatch()
   const scene = useSelector(({ compositor }) => compositor.scenes[sceneId])
 
+  // TODO i18n
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
       <DialogTitle id='form-dialog-title'>Update Scene</DialogTitle>
@@ -27,7 +27,7 @@ const EditScene = React.memo(({ open, handleClose, sceneId }) => {
           type='text'
           fullWidth
           value={scene.name}
-          onChange={e => dispatch(updateScene({ ...scene, name: e.target.value }))}
+          onChange={e => dispatch(changeSceneName({ sceneId: scene.id, name: e.target.value }))}
         />
       </DialogContent>
     </Dialog>

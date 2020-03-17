@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
 const configureSceneElement = sceneElement => {
   sceneElement.style.display = 'inline'
   sceneElement.style.width = '100%'
-  // sceneElement.style.height = '100%'
   sceneElement.style.overflow = 'hidden'
   sceneElement.style.flex = 1
   sceneElement.style.order = 100
@@ -37,7 +36,7 @@ const configureSceneElement = sceneElement => {
   return sceneElement
 }
 
-const LocalScene = React.memo(({ sceneId }) => {
+const Scene = React.memo(({ sceneId }) => {
   const dispatch = useDispatch()
   const contentRef = useRef(null)
 
@@ -100,4 +99,4 @@ const LocalScene = React.memo(({ sceneId }) => {
   )
 })
 
-export default LocalScene
+export default Scene

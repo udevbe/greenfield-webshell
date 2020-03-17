@@ -28,6 +28,7 @@
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.8.4",
     "markdown-to-jsx": "^6.11.0",
+    "peerjs": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-custom-scrollbars": "^4.2.1",

@@ -7,7 +7,13 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{userSurfaceKey:string, sceneId: string}}UserSurfaceView
  */
 /**
- * @typedef {{name: string, id: string, type: 'local', lastActive: number, views: UserSurfaceView[]}}Scene
+ * @typedef {{views: UserSurfaceView[], sharing: 'public'|'private', shared_with: string[]}}LocalSceneState
+ */
+/**
+ * @typedef {{shared_by: string, access: 'pending'|'granted'|'denied'}}RemoteSceneState
+ */
+/**
+ * @typedef {{name: string, id: string, type: 'local'|'remote', lastActive: number, state: LocalSceneState|RemoteSceneState}}Scene
  */
 /**
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
@@ -33,7 +39,6 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * userSurfaces: Object.<string,UserSurface>,
  * userConfiguration: UserConfiguration,
  * scenes: Object.<string, Scene>,
- * sessionId: string
  * }}CompositorState
  */
 /**
@@ -55,8 +60,7 @@ const initialState = {
     scrollFactor: 1,
     keyboardLayoutName: null
   },
-  scenes: {},
-  sessionId: null
+  scenes: {}
 }
 
 /**
@@ -68,7 +72,6 @@ const reducers = {
    * @param {Action}action
    */
   initializeCompositor: (state, action) => {
-    state.sessionId = action.payload
     state.initialized = true
   },
 
@@ -144,7 +147,7 @@ const reducers = {
    */
   createUserSurfaceView: (state, action) => {
     const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].views.push({ userSurfaceKey, sceneId })
+    state.scenes[sceneId].state.views.push({ userSurfaceKey, sceneId })
   },
 
   /**
@@ -153,8 +156,8 @@ const reducers = {
    */
   destroyUserSurfaceView: (state, action) => {
     const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].views =
-      state.scenes[sceneId].views.filter(view => view.userSurfaceKey !== userSurfaceKey && view.sceneId !== sceneId)
+    state.scenes[sceneId].state.views = state.scenes[sceneId].state.views.filter(view =>
+      view.userSurfaceKey !== userSurfaceKey && view.sceneId !== sceneId)
   },
 
   /**
@@ -163,7 +166,13 @@ const reducers = {
    */
   createScene: (state, action) => {
     const { name, id, type } = action.payload
-    state.scenes[id] = { name, id, type, views: [] }
+    const scene = { name, id, type }
+    if (type === 'local') {
+      scene.state = { views: [], sharing: 'private', shared_with: [] }
+    } else if (type === 'remote') {
+      scene.state = { shared_by: null, access: 'pending' }
+    }
+    state.scenes[id] = scene
   },
 
   /**
@@ -175,9 +184,56 @@ const reducers = {
     delete state.scenes[id]
   },
 
-  updateScene: (state, action) => {
-    const scene = action.payload
-    state.scenes[scene.id] = scene
+  /**
+   * @param {CompositorState}state
+   * @param {{payload: {grantingUserId: string, remoteSceneId: string}}}action
+   */
+  grantedSceneAccess: (state, action) => {
+    const { grantingUserId, remoteSceneId } = action.payload
+    state.scenes[remoteSceneId].state.access = 'granted'
+    state.scenes[remoteSceneId].state.shared_by = grantingUserId
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {{payload: {remoteSceneId: string}}}action
+   */
+  deniedSceneAccess: (state, action) => {
+    const { remoteSceneId } = action.payload
+    state.scenes[remoteSceneId].state.access = 'denied'
+    state.scenes[remoteSceneId].state.shared_by = null
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {{payload: {localSceneId: string, requestingUserId:string, peerId:string, remoteSceneId:string, access: 'denied'|'granted'}}}action
+   */
+  requestSceneAccess: (state, action) => {
+    const { localSceneId, requestingUserId, access } = action.payload
+    const scene = state.scenes[localSceneId]
+    if (access === 'granted') {
+      scene.state.shared_with.push(requestingUserId)
+    } else if (access === 'denied') {
+      scene.state.shared_with = scene.state.shared_with.filter(uid => uid !== requestingUserId)
+    }
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {Action}action
+   */
+  changeSceneName: (state, action) => {
+    const { sceneId, name } = action.payload
+    state.scenes[sceneId].name = name
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {{payload: {sceneId: string, sharing: string}}}action
+   */
+  shareScene: (state, action) => {
+    const { sceneId, sharing } = action.payload
+    state.scenes[sceneId].state.sharing = sharing
   },
 
   /**
@@ -201,6 +257,11 @@ export const requestUserSurfaceActive = createAction('requestUserSurfaceActive')
  * @type {function(payload: string):string}
  */
 export const refreshScene = createAction('refreshScene')
+
+/**
+ * @type {function(payload: {sceneId: string}):string}
+ */
+export const requestingSceneAccess = createAction('requestingSceneAccess')
 
 /**
  * @type {function(payload: string):string}
@@ -247,7 +308,11 @@ export const {
   destroyUserSurfaceView,
 
   createScene,
-  updateScene,
+  requestSceneAccess: requestedSceneAccess,
+  grantedSceneAccess,
+  deniedSceneAccess,
+  changeSceneName,
+  shareScene,
   destroyScene,
   markSceneLastActive
 } = slice.actions

@@ -5,15 +5,19 @@ import {
   createScene,
   createUserSurface,
   createUserSurfaceView,
+  deniedSceneAccess,
   destroyClient,
   destroyScene,
   destroyUserSurface,
   destroyUserSurfaceView,
+  grantedSceneAccess,
   initializeCompositor,
   launchApp,
   markSceneLastActive,
   notifyUserSurfaceInactive,
   refreshScene,
+  requestedSceneAccess,
+  requestingSceneAccess,
   requestUserSurfaceActive,
   terminateClient,
   updateUserConfiguration,
@@ -21,6 +25,7 @@ import {
   updateUserSurface,
   userSurfaceKeyboardFocus
 } from '../../store/compositor'
+import Peer from 'peerjs'
 
 class CompositorMiddleWare {
   /**
@@ -91,6 +96,16 @@ class CompositorMiddleWare {
      * @private
      */
     this._session = null
+    /**
+     * @type {Object.<string,Peer.DataConnection>}
+     * @private
+     */
+    this._dataConnections = {}
+    /**
+     * @type {Peer}
+     * @private
+     */
+    this._peer = null
   }
 
   _linkUserShellEvents (store) {
@@ -146,7 +161,7 @@ class CompositorMiddleWare {
   }
 
   _createDefaultWorkspace (store) {
-    store.dispatch(createScene({ name: 'default', type: 'local', sharing: 'private' }))
+    store.dispatch(createScene({ name: 'default', type: 'local' }))
   }
 
   /**
@@ -171,7 +186,29 @@ class CompositorMiddleWare {
 
         this._session.globals.register()
 
-        action.payload = this._session.compositorSessionId
+        this._peer = new Peer(CompositorMiddleWare._uuidv4())
+        this._peer.on('connection', dataConnection => {
+          this._dataConnections[dataConnection.peer] = dataConnection
+
+          dataConnection.on('data', data => {
+            // TODO we probably want a bit of message sanity checking here
+            const action = JSON.parse(data)
+            action.payload.peerId = dataConnection.peer
+            next(action)
+          })
+
+          dataConnection.on('close', () => {
+            delete this._dataConnections[dataConnection.peer]
+          })
+        })
+        this._peer.on('call', mediaConnection => {
+          const { sceneId } = mediaConnection.metadata
+          mediaConnection.on('stream', stream => {
+            const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
+            video.srcObject = stream
+          })
+        })
+
         next(action)
       })
     }
@@ -201,7 +238,10 @@ class CompositorMiddleWare {
    */
   [refreshScene] (store, next, action) {
     const sceneId = action.payload
-    this._session.userShell.actions.refreshScene(sceneId)
+    const compositorState = store.getState().compositor
+    if (compositorState.scenes[sceneId].type === 'local') {
+      this._session.userShell.actions.refreshScene(sceneId)
+    }
     return next(action)
   }
 
@@ -236,38 +276,125 @@ class CompositorMiddleWare {
   /**
    * @param store
    * @param {function(action:*):*}next
+   * @param {{payload:{sceneId: string, peerId: string}}}action
+   * @return {*}
+   */
+  [requestingSceneAccess] (store, next, action) {
+    const { sceneId, peerId } = action.payload
+    store.dispatch(createScene({ name: 'remote', type: 'remote' }))
+    this._send(peerId, JSON.stringify(requestedSceneAccess({ sceneId })))
+  }
+
+  /**
+   * @param {string}peerId
+   * @param {string}message
+   * @private
+   */
+  _send (peerId, message) {
+    const dataConnection = this._dataConnections[peerId]
+    if (dataConnection && dataConnection.open) {
+      dataConnection.send(message)
+    } else if (dataConnection && !dataConnection.open) {
+      dataConnection.on('open', () => this._send(peerId, message))
+    } else if (!dataConnection) {
+      this._dataConnections[peerId] = this._peer.connect(peerId, { reliable: true })
+      this._send(peerId, message)
+    }
+  }
+
+  /**
+   * @param store
+   * @param {function(action:*):*}next
+   * @param {{payload: {sceneId: string, peerId: string}}}action
+   * @return {*}
+   */
+  [requestedSceneAccess] (store, next, action) {
+    const { sceneId, peerId } = action.payload
+    const firebaseState = store.getState().firebase
+    const compositorState = store.getState().compositor
+
+    const scene = compositorState.scenes[sceneId]
+    if (scene && scene.type === 'local' && scene.sharing === 'public') {
+      action.payload.access = 'granted'
+      this._send(peerId, JSON.stringify(grantedSceneAccess({
+        grantingUserId: firebaseState.auth.uid,
+        sceneId
+      })))
+
+      const canvas = /** @type {HTMLCanvasElement} */ document.getElementById(sceneId)
+      // TODO pass in a framerate of 0 and explicitly sync with scene repaint
+      const sceneVideoStream = canvas.captureStream()
+      const sceneCall = this._peer.call(peerId, sceneVideoStream, { metadata: { sceneId } })
+
+      sceneCall.on('close', () => {
+        action.payload.access = 'denied'
+        next(action)
+      })
+    } else {
+      action.payload.access = 'denied'
+      this._send(peerId, JSON.stringify(deniedSceneAccess({ sceneId })))
+    }
+    return next(action)
+  }
+
+  /**
+   * @param store
+   * @param {function(action:*):*}next
    * @param {{payload: {name: string, id: string, type: string}}}action
    * @return {*}
    */
   [createScene] (store, next, action) {
-    if (action.payload.type === 'local') {
-      const id = CompositorMiddleWare._uuidv4()
-      const canvas = document.createElement('canvas')
+    const id = CompositorMiddleWare._uuidv4()
+    action.payload.id = id
+    const { type } = action.payload
 
-      canvas.onpointermove = event => this._session.userShell.actions.input.pointerMove(event, id)
-      canvas.onpointerdown = event => {
-        canvas.setPointerCapture(event.pointerId)
+    let sceneElement = null
+    if (type === 'local') {
+      sceneElement = document.createElement('canvas')
+      this._session.userShell.actions.initScene(id, sceneElement)
+
+      sceneElement.onpointermove = event => this._session.userShell.actions.input.pointerMove(event, id)
+      sceneElement.onpointerdown = event => {
+        sceneElement.setPointerCapture(event.pointerId)
         this._session.userShell.actions.input.buttonDown(event, id)
       }
-      canvas.onpointerup = event => {
+      sceneElement.onpointerup = event => {
         this._session.userShell.actions.input.buttonUp(event, id)
-        canvas.releasePointerCapture(event.pointerId)
+        sceneElement.releasePointerCapture(event.pointerId)
       }
-      canvas.onwheel = event => this._session.userShell.actions.input.axis(event, id)
-      canvas.onkeydown = event => this._session.userShell.actions.input.key(event, true)
-      canvas.onkeyup = event => this._session.userShell.actions.input.key(event, false)
-      canvas.onmouseover = () => canvas.focus()
-      canvas.tabIndex = 1
+      sceneElement.onwheel = event => this._session.userShell.actions.input.axis(event, id)
+      sceneElement.onkeydown = event => this._session.userShell.actions.input.key(event, true)
+      sceneElement.onkeyup = event => this._session.userShell.actions.input.key(event, false)
+    } else if (type === 'remote') {
+      sceneElement = document.createElement('video')
 
-      canvas.style.display = 'none'
-      canvas.id = id
-      document.body.appendChild(canvas)
-      this._session.userShell.actions.initScene(id, canvas)
-      action.payload.id = id
-      next(action)
-      store.dispatch(markSceneLastActive(action.payload.id))
-      return id
+      sceneElement.onpointermove = event => { /* send event over connection */ }
+      sceneElement.onpointerdown = event => {
+        sceneElement.setPointerCapture(event.pointerId)
+        /* send event over connection */
+      }
+      sceneElement.onpointerup = event => {
+        this._session.userShell.actions.input.buttonUp(event, id)
+        /* send event over connection */
+      }
+      sceneElement.onwheel = event => { /* send event over connection */ }
+      sceneElement.onkeydown = event => { /* send event over connection */ }
+      sceneElement.onkeyup = event => { /* send event over connection */ }
+    } else {
+      // TODO error unknown type?
+      return
     }
+
+    sceneElement.onmouseover = () => sceneElement.focus()
+    sceneElement.tabIndex = 1
+
+    sceneElement.style.display = 'none'
+    sceneElement.id = id
+    document.body.appendChild(sceneElement)
+
+    next(action)
+    store.dispatch(markSceneLastActive(id))
+    return id
   }
 
   /**

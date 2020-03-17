@@ -5,7 +5,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import { Switch } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateScene } from '../../store/compositor'
+import { shareScene } from '../../store/compositor'
 
 const ShareScene = ({ open, handleClose, sceneId }) => {
   const dispatch = useDispatch()
@@ -20,14 +20,16 @@ const ShareScene = ({ open, handleClose, sceneId }) => {
           Toggle the button below to make this this scene available to other users.
         </DialogContentText>
         <Switch
-          checked={scene.sharing === 'public'}
-          onChange={event => dispatch(updateScene({ ...scene, sharing: event.target.checked ? 'public' : 'private' }))}
+          checked={scene.state.sharing === 'public'}
+          onChange={event => dispatch(shareScene({
+            sceneId: scene.id,
+            sharing: event.target.checked ? 'public' : 'private'
+          }))}
           value='public'
           color='primary'
           inputProps={{ 'aria-label': 'Scene charing checkbox' }}
         />
       </DialogContent>
-      }
     </Dialog>
   )
 }

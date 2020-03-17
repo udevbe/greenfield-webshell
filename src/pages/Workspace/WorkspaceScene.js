@@ -8,9 +8,9 @@ import Tabs from '@material-ui/core/Tabs'
 import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
-import LocalScene from '../../components/Workspace/LocalScene'
-import { useParams } from 'react-router'
-import { markSceneLastActive } from '../../store/compositor'
+import Scene from '../../components/Workspace/Scene'
+import { useLocation, useParams } from 'react-router'
+import { markSceneLastActive, requestingSceneAccess } from '../../store/compositor'
 import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
@@ -41,8 +41,13 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+function useQuery () {
+  return new URLSearchParams(useLocation().search)
+}
+
 const WorkspaceScene = React.memo(() => {
   const { sceneId } = useParams()
+  const peerId = useQuery().get('peerId')
   const dispatch = useDispatch()
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
@@ -57,6 +62,10 @@ const WorkspaceScene = React.memo(() => {
       return null
     }
   })
+
+  if (!sceneExists && peerId) {
+    dispatch(requestingSceneAccess({ sceneId, peerId }))
+  }
 
   if (sceneExists && lastActiveSceneId !== sceneId) {
     dispatch(markSceneLastActive(sceneId))
@@ -93,22 +102,36 @@ const WorkspaceScene = React.memo(() => {
     >
       {
         sceneExists && userSurfaces.length === 0 &&
-        <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
+        (
+          <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
               No applications are running. To launch an application, press the  <AppsIcon /> icon in the top right corner.
             </Typography>
           </Backdrop>
+        )
       }
       {
-        !sceneExists &&
-        <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
+        !sceneExists && !peerId &&
+        (
+          <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
               Scene does not exist. <Link to='/workspace'>Go back.</Link>
             </Typography>
           </Backdrop>
+        )
+      }
+      {
+        peerId &&
+        (
+          <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
+            <Typography variant='subtitle1'>
+              Connecting to remote scene...
+            </Typography>
+          </Backdrop>
+        )
       }
       {/* TODO render all scenes stacked and update order using the scene tabs. This fixes the flash when creating a new scene. */}
-      {sceneExists && <LocalScene sceneId={sceneId} />}
+      {sceneExists && <Scene sceneId={sceneId} />}
     </Activity>
   )
 })
