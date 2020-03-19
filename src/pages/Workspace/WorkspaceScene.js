@@ -9,8 +9,8 @@ import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
 import Scene from '../../components/Workspace/Scene'
-import { useLocation, useParams } from 'react-router'
-import { markSceneLastActive, requestingSceneAccess } from '../../store/compositor'
+import { useParams } from 'react-router'
+import { markSceneLastActive } from '../../store/compositor'
 import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
@@ -41,13 +41,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function useQuery () {
-  return new URLSearchParams(useLocation().search)
-}
-
 const WorkspaceScene = React.memo(() => {
   const { sceneId } = useParams()
-  const peerId = useQuery().get('peerId')
   const dispatch = useDispatch()
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
@@ -62,10 +57,6 @@ const WorkspaceScene = React.memo(() => {
       return null
     }
   })
-
-  if (!sceneExists && peerId) {
-    dispatch(requestingSceneAccess({ sceneId, peerId }))
-  }
 
   if (sceneExists && lastActiveSceneId !== sceneId) {
     dispatch(markSceneLastActive(sceneId))
@@ -111,21 +102,11 @@ const WorkspaceScene = React.memo(() => {
         )
       }
       {
-        !sceneExists && !peerId &&
+        !sceneExists &&
         (
           <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
               Scene does not exist. <Link to='/workspace'>Go back.</Link>
-            </Typography>
-          </Backdrop>
-        )
-      }
-      {
-        peerId &&
-        (
-          <Backdrop open className={classes.backdrop} timeout={1000} addEndListener={() => {}}>
-            <Typography variant='subtitle1'>
-              Connecting to remote scene...
             </Typography>
           </Backdrop>
         )

@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 import RestrictedRoute from '../RestrictedRoute'
-import WorkspaceScene from '../../pages/Workspace/WorkspaceScene'
 
 const User = lazy(() => import('../../pages/Users/User'))
 const Users = lazy(() => import('../../pages/Users/Users'))
@@ -11,12 +10,17 @@ const Role = lazy(() => import('../../pages/Roles/Role'))
 const Roles = lazy(() => import('../../pages/Roles/Roles'))
 
 const Workspace = lazy(() => import('../../pages/Workspace'))
+const WorkspaceScene = lazy(() => import('../../pages/Workspace/WorkspaceScene'))
+const RemoteScene = lazy(() => import('../../pages/Workspace/RemoteScene'))
+
 const WebStore = lazy(() => import('../../pages/WebStore/WebStore'))
 const AboutApp = lazy(() => import('../../pages/WebStore/AppDetails'))
 
 const Settings = lazy(() => import('../../pages/Settings'))
 const SiteSettings = lazy(() => import('../../pages/Settings/SiteSettings'))
 const InputSettings = lazy(() => import('../../pages/Settings/InputSettings'))
+
+const SignIn = lazy(() => import('../../pages/SignIn'))
 
 const AsyncPageNotFound = lazy(() => import('../../pages/PageNotFound'))
 
@@ -51,6 +55,9 @@ export const Routes = React.memo(() => {
           </RestrictedRoute>,
           <RestrictedRoute type='private' path='/workspace/:sceneId' exact>
             <WorkspaceScene />
+          </RestrictedRoute>
+          <RestrictedRoute type='private' path='/workspace/remote/:sceneId/:peerId' exact>
+            <RemoteScene />
           </RestrictedRoute>,
           <RestrictedRoute type='private' path='/webstore' exact>
             <WebStore />
@@ -67,6 +74,9 @@ export const Routes = React.memo(() => {
           <RestrictedRoute type='private' path='/settings/input' exact>
             <InputSettings />
           </RestrictedRoute>,
+          <Route path='/signin' exact strict>
+            <SignIn />
+          </Route>
           <Route>
             <AsyncPageNotFound />
           </Route>

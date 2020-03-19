@@ -6,7 +6,6 @@ import AppProviders from './AppProviders'
 import StoreProvider from './StoreProvider'
 import { CssBaseline } from '@material-ui/core'
 import Helmet from 'react-helmet'
-import { Route, Switch } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 import { useDispatch } from 'react-redux'
 import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
@@ -16,7 +15,6 @@ import { registrationSuccess, updateAvailable } from '../../store/serviceworker'
 const history = createBrowserHistory()
 
 const Root = lazy(() => import('../Root'))
-const SignIn = lazy(() => import('../../pages/SignIn'))
 const FirebaseProvider = lazy(() => import('./FirebaseProvider'))
 
 const AppBody = React.memo(() => {
@@ -49,14 +47,7 @@ const AppBody = React.memo(() => {
     <Router history={history}>
       <Suspense fallback={<LoadingComponent />}>
         <FirebaseProvider>
-          <Switch>
-            <Route path='/signin' exact strict>
-              <SignIn />
-            </Route>
-            <Route>
-              <Root />
-            </Route>
-          </Switch>
+          <Root />
         </FirebaseProvider>
       </Suspense>
     </Router>

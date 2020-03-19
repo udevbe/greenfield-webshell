@@ -5,7 +5,7 @@ import Logo from '../../components/Logo'
 import { makeStyles } from '@material-ui/core/styles'
 import { shallowEqual, useSelector } from 'react-redux'
 import { isEmpty, isLoaded, useFirebase } from 'react-redux-firebase'
-import { Redirect } from 'react-router'
+import { Redirect, useLocation } from 'react-router'
 import LoadingComponent from '../../components/LoadingComponent'
 import Fade from '@material-ui/core/Fade'
 
@@ -55,6 +55,7 @@ function updateUserPublicData (firebase, auth) {
 
 const SignIn = React.memo(() => {
   const firebase = useFirebase()
+  const location = useLocation()
   const classes = useStyles()
   const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
   if (!isLoaded(auth)) {
@@ -78,8 +79,12 @@ const SignIn = React.memo(() => {
   } else {
     updateUserOnlineStatus(firebase, auth)
     updateUserPublicData(firebase, auth)
-    // TODO redirect to wherever we came from based on redirect state we received
-    return <Redirect to='/' />
+
+    if (location.state && location.state.fromRedirect) {
+      return <Redirect to={location.state.fromLocation.pathname} />
+    } else {
+      return <Redirect to='/' />
+    }
   }
 })
 

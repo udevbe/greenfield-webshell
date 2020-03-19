@@ -35,6 +35,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{
  * clients: Object.<string,WaylandClient>,
  * initialized: boolean,
+ * peerId: string,
  * seat: UserSeat,
  * userSurfaces: Object.<string,UserSurface>,
  * userConfiguration: UserConfiguration,
@@ -47,6 +48,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
 const initialState = {
   clients: {},
   initialized: false,
+  peerId: null,
   seat: {
     pointerGrab: null,
     keyboardFocus: null,
@@ -72,6 +74,8 @@ const reducers = {
    * @param {Action}action
    */
   initializeCompositor: (state, action) => {
+    const { peerId } = action.payload
+    state.peerId = peerId
     state.initialized = true
   },
 
@@ -208,9 +212,9 @@ const reducers = {
    * @param {CompositorState}state
    * @param {{payload: {localSceneId: string, requestingUserId:string, peerId:string, remoteSceneId:string, access: 'denied'|'granted'}}}action
    */
-  requestSceneAccess: (state, action) => {
-    const { localSceneId, requestingUserId, access } = action.payload
-    const scene = state.scenes[localSceneId]
+  requestedSceneAccess: (state, action) => {
+    const { sceneId, requestingUserId, access } = action.payload
+    const scene = state.scenes[sceneId]
     if (access === 'granted') {
       scene.state.shared_with.push(requestingUserId)
     } else if (access === 'denied') {
@@ -308,7 +312,7 @@ export const {
   destroyUserSurfaceView,
 
   createScene,
-  requestSceneAccess: requestedSceneAccess,
+  requestedSceneAccess,
   grantedSceneAccess,
   deniedSceneAccess,
   changeSceneName,

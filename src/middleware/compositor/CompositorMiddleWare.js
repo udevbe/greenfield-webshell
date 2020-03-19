@@ -25,7 +25,8 @@ import {
   updateUserSurface,
   userSurfaceKeyboardFocus
 } from '../../store/compositor'
-import Peer from 'peerjs'
+
+const importPeerModule = import('peerjs')
 
 class CompositorMiddleWare {
   /**
@@ -171,10 +172,12 @@ class CompositorMiddleWare {
    * @return {*}
    */
   [initializeCompositor] (store, next, action) {
+    action.payload = {}
     const compositorState = store.getState().compositor
     if (!compositorState.initialized && !this._initializing) {
       this._initializing = true
-      this._compositorModule.then(({ remoteAppLauncher, webAppLauncher, session }) => {
+
+      const compositorInit = this._compositorModule.then(({ remoteAppLauncher, webAppLauncher, session }) => {
         this._remoteAppLauncher = remoteAppLauncher
         this._webAppLauncher = webAppLauncher
         this._session = session
@@ -185,8 +188,11 @@ class CompositorMiddleWare {
         this._restoreUserConfiguration(store)
 
         this._session.globals.register()
+      })
 
-        this._peer = new Peer(CompositorMiddleWare._uuidv4())
+      const peerInit = importPeerModule.then(({ peerjs: { Peer } }) => {
+        this._peer = new Peer(CompositorMiddleWare._uuidv4(), { debug: 0 })
+        action.payload.peerId = this._peer.id
         this._peer.on('connection', dataConnection => {
           this._dataConnections[dataConnection.peer] = dataConnection
 
@@ -194,7 +200,7 @@ class CompositorMiddleWare {
             // TODO we probably want a bit of message sanity checking here
             const action = JSON.parse(data)
             action.payload.peerId = dataConnection.peer
-            next(action)
+            store.dispatch(action)
           })
 
           dataConnection.on('close', () => {
@@ -206,10 +212,16 @@ class CompositorMiddleWare {
           mediaConnection.on('stream', stream => {
             const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
             video.srcObject = stream
+            video.onloadedmetadata = () => video.play()
           })
+          // TODO we probably only want to answer if the given sceneId is valid.
+          mediaConnection.answer(null)
         })
+      })
 
+      Promise.all([compositorInit, peerInit]).then(() => {
         next(action)
+        this._initializing = false
       })
     }
   }
@@ -281,8 +293,17 @@ class CompositorMiddleWare {
    */
   [requestingSceneAccess] (store, next, action) {
     const { sceneId, peerId } = action.payload
-    store.dispatch(createScene({ name: 'remote', type: 'remote' }))
-    this._send(peerId, JSON.stringify(requestedSceneAccess({ sceneId })))
+    const compositorState = store.getState().compositor
+
+    const scene = compositorState.scenes[sceneId] || null
+    if (!scene) {
+      store.dispatch(createScene({ name: 'remote', type: 'remote', id: sceneId }))
+      const requestedSceneAccessAction = requestedSceneAccess({ sceneId })
+      const requestedSceneAccessActionMessage = JSON.stringify(requestedSceneAccessAction)
+      console.log(requestedSceneAccessActionMessage)
+      this._send(peerId, requestedSceneAccessActionMessage)
+    }
+    return next(action)
   }
 
   /**
@@ -314,7 +335,7 @@ class CompositorMiddleWare {
     const compositorState = store.getState().compositor
 
     const scene = compositorState.scenes[sceneId]
-    if (scene && scene.type === 'local' && scene.sharing === 'public') {
+    if (scene && scene.type === 'local' && scene.state.sharing === 'public') {
       action.payload.access = 'granted'
       this._send(peerId, JSON.stringify(grantedSceneAccess({
         grantingUserId: firebaseState.auth.uid,
@@ -323,7 +344,7 @@ class CompositorMiddleWare {
 
       const canvas = /** @type {HTMLCanvasElement} */ document.getElementById(sceneId)
       // TODO pass in a framerate of 0 and explicitly sync with scene repaint
-      const sceneVideoStream = canvas.captureStream()
+      const sceneVideoStream = canvas.captureStream(15)
       const sceneCall = this._peer.call(peerId, sceneVideoStream, { metadata: { sceneId } })
 
       sceneCall.on('close', () => {
@@ -344,12 +365,13 @@ class CompositorMiddleWare {
    * @return {*}
    */
   [createScene] (store, next, action) {
-    const id = CompositorMiddleWare._uuidv4()
-    action.payload.id = id
+    let id = action.payload.id
     const { type } = action.payload
 
     let sceneElement = null
     if (type === 'local') {
+      id = CompositorMiddleWare._uuidv4()
+      action.payload.id = id
       sceneElement = document.createElement('canvas')
       this._session.userShell.actions.initScene(id, sceneElement)
 
@@ -374,7 +396,7 @@ class CompositorMiddleWare {
         /* send event over connection */
       }
       sceneElement.onpointerup = event => {
-        this._session.userShell.actions.input.buttonUp(event, id)
+        sceneElement.releasePointerCapture(event.pointerId)
         /* send event over connection */
       }
       sceneElement.onwheel = event => { /* send event over connection */ }
