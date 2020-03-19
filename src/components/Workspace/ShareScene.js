@@ -6,10 +6,19 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import { Switch } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { shareScene } from '../../store/compositor'
+import Typography from '@material-ui/core/Typography'
 
 const ShareScene = ({ open, handleClose, sceneId }) => {
   const dispatch = useDispatch()
-  const scene = useSelector(({ compositor }) => compositor.scenes[sceneId])
+  const isPublic = useSelector(({ compositor }) => compositor.scenes[sceneId].state.sharing === 'public')
+  const peerId = useSelector(({ compositor }) => compositor.peerId)
+
+  const publicURL = `${window.location.host}/workspace/remote/${sceneId}/${peerId}`
+  const publicURLStyle = {
+    visibility: isPublic ? 'visible' : 'hidden',
+    opacity: isPublic ? '1' : '0',
+    transition: 'visibility 0.3s linear,opacity 0.3s linear'
+  }
 
   // TODO i18n
   return (
@@ -17,18 +26,24 @@ const ShareScene = ({ open, handleClose, sceneId }) => {
       <DialogTitle id='form-dialog-title'>Share Scene</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Toggle the button below to make this this scene available to other users.
+          Toggle the button below to make this this scene publicly available to other users.
         </DialogContentText>
         <Switch
-          checked={scene.state.sharing === 'public'}
+          checked={isPublic}
           onChange={event => dispatch(shareScene({
-            sceneId: scene.id,
+            sceneId,
             sharing: event.target.checked ? 'public' : 'private'
           }))}
           value='public'
           color='primary'
           inputProps={{ 'aria-label': 'Scene charing checkbox' }}
         />
+        <Typography
+          paragraph
+          style={publicURLStyle}
+        >
+          {publicURL}
+        </Typography>
       </DialogContent>
     </Dialog>
   )
