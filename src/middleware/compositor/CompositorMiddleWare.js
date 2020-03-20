@@ -16,6 +16,11 @@ import {
   markSceneLastActive,
   notifyUserSurfaceInactive,
   refreshScene,
+  remoteAxis,
+  remoteButtonDown,
+  remoteButtonUp,
+  remoteKey,
+  remotePointerMove,
   requestedSceneAccess,
   requestingSceneAccess,
   requestUserSurfaceActive,
@@ -190,6 +195,33 @@ class CompositorMiddleWare {
     store.dispatch(createScene({ name: 'default', type: 'local' }))
   }
 
+  _installVideoInputHandlers (sceneElement, peerId, sceneId) {
+    sceneElement.onpointermove = event => this._send(peerId, JSON.stringify(
+      remotePointerMove(this._createButtonEventFromMouseEvent(event, null, sceneId))
+    ))
+    sceneElement.onpointerdown = event => {
+      sceneElement.setPointerCapture(event.pointerId)
+      this._send(peerId, JSON.stringify(
+        remoteButtonDown(this._createButtonEventFromMouseEvent(event, false, sceneId))
+      ))
+    }
+    sceneElement.onpointerup = event => {
+      sceneElement.releasePointerCapture(event.pointerId)
+      this._send(peerId, JSON.stringify(
+        remoteButtonUp(this._createButtonEventFromMouseEvent(event, true, sceneId))
+      ))
+    }
+    sceneElement.onwheel = event => this._send(peerId, JSON.stringify(
+      remoteAxis(this._createAxisEventFromWheelEvent(event, sceneId))
+    ))
+    sceneElement.onkeydown = event => this._send(peerId, JSON.stringify(
+      remoteKey(this._createKeyEventFromKeyboardEvent(event, true))
+    ))
+    sceneElement.onkeyup = event => this._send(peerId, JSON.stringify(
+      remoteKey(this._createKeyEventFromKeyboardEvent(event, false))
+    ))
+  }
+
   /**
    * @param store
    * @param {function(action:*):*}next
@@ -248,6 +280,7 @@ class CompositorMiddleWare {
 
           mediaConnection.on('stream', stream => {
             const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
+            this._installVideoInputHandlers(video, mediaConnection.peer, sceneId)
             video.srcObject = stream
             const updateScaling = () => {
               const { clientHeight, videoWidth, clientWidth, videoHeight } = video
@@ -280,6 +313,31 @@ class CompositorMiddleWare {
         this._initializing = false
       })
     }
+  }
+
+  [remoteAxis] (store, next, action) {
+    const event = action.payload
+    this._session.userShell.actions.input.axis(event)
+  }
+
+  [remoteButtonDown] (store, next, action) {
+    const event = action.payload
+    this._session.userShell.actions.input.buttonDown(event)
+  }
+
+  [remoteButtonUp] (store, next, action) {
+    const event = action.payload
+    this._session.userShell.actions.input.buttonUp(event)
+  }
+
+  [remoteKey] (store, next, action) {
+    const event = action.payload
+    this._session.userShell.actions.input.key(event)
+  }
+
+  [remotePointerMove] (store, next, action) {
+    const event = action.payload
+    this._session.userShell.actions.input.pointerMove(event)
   }
 
   /**
@@ -361,7 +419,6 @@ class CompositorMiddleWare {
       store.dispatch(createScene({ name: 'remote', type: 'remote', id: sceneId }))
       const requestedSceneAccessAction = requestedSceneAccess({ sceneId })
       const requestedSceneAccessActionMessage = JSON.stringify(requestedSceneAccessAction)
-      console.log(requestedSceneAccessActionMessage)
       this._send(peerId, requestedSceneAccessActionMessage)
     }
     return next(action)
@@ -469,19 +526,6 @@ class CompositorMiddleWare {
       sceneElement.onkeyup = event => this._session.userShell.actions.input.key(event, false)
     } else if (type === 'remote') {
       sceneElement = document.createElement('video')
-
-      sceneElement.onpointermove = event => { /* send event over connection */ }
-      sceneElement.onpointerdown = event => {
-        sceneElement.setPointerCapture(event.pointerId)
-        /* send event over connection */
-      }
-      sceneElement.onpointerup = event => {
-        sceneElement.releasePointerCapture(event.pointerId)
-        /* send event over connection */
-      }
-      sceneElement.onwheel = event => { /* send event over connection */ }
-      sceneElement.onkeydown = event => { /* send event over connection */ }
-      sceneElement.onkeyup = event => { /* send event over connection */ }
     } else {
       // TODO error unknown type?
       return

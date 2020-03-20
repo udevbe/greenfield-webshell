@@ -262,6 +262,27 @@ const reducers = {
 // actions handled by compositor middleware
 
 /**
+ * @type {function(payload: Object):string}
+ */
+export const remotePointerMove = createAction('greenfield/compositor/remotePointerMove')
+/**
+ * @type {function(payload: Object):string}
+ */
+export const remoteButtonUp = createAction('greenfield/compositor/remoteButtonUp')
+/**
+ * @type {function(payload: Object):string}
+ */
+export const remoteButtonDown = createAction('greenfield/compositor/remoteButtonDown')
+/**
+ * @type {function(payload: Object):string}
+ */
+export const remoteAxis = createAction('greenfield/compositor/remoteAxis')
+/**
+ * @type {function(payload: Object):string}
+ */
+export const remoteKey = createAction('greenfield/compositor/remoteKey')
+
+/**
  * @type {function(payload: string):string}
  */
 export const sendRemoteSceneUpdate = createAction('greenfield/compositor/sendRemoteSceneUpdate')
