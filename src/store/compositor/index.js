@@ -10,7 +10,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
  * @typedef {{views: UserSurfaceView[], sharing: 'public'|'private', shared_with: string[]}}LocalSceneState
  */
 /**
- * @typedef {{shared_by: string, access: 'pending'|'granted'|'denied'}}RemoteSceneState
+ * @typedef {{shared_by: string, access: 'pending'|'granted'|'denied', scaling: { x: number, y: number}}}RemoteSceneState
  */
 /**
  * @typedef {{name: string, id: string, type: 'local'|'remote', lastActive: number, state: LocalSceneState|RemoteSceneState}}Scene
@@ -172,9 +172,9 @@ const reducers = {
     const { name, id, type } = action.payload
     const scene = { name, id, type }
     if (type === 'local') {
-      scene.state = { views: [], sharing: 'private', shared_with: [] }
+      scene.state = /** @type{LocalSceneState} */{ views: [], sharing: 'private', shared_with: [] }
     } else if (type === 'remote') {
-      scene.state = { shared_by: null, access: 'pending' }
+      scene.state = /** @type{RemoteSceneState} */{ shared_by: null, access: 'pending', scaling: { x: 1, y: 1 } }
     }
     state.scenes[id] = scene
   },
@@ -242,6 +242,15 @@ const reducers = {
 
   /**
    * @param {CompositorState}state
+   * @param {{payload: {sceneId: string, x: number, y: number}}}action
+   */
+  setRemoteSceneScaling: (state, action) => {
+    const { sceneId, x, y } = action.payload
+    state.scenes[sceneId].state.scaling = { x, y }
+  },
+
+  /**
+   * @param {CompositorState}state
    * @param {Action}action
    */
   markSceneLastActive: (state, action) => {
@@ -255,37 +264,42 @@ const reducers = {
 /**
  * @type {function(payload: string):string}
  */
-export const requestUserSurfaceActive = createAction('requestUserSurfaceActive')
+export const sendRemoteSceneUpdate = createAction('greenfield/compositor/sendRemoteSceneUpdate')
 
 /**
  * @type {function(payload: string):string}
  */
-export const refreshScene = createAction('refreshScene')
+export const requestUserSurfaceActive = createAction('greenfield/compositor/requestUserSurfaceActive')
+
+/**
+ * @type {function(payload: string):string}
+ */
+export const refreshScene = createAction('greenfield/compositor/refreshScene')
 
 /**
  * @type {function(payload: {sceneId: string}):string}
  */
-export const requestingSceneAccess = createAction('requestingSceneAccess')
+export const requestingSceneAccess = createAction('greenfield/compositor/requestingSceneAccess')
 
 /**
  * @type {function(payload: string):string}
  */
-export const notifyUserSurfaceInactive = createAction('notifyUserSurfaceInactive')
+export const notifyUserSurfaceInactive = createAction('greenfield/compositor/notifyUserSurfaceInactive')
 
 /**
  * @type {function(payload: string):string}
  */
-export const userSurfaceKeyboardFocus = createAction('userSurfaceKeyboardFocus')
+export const userSurfaceKeyboardFocus = createAction('greenfield/compositor/userSurfaceKeyboardFocus')
 
 /**
  * @type {function(payload: string):string}
  */
-export const terminateClient = createAction('terminateClient')
+export const terminateClient = createAction('greenfield/compositor/terminateClient')
 
 /**
  * @type {function(payload: {url: string, type: 'web'|'remote'}):string}
  */
-export const launchApp = createAction('launchApp')
+export const launchApp = createAction('greenfield/compositor/launchApp')
 
 // TODO application launching
 
@@ -318,7 +332,8 @@ export const {
   changeSceneName,
   shareScene,
   destroyScene,
-  markSceneLastActive
+  markSceneLastActive,
+  setRemoteSceneScaling
 } = slice.actions
 
 export default slice.reducer

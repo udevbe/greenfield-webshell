@@ -2,7 +2,14 @@ const importCompositorModule = import('compositor-module')
 
 class CompositorModule {
   /**
-   * @return {Promise<{remoteAppLauncher: RemoteAppLauncher, webAppLauncher: WebAppLauncher, session: Session}>}
+   * @return {Promise<{
+   * remoteAppLauncher: RemoteAppLauncher,
+   * webAppLauncher: WebAppLauncher,
+   * session: Session,
+   * createButtonEventFromMouseEvent: function(mouseEvent: MouseEvent, released: boolean, sceneId: string):Object,
+   * createAxisEventFromWheelEvent: function(wheelEvent: WheelEvent, sceneId: string):Object,
+   * createKeyEventFromKeyboardEvent: function(keyboardEvent: KeyboardEvent, down: boolean):Object
+   * }>}
    */
   static async create () {
     const {
@@ -11,7 +18,10 @@ class CompositorModule {
       RemoteSocket,
       Session,
       WebAppLauncher,
-      WebAppSocket
+      WebAppSocket,
+      createButtonEventFromMouseEvent,
+      createAxisEventFromWheelEvent,
+      createKeyEventFromKeyboardEvent
     } = await importCompositorModule
 
     await initWasm()
@@ -24,7 +34,14 @@ class CompositorModule {
     const remoteSocket = RemoteSocket.create(session)
     const remoteAppLauncher = RemoteAppLauncher.create(session, remoteSocket)
 
-    return { session, webAppLauncher, remoteAppLauncher }
+    return {
+      session,
+      webAppLauncher,
+      remoteAppLauncher,
+      createButtonEventFromMouseEvent,
+      createAxisEventFromWheelEvent,
+      createKeyEventFromKeyboardEvent
+    }
   }
 }
 

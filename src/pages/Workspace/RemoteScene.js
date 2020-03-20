@@ -21,6 +21,7 @@ const RemoteScene = () => {
       return <Redirect to='/' push />
     }
   } else {
+    // TODO i18n
     return (
       <Dialog aria-labelledby='open-remote-scene-dialog-title' open>
         <DialogTitle id='open-remote-scene-dialog-title'>Open Remote Scene?</DialogTitle>
@@ -36,7 +37,8 @@ const RemoteScene = () => {
             setConfirmation(true)
             setOpenScene(false)
           }}
-          >Cancel
+          >
+            Cancel
           </Button>
         </DialogActions>
       </Dialog>

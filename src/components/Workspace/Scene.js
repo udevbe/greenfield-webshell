@@ -32,6 +32,8 @@ const configureSceneElement = sceneElement => {
   sceneElement.style.flex = 1
   sceneElement.style.order = 100
   sceneElement.style.outline = 'none'
+  sceneElement.style.objectFit = 'fill'
+  sceneElement.style.backgroundColor = 'black'
 
   return sceneElement
 }

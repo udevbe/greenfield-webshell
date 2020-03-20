@@ -19,6 +19,8 @@ import {
   requestedSceneAccess,
   requestingSceneAccess,
   requestUserSurfaceActive,
+  sendRemoteSceneUpdate,
+  setRemoteSceneScaling,
   terminateClient,
   updateUserConfiguration,
   updateUserSeat,
@@ -103,10 +105,31 @@ class CompositorMiddleWare {
      */
     this._dataConnections = {}
     /**
+     * @type {Object.<string,MediaStream>}
+     * @private
+     */
+    this._canvasMediaStreams = {}
+    /**
      * @type {Peer}
      * @private
      */
     this._peer = null
+
+    /**
+     * @type {function(mouseEvent: MouseEvent, released: boolean, sceneId: string):Object}
+     * @private
+     */
+    this._createButtonEventFromMouseEvent = null
+    /**
+     * @type {function(wheelEvent: WheelEvent, sceneId: string):Object}
+     * @private
+     */
+    this._createAxisEventFromWheelEvent = null
+    /**
+     * @type {function(keyboardEvent: KeyboardEvent, down: boolean):Object}
+     * @private
+     */
+    this._createKeyEventFromKeyboardEvent = null
   }
 
   _linkUserShellEvents (store) {
@@ -142,6 +165,8 @@ class CompositorMiddleWare {
         pointerGrab: CompositorMiddleWare._userSurfaceKey(pointerGrab)
       }))
     }
+
+    userShell.events.sceneRefresh = sceneId => store.dispatch(sendRemoteSceneUpdate(sceneId))
   }
 
   _restoreUserConfiguration (store) {
@@ -177,10 +202,21 @@ class CompositorMiddleWare {
     if (!compositorState.initialized && !this._initializing) {
       this._initializing = true
 
-      const compositorInit = this._compositorModule.then(({ remoteAppLauncher, webAppLauncher, session }) => {
+      const compositorInit = this._compositorModule.then(({
+        remoteAppLauncher,
+        webAppLauncher,
+        session,
+        createButtonEventFromMouseEvent,
+        createAxisEventFromWheelEvent,
+        createKeyEventFromKeyboardEvent
+      }) => {
         this._remoteAppLauncher = remoteAppLauncher
         this._webAppLauncher = webAppLauncher
         this._session = session
+
+        this._createButtonEventFromMouseEvent = createButtonEventFromMouseEvent
+        this._createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
+        this._createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
 
         this._linkUserShellEvents(store)
         this._initializeUserSeat(store)
@@ -209,10 +245,30 @@ class CompositorMiddleWare {
         })
         this._peer.on('call', mediaConnection => {
           const { sceneId } = mediaConnection.metadata
+
           mediaConnection.on('stream', stream => {
             const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
             video.srcObject = stream
-            video.onloadedmetadata = () => video.play()
+            const updateScaling = () => {
+              const { clientHeight, videoWidth, clientWidth, videoHeight } = video
+              store.dispatch(setRemoteSceneScaling({
+                sceneId,
+                x: videoWidth / clientWidth,
+                y: videoHeight / clientHeight
+              }))
+            }
+            video.onloadedmetadata = () => {
+              updateScaling()
+              video.play().catch(reason => {
+                console.error(reason)
+                store.dispatch(showNotification({
+                  // TODO i18n
+                  message: `Failed to show remote scene: ${reason}`,
+                  variant: 'error'
+                }))
+              })
+            }
+            video.addEventListener('resize', updateScaling)
           })
           // TODO we probably only want to answer if the given sceneId is valid.
           mediaConnection.answer(null)
@@ -251,8 +307,13 @@ class CompositorMiddleWare {
   [refreshScene] (store, next, action) {
     const sceneId = action.payload
     const compositorState = store.getState().compositor
-    if (compositorState.scenes[sceneId].type === 'local') {
+    const scene = compositorState.scenes[sceneId]
+    if (scene.type === 'local') {
       this._session.userShell.actions.refreshScene(sceneId)
+    } else if (scene.type === 'remote') {
+      const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
+      const { clientHeight, videoWidth, clientWidth, videoHeight } = video
+      store.dispatch(setRemoteSceneScaling({ sceneId, x: videoWidth / clientWidth, y: videoHeight / clientHeight }))
     }
     return next(action)
   }
@@ -323,6 +384,14 @@ class CompositorMiddleWare {
     }
   }
 
+  [sendRemoteSceneUpdate] (store, next, action) {
+    const sceneId = action.payload
+    const mediaStream = this._canvasMediaStreams[sceneId]
+    if (mediaStream) {
+      mediaStream.getVideoTracks()[0].requestFrame()
+    }
+  }
+
   /**
    * @param store
    * @param {function(action:*):*}next
@@ -343,14 +412,14 @@ class CompositorMiddleWare {
       })))
 
       const canvas = /** @type {HTMLCanvasElement} */ document.getElementById(sceneId)
-      // TODO pass in a framerate of 0 and explicitly sync with scene repaint
-      const sceneVideoStream = canvas.captureStream(15)
+      const sceneVideoStream = canvas.captureStream(0)
+      this._canvasMediaStreams[sceneId] = sceneVideoStream
       const sceneCall = this._peer.call(peerId, sceneVideoStream, { metadata: { sceneId } })
-
       sceneCall.on('close', () => {
         action.payload.access = 'denied'
         next(action)
       })
+      sceneCall.on('stream', () => store.dispatch(sendRemoteSceneUpdate(sceneId)))
     } else {
       action.payload.access = 'denied'
       this._send(peerId, JSON.stringify(deniedSceneAccess({ sceneId })))
@@ -375,17 +444,28 @@ class CompositorMiddleWare {
       sceneElement = document.createElement('canvas')
       this._session.userShell.actions.initScene(id, sceneElement)
 
-      sceneElement.onpointermove = event => this._session.userShell.actions.input.pointerMove(event, id)
+      sceneElement.onpointermove = event => {
+        event.preventDefault()
+        this._session.userShell.actions.input.pointerMove(this._createButtonEventFromMouseEvent(event, null, id))
+      }
       sceneElement.onpointerdown = event => {
+        event.preventDefault()
         sceneElement.setPointerCapture(event.pointerId)
-        this._session.userShell.actions.input.buttonDown(event, id)
+        this._session.userShell.actions.input.buttonDown(this._createButtonEventFromMouseEvent(event, false, id))
       }
       sceneElement.onpointerup = event => {
-        this._session.userShell.actions.input.buttonUp(event, id)
+        event.preventDefault()
+        this._session.userShell.actions.input.buttonUp(this._createButtonEventFromMouseEvent(event, true, id))
         sceneElement.releasePointerCapture(event.pointerId)
       }
-      sceneElement.onwheel = event => this._session.userShell.actions.input.axis(event, id)
-      sceneElement.onkeydown = event => this._session.userShell.actions.input.key(event, true)
+      sceneElement.onwheel = event => {
+        event.preventDefault()
+        this._session.userShell.actions.input.axis(this._createAxisEventFromWheelEvent(event, id))
+      }
+      sceneElement.onkeydown = event => {
+        event.preventDefault()
+        this._session.userShell.actions.input.key(this._createKeyEventFromKeyboardEvent(event, true))
+      }
       sceneElement.onkeyup = event => this._session.userShell.actions.input.key(event, false)
     } else if (type === 'remote') {
       sceneElement = document.createElement('video')

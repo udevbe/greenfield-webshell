@@ -9,17 +9,17 @@ import { createSlice } from '@reduxjs/toolkit'
  */
 
 /**
- * @typedef {{notification:?Notification}}ServiceWorkerState
+ * @typedef {{notification:?Notification}}NotificationState
  */
 
 /**
- * @type {ServiceWorkerState}
+ * @type {NotificationState}
  */
 const initialState = { notification: null }
 
 const reducers = {
   /**
-   * @param {ServiceWorkerState}state
+   * @param {NotificationState}state
    * @param {Action}action
    */
   showNotification: (state, action) => { state.notification = action.payload },
