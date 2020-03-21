@@ -193,9 +193,9 @@ const reducers = {
    * @param {{payload: {grantingUserId: string, remoteSceneId: string}}}action
    */
   grantedSceneAccess: (state, action) => {
-    const { grantingUserId, remoteSceneId } = action.payload
-    state.scenes[remoteSceneId].state.access = 'granted'
-    state.scenes[remoteSceneId].state.shared_by = grantingUserId
+    const { grantingUserId, sceneId } = action.payload
+    state.scenes[sceneId].state.access = 'granted'
+    state.scenes[sceneId].state.shared_by = grantingUserId
   },
 
   /**
@@ -203,9 +203,9 @@ const reducers = {
    * @param {{payload: {remoteSceneId: string}}}action
    */
   deniedSceneAccess: (state, action) => {
-    const { remoteSceneId } = action.payload
-    state.scenes[remoteSceneId].state.access = 'denied'
-    state.scenes[remoteSceneId].state.shared_by = null
+    const { sceneId } = action.payload
+    state.scenes[sceneId].state.access = 'denied'
+    state.scenes[sceneId].state.shared_by = null
   },
 
   /**

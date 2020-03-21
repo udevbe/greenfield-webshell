@@ -195,31 +195,43 @@ class CompositorMiddleWare {
     store.dispatch(createScene({ name: 'default', type: 'local' }))
   }
 
-  _installVideoInputHandlers (sceneElement, peerId, sceneId) {
-    sceneElement.onpointermove = event => this._send(peerId, JSON.stringify(
-      remotePointerMove(this._createButtonEventFromMouseEvent(event, null, sceneId))
-    ))
+  _installVideoInputHandlers (sceneElement, peerId, sceneId, store) {
+    sceneElement.onpointermove = event => this._send(
+      peerId,
+      remotePointerMove(this._createButtonEventFromMouseEvent(event, null, sceneId)),
+      store
+    )
     sceneElement.onpointerdown = event => {
       sceneElement.setPointerCapture(event.pointerId)
-      this._send(peerId, JSON.stringify(
-        remoteButtonDown(this._createButtonEventFromMouseEvent(event, false, sceneId))
-      ))
+      this._send(
+        peerId,
+        remoteButtonDown(this._createButtonEventFromMouseEvent(event, false, sceneId)),
+        store
+      )
     }
     sceneElement.onpointerup = event => {
       sceneElement.releasePointerCapture(event.pointerId)
-      this._send(peerId, JSON.stringify(
-        remoteButtonUp(this._createButtonEventFromMouseEvent(event, true, sceneId))
-      ))
+      this._send(
+        peerId,
+        remoteButtonUp(this._createButtonEventFromMouseEvent(event, true, sceneId)),
+        store
+      )
     }
-    sceneElement.onwheel = event => this._send(peerId, JSON.stringify(
-      remoteAxis(this._createAxisEventFromWheelEvent(event, sceneId))
-    ))
-    sceneElement.onkeydown = event => this._send(peerId, JSON.stringify(
-      remoteKey(this._createKeyEventFromKeyboardEvent(event, true))
-    ))
-    sceneElement.onkeyup = event => this._send(peerId, JSON.stringify(
-      remoteKey(this._createKeyEventFromKeyboardEvent(event, false))
-    ))
+    sceneElement.onwheel = event => this._send(
+      peerId,
+      remoteAxis(this._createAxisEventFromWheelEvent(event, sceneId)),
+      store
+    )
+    sceneElement.onkeydown = event => this._send(
+      peerId,
+      remoteKey(this._createKeyEventFromKeyboardEvent(event, true)),
+      store
+    )
+    sceneElement.onkeyup = event => this._send(
+      peerId,
+      remoteKey(this._createKeyEventFromKeyboardEvent(event, false)),
+      store
+    )
   }
 
   /**
@@ -263,24 +275,24 @@ class CompositorMiddleWare {
         action.payload.peerId = this._peer.id
         this._peer.on('connection', dataConnection => {
           this._dataConnections[dataConnection.peer] = dataConnection
+          dataConnection.on('close', () => delete this._dataConnections[dataConnection.peer])
 
+          dataConnection.on('error', err => console.error(err))
           dataConnection.on('data', data => {
+            console.log('received data', data)
             // TODO we probably want a bit of message sanity checking here
-            const action = JSON.parse(data)
+            const action = data
             action.payload.peerId = dataConnection.peer
             store.dispatch(action)
           })
-
-          dataConnection.on('close', () => {
-            delete this._dataConnections[dataConnection.peer]
-          })
         })
+
         this._peer.on('call', mediaConnection => {
           const { sceneId } = mediaConnection.metadata
 
           mediaConnection.on('stream', stream => {
             const video = /** @type {HTMLVideoElement} */document.getElementById(sceneId)
-            this._installVideoInputHandlers(video, mediaConnection.peer, sceneId)
+            this._installVideoInputHandlers(video, mediaConnection.peer, sceneId, store)
             video.srcObject = stream
             const updateScaling = () => {
               const { clientHeight, videoWidth, clientWidth, videoHeight } = video
@@ -416,10 +428,10 @@ class CompositorMiddleWare {
 
     const scene = compositorState.scenes[sceneId] || null
     if (!scene) {
+      const firebaseState = store.getState().firebase
       store.dispatch(createScene({ name: 'remote', type: 'remote', id: sceneId }))
-      const requestedSceneAccessAction = requestedSceneAccess({ sceneId })
-      const requestedSceneAccessActionMessage = JSON.stringify(requestedSceneAccessAction)
-      this._send(peerId, requestedSceneAccessActionMessage)
+      const requestedSceneAccessAction = requestedSceneAccess({ sceneId, requestingUserId: firebaseState.auth.uid })
+      this._send(peerId, requestedSceneAccessAction, store)
     }
     return next(action)
   }
@@ -427,17 +439,30 @@ class CompositorMiddleWare {
   /**
    * @param {string}peerId
    * @param {string}message
+   * @param store
    * @private
    */
-  _send (peerId, message) {
+  _send (peerId, message, store) {
     const dataConnection = this._dataConnections[peerId]
     if (dataConnection && dataConnection.open) {
+      console.log('sending message', message)
       dataConnection.send(message)
     } else if (dataConnection && !dataConnection.open) {
-      dataConnection.on('open', () => this._send(peerId, message))
+      dataConnection.on('open', () => dataConnection.send(message))
     } else if (!dataConnection) {
-      this._dataConnections[peerId] = this._peer.connect(peerId, { reliable: true })
-      this._send(peerId, message)
+      // TODO refactor and reuse code from on('connection') event.
+      const dataConnection = this._peer.connect(peerId, { reliable: true })
+      this._dataConnections[peerId] = dataConnection
+      dataConnection.on('close', () => delete this._dataConnections[dataConnection.peer])
+      dataConnection.on('data', data => {
+        // TODO we probably want a bit of message sanity checking here
+        console.log('received data', data)
+        const action = data
+        action.payload.peerId = dataConnection.peer
+        store.dispatch(action)
+      })
+      dataConnection.on('error', err => console.error(err))
+      dataConnection.on('open', () => dataConnection.send(message))
     }
   }
 
@@ -463,10 +488,10 @@ class CompositorMiddleWare {
     const scene = compositorState.scenes[sceneId]
     if (scene && scene.type === 'local' && scene.state.sharing === 'public') {
       action.payload.access = 'granted'
-      this._send(peerId, JSON.stringify(grantedSceneAccess({
+      this._send(peerId, grantedSceneAccess({
         grantingUserId: firebaseState.auth.uid,
         sceneId
-      })))
+      }), store)
 
       const canvas = /** @type {HTMLCanvasElement} */ document.getElementById(sceneId)
       const sceneVideoStream = canvas.captureStream(0)
@@ -479,7 +504,7 @@ class CompositorMiddleWare {
       sceneCall.on('stream', () => store.dispatch(sendRemoteSceneUpdate(sceneId)))
     } else {
       action.payload.access = 'denied'
-      this._send(peerId, JSON.stringify(deniedSceneAccess({ sceneId })))
+      this._send(peerId, deniedSceneAccess({ sceneId }), store)
     }
     return next(action)
   }

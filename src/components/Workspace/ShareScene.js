@@ -13,7 +13,7 @@ const ShareScene = ({ open, handleClose, sceneId }) => {
   const isPublic = useSelector(({ compositor }) => compositor.scenes[sceneId].state.sharing === 'public')
   const peerId = useSelector(({ compositor }) => compositor.peerId)
 
-  const publicURL = `${window.location.host}/workspace/remote/${sceneId}/${peerId}`
+  const publicURL = `${window.location.protocol}//${window.location.host}/workspace/remote/${sceneId}/${peerId}`
   const publicURLStyle = {
     visibility: isPublic ? 'visible' : 'hidden',
     opacity: isPublic ? '1' : '0',
