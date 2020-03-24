@@ -1,4 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 /**
  * @typedef {{id:number, clientId: string, title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string, lastActive: number}}UserSurface
@@ -192,7 +192,7 @@ const reducers = {
    * @param {CompositorState}state
    * @param {{payload: {grantingUserId: string, remoteSceneId: string}}}action
    */
-  grantedSceneAccess: (state, action) => {
+  notifySceneAccessGrant: (state, action) => {
     const { grantingUserId, sceneId } = action.payload
     state.scenes[sceneId].state.access = 'granted'
     state.scenes[sceneId].state.shared_by = grantingUserId
@@ -202,7 +202,7 @@ const reducers = {
    * @param {CompositorState}state
    * @param {{payload: {remoteSceneId: string}}}action
    */
-  deniedSceneAccess: (state, action) => {
+  notifySceneAccessDenied: (state, action) => {
     const { sceneId } = action.payload
     state.scenes[sceneId].state.access = 'denied'
     state.scenes[sceneId].state.shared_by = null
@@ -210,14 +210,22 @@ const reducers = {
 
   /**
    * @param {CompositorState}state
-   * @param {{payload: {localSceneId: string, requestingUserId:string, peerId:string, remoteSceneId:string, access: 'denied'|'granted'}}}action
+   * @param {{payload: {sceneId: string, requestingUserId:string}}}action
    */
-  requestedSceneAccess: (state, action) => {
-    const { sceneId, requestingUserId, access } = action.payload
+  grantSceneAccess: (state, action) => {
+    const { sceneId, requestingUserId } = action.payload
     const scene = state.scenes[sceneId]
-    if (access === 'granted') {
-      scene.state.shared_with.push(requestingUserId)
-    } else if (access === 'denied') {
+    scene.state.shared_with.push(requestingUserId)
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {{payload: {sceneId: string, requestingUserId:string}}}action
+   */
+  denySceneAccess: (state, action) => {
+    const { sceneId, requestingUserId } = action.payload
+    const scene = state.scenes[sceneId]
+    if (scene) {
       scene.state.shared_with = scene.state.shared_with.filter(uid => uid !== requestingUserId)
     }
   },
@@ -251,78 +259,13 @@ const reducers = {
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {{payload: {sceneId: string, lastActive: number}}}action
    */
   markSceneLastActive: (state, action) => {
-    const id = action.payload
-    Object.values(state.scenes).find(scene => scene.id === id).lastActive = Date.now()
+    const { sceneId, lastActive } = action.payload
+    Object.values(state.scenes).find(scene => scene.id === sceneId).lastActive = lastActive
   }
 }
-
-// actions handled by compositor middleware
-
-/**
- * @type {function(payload: Object):string}
- */
-export const remotePointerMove = createAction('greenfield/compositor/remotePointerMove')
-/**
- * @type {function(payload: Object):string}
- */
-export const remoteButtonUp = createAction('greenfield/compositor/remoteButtonUp')
-/**
- * @type {function(payload: Object):string}
- */
-export const remoteButtonDown = createAction('greenfield/compositor/remoteButtonDown')
-/**
- * @type {function(payload: Object):string}
- */
-export const remoteAxis = createAction('greenfield/compositor/remoteAxis')
-/**
- * @type {function(payload: Object):string}
- */
-export const remoteKey = createAction('greenfield/compositor/remoteKey')
-
-/**
- * @type {function(payload: string):string}
- */
-export const sendRemoteSceneUpdate = createAction('greenfield/compositor/sendRemoteSceneUpdate')
-
-/**
- * @type {function(payload: string):string}
- */
-export const requestUserSurfaceActive = createAction('greenfield/compositor/requestUserSurfaceActive')
-
-/**
- * @type {function(payload: string):string}
- */
-export const refreshScene = createAction('greenfield/compositor/refreshScene')
-
-/**
- * @type {function(payload: {sceneId: string}):string}
- */
-export const requestingSceneAccess = createAction('greenfield/compositor/requestingSceneAccess')
-
-/**
- * @type {function(payload: string):string}
- */
-export const notifyUserSurfaceInactive = createAction('greenfield/compositor/notifyUserSurfaceInactive')
-
-/**
- * @type {function(payload: string):string}
- */
-export const userSurfaceKeyboardFocus = createAction('greenfield/compositor/userSurfaceKeyboardFocus')
-
-/**
- * @type {function(payload: string):string}
- */
-export const terminateClient = createAction('greenfield/compositor/terminateClient')
-
-/**
- * @type {function(payload: {url: string, type: 'web'|'remote'}):string}
- */
-export const launchApp = createAction('greenfield/compositor/launchApp')
-
-// TODO application launching
 
 const slice = createSlice({
   reducers,
@@ -347,9 +290,10 @@ export const {
   destroyUserSurfaceView,
 
   createScene,
-  requestedSceneAccess,
-  grantedSceneAccess,
-  deniedSceneAccess,
+  notifySceneAccessGrant,
+  notifySceneAccessDenied,
+  denySceneAccess,
+  grantSceneAccess,
   changeSceneName,
   shareScene,
   destroyScene,

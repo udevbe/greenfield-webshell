@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Image from '../Image'
 import { useFirebase } from 'react-redux-firebase'
 import { useDispatch } from 'react-redux'
-import { launchApp } from '../../store/compositor'
+import { launchApp } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles({
   root: {

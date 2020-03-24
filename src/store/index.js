@@ -4,7 +4,7 @@ import rootReducer from './reducers'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import { actionTypes } from 'react-redux-firebase'
-import compositorMiddleware from '../middleware/compositor'
+import { compositorMiddleWareReducers, sharedSceneMiddleWareReducers } from '../middleware/compositor'
 
 const persistConfig = {
   key: 'root',
@@ -38,7 +38,8 @@ export default () => {
           ]
         }
       }),
-      compositorMiddleware
+      compositorMiddleWareReducers,
+      sharedSceneMiddleWareReducers
     ]
   })
   const persistor = persistStore(store)

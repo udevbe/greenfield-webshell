@@ -1,13 +1,13 @@
 import React, { useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import SceneTabs from './SceneTabs'
+import { makeStyles } from '@material-ui/styles'
 import {
   notifyUserSurfaceInactive,
   refreshScene,
   requestUserSurfaceActive,
   userSurfaceKeyboardFocus
-} from '../../store/compositor'
-import SceneTabs from './SceneTabs'
-import { makeStyles } from '@material-ui/styles'
+} from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles(theme => ({
   content: {

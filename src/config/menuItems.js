@@ -14,7 +14,7 @@ import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/au
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
 import { ListItemText } from '@material-ui/core'
-import { terminateClient } from '../store/compositor'
+import { terminateClient } from '../middleware/compositor/actions'
 
 /**
  * @typedef {{
