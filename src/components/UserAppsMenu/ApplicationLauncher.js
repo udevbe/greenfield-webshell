@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Image from '../Image'
 import { useFirebase } from 'react-redux-firebase'
 import { useDispatch } from 'react-redux'
-import { launchApp } from '../../middleware/compositor/actions'
+import { launchRemoteApp, launchWebApp } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles({
   root: {
@@ -23,7 +23,8 @@ const useStyles = makeStyles({
   }
 })
 
-export const ApplicationLauncher = React.memo(({ application: { icon, title }, appId }) => {
+export const ApplicationLauncher = React.memo(({ application, appId }) => {
+  const { icon, title, type, url } = application
   const [appIcon, setAppIcon] = useState(null)
   const dispatch = useDispatch()
   const firebase = useFirebase()
@@ -32,7 +33,17 @@ export const ApplicationLauncher = React.memo(({ application: { icon, title }, a
     firebase.storage().refFromURL(icon).getDownloadURL().then(iconURL => setAppIcon(iconURL))
   }
 
-  const onLaunchApplication = () => dispatch(launchApp({ appId, firebase }))
+  const onLaunchApplication = () => {
+    if (type === 'remote') {
+      dispatch(launchRemoteApp(application))
+    } else if (type === 'web') {
+      firebase
+        .storage()
+        .refFromURL(url)
+        .getDownloadURL()
+        .then(downloadURL => dispatch(launchWebApp({ ...application, downloadURL })))
+    }
+  }
 
   const classes = useStyles()
   return (
@@ -40,7 +51,7 @@ export const ApplicationLauncher = React.memo(({ application: { icon, title }, a
       <CardActionArea onClick={onLaunchApplication}>
         <Card className={classes.card} key={appId} elevation={3}>
           <CardMedia title={title}>
-            <Image src={appIcon} alt={title} />
+            <Image src={appIcon || ''} alt={title} />
           </CardMedia>
         </Card>
         <Typography

@@ -7,13 +7,13 @@ import { createSlice } from '@reduxjs/toolkit'
  * @typedef {{userSurfaceKey:string, sceneId: string}}UserSurfaceView
  */
 /**
- * @typedef {{views: UserSurfaceView[], sharing: 'public'|'private', shared_with: string[]}}LocalSceneState
+ * @typedef {{, sharing: 'public'|'private', shared_with: string[]}}LocalSceneState
  */
 /**
  * @typedef {{shared_by: string, access: 'pending'|'granted'|'denied', scaling: { x: number, y: number}}}RemoteSceneState
  */
 /**
- * @typedef {{name: string, id: string, type: 'local'|'remote', lastActive: number, state: LocalSceneState|RemoteSceneState}}Scene
+ * @typedef {{views: UserSurfaceView[], name: string, id: string, type: 'local'|'remote', lastActive: number, state: LocalSceneState|RemoteSceneState}}Scene
  */
 /**
  * @typedef {{id:number, variant: 'web'|'remote'}}WaylandClient
@@ -92,7 +92,7 @@ const reducers = {
    * @param {CompositorState}state
    * @param {Action}action
    */
-  destroyClient: (state, action) => {
+  cleanUpDestroyedClient: (state, action) => {
     const client = action.payload
     delete state.clients[client.id]
   },
@@ -151,7 +151,7 @@ const reducers = {
    */
   createUserSurfaceView: (state, action) => {
     const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].state.views.push({ userSurfaceKey, sceneId })
+    state.scenes[sceneId].views.push({ userSurfaceKey, sceneId })
   },
 
   /**
@@ -160,7 +160,7 @@ const reducers = {
    */
   destroyUserSurfaceView: (state, action) => {
     const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].state.views = state.scenes[sceneId].state.views.filter(view =>
+    state.scenes[sceneId].views = state.scenes[sceneId].views.filter(view =>
       view.userSurfaceKey !== userSurfaceKey && view.sceneId !== sceneId)
   },
 
@@ -170,9 +170,9 @@ const reducers = {
    */
   createScene: (state, action) => {
     const { name, id, type } = action.payload
-    const scene = { name, id, type }
+    const scene = { name, id, type, views: [] }
     if (type === 'local') {
-      scene.state = /** @type{LocalSceneState} */{ views: [], sharing: 'private', shared_with: [] }
+      scene.state = /** @type{LocalSceneState} */{ sharing: 'private', shared_with: [] }
     } else if (type === 'remote') {
       scene.state = /** @type{RemoteSceneState} */{ shared_by: null, access: 'pending', scaling: { x: 1, y: 1 } }
     }
@@ -277,7 +277,7 @@ export const {
   initializeCompositor,
 
   createClient,
-  destroyClient,
+  cleanUpDestroyedClient,
 
   createUserSurface,
   updateUserSurface,

@@ -68,7 +68,6 @@ class SharedSceneMiddleWare {
   _send (peerId, message, store) {
     const dataConnection = this._dataConnections[peerId]
     if (dataConnection && dataConnection.open) {
-      console.log('sending message', message)
       dataConnection.send(message)
     } else if (dataConnection && !dataConnection.open) {
       dataConnection.on('open', () => dataConnection.send(message))
@@ -79,7 +78,6 @@ class SharedSceneMiddleWare {
       dataConnection.on('close', () => delete this._dataConnections[dataConnection.peer])
       dataConnection.on('data', data => {
         // TODO we probably want a bit of message sanity checking here
-        console.log('received data', data)
         const action = data
         action.payload.peerId = dataConnection.peer
         store.dispatch(action)
@@ -144,7 +142,6 @@ class SharedSceneMiddleWare {
 
         dataConnection.on('error', err => console.error(err))
         dataConnection.on('data', data => {
-          console.log('received data', data)
           // TODO we probably want a bit of message sanity checking here
           const action = data
           action.payload.peerId = dataConnection.peer

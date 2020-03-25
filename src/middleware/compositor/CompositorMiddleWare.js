@@ -1,11 +1,11 @@
 import CompositorModule from './CompositorModule'
 import { showNotification } from '../../store/notification'
 import {
+  cleanUpDestroyedClient,
   createClient,
   createScene,
   createUserSurface,
   createUserSurfaceView,
-  destroyClient,
   destroyScene,
   destroyUserSurface,
   destroyUserSurfaceView,
@@ -17,7 +17,8 @@ import {
 } from '../../store/compositor'
 import { uuidv4 } from './index'
 import {
-  launchApp,
+  launchRemoteApp,
+  launchWebApp,
   notifyUserSurfaceInactive,
   refreshScene,
   requestUserSurfaceActive,
@@ -105,7 +106,7 @@ class CompositorMiddleWare {
     userShell.events.notify = (variant, message) => store.dispatch(showNotification({ variant, message }))
 
     userShell.events.createApplicationClient = client => store.dispatch(createClient({ ...client }))
-    userShell.events.destroyApplicationClient = client => store.dispatch(destroyClient({ ...client }))
+    userShell.events.destroyApplicationClient = client => store.dispatch(cleanUpDestroyedClient({ ...client }))
 
     userShell.events.createUserSurface = (userSurface, userSurfaceState) => {
       store.dispatch(createUserSurface({
@@ -211,8 +212,10 @@ class CompositorMiddleWare {
     const compositorState = store.getState().compositor
     const userSurface = compositorState.userSurfaces[userSurfaceKey]
     this.session.userShell.actions.requestActive(userSurface)
-    const lastActiveSceneId = Object.values(store.getState().compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
-    this.session.userShell.actions.raise(userSurface, lastActiveSceneId)
+
+    const scenesWithSurface = Object.values(compositorState.scenes).filter(scene => scene.views.some(view => view.userSurfaceKey === userSurface.key))
+    scenesWithSurface.forEach(scene => this.session.userShell.actions.raise(userSurface, scene.id))
+
     return next(action)
   }
 
@@ -307,11 +310,21 @@ class CompositorMiddleWare {
       document.body.appendChild(sceneElement)
 
       next(action)
-      store.dispatch(markSceneLastActive({ sceneId: id, lastActive: Date.now() }))
+      store.dispatch(markSceneLastActive({ sceneId: id }))
       return id
     } else {
       return next(action)
     }
+  }
+
+  /**
+   * @param store
+   * @param {function(action:*):*}next
+   * @param {{payload: {sceneId: string}}}action
+   */
+  [markSceneLastActive] (store, next, action) {
+    action.payload.lastActive = Date.now()
+    return next(action)
   }
 
   /**
@@ -355,8 +368,14 @@ class CompositorMiddleWare {
    * @param {{payload: UserSurface}}action
    */
   [updateUserSurface] (store, next, action) {
-    action.payload = CompositorMiddleWare._updateLastActiveTimeStamp(action.payload)
-    return next(action)
+    const userSurface = action.payload
+    action.payload = CompositorMiddleWare._updateLastActiveTimeStamp(userSurface)
+    next(action)
+
+    const compositorState = store.getState().compositor
+    const scenesWithSurface = Object.values(compositorState.scenes).filter(scene => scene.views.some(view => view.userSurfaceKey === userSurface.key))
+    const lastActiveSceneWithSurface = scenesWithSurface.reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue)
+    store.dispatch(markSceneLastActive({ sceneId: lastActiveSceneWithSurface.id }))
   }
 
   /**
@@ -412,7 +431,7 @@ class CompositorMiddleWare {
     return next(action)
   }
 
-  [destroyClient] (store, next, action) {
+  [cleanUpDestroyedClient] (store, next, action) {
     const client = action.payload
     Object.values(store.getState().compositor.userSurfaces)
       .filter(userSurface => userSurface.clientId === client.id)
@@ -423,49 +442,53 @@ class CompositorMiddleWare {
   /**
    * @param store
    * @param {function(action:*):*}next
-   * @param {{payload: {url: string, type: 'web'|'remote'}}}action
+   * @param {{payload: {appId: string, url: string}}}action
    */
-  [launchApp] (store, next, action) {
-    const { firebase, appId } = action.payload
-    const { type, url, title } = store.getState().firebase.data.apps[appId]
-
-    if (this._remoteAppLauncher && type === 'remote') {
-      this._remoteAppLauncher
-        .launch(new URL(url), appId)
-        .catch(function (error) {
-          store.dispatch(showNotification({
-            variant: 'error',
-            message: `${title} failed to launch. ${error.message}`
-          }))
-        })
-    } else if (this._webAppLauncher && type === 'web') {
-      firebase.storage().refFromURL(url).getDownloadURL().then(downloadURL => {
-        this._webAppLauncher
-          .launch(new URL(downloadURL))
-          .catch(function (error) {
-            // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
-            switch (error.code) {
-              case 'storage/object-not-found':
-                store.dispatch(showNotification({
-                  variant: 'error',
-                  message: `${title} application could not be found on server.`
-                }))
-                break
-              case 'storage/unauthorized':
-                store.dispatch(showNotification({ variant: 'error', message: `Not authorized to launch ${title}.` }))
-                break
-              case 'storage/unknown':
-              default:
-                store.dispatch(showNotification({
-                  variant: 'error',
-                  message: `${title} failed to launch. ${error.message}`
-                }))
-                break
-            }
-          })
+  [launchRemoteApp] (store, next, action) {
+    const { appId, url, title } = action.payload
+    this._remoteAppLauncher
+      .launch(new URL(url), appId)
+      .catch(function (error) {
+        // TODO dispatch launch failure action for app instead
+        store.dispatch(showNotification({
+          variant: 'error',
+          message: `${title} failed to launch. ${error.message}`
+        }))
       })
-      next(action)
-    }
+  }
+
+  /**
+   * @param store
+   * @param {function(action:*):*}next
+   * @param {{payload: {appId: string}}}action
+   */
+  [launchWebApp] (store, next, action) {
+    const { downloadURL, title } = action.payload
+
+    this._webAppLauncher
+      .launch(new URL(downloadURL))
+      .catch(function (error) {
+        // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          // TODO dispatch launch failure action for app instead
+          case 'storage/object-not-found':
+            store.dispatch(showNotification({
+              variant: 'error',
+              message: `${title} application could not be found on server.`
+            }))
+            break
+          case 'storage/unauthorized':
+            store.dispatch(showNotification({ variant: 'error', message: `Not authorized to launch ${title}.` }))
+            break
+          case 'storage/unknown':
+          default:
+            store.dispatch(showNotification({
+              variant: 'error',
+              message: `${title} failed to launch. ${error.message}`
+            }))
+            break
+        }
+      })
   }
 }
 

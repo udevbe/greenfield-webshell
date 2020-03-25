@@ -21,9 +21,17 @@ export const userSurfaceKeyboardFocus = createAction('greenfield/compositor/user
  */
 export const terminateClient = createAction('greenfield/compositor/terminateClient')
 /**
- * @type {function(payload: {url: string, type: 'web'|'remote'}):string}
+ * @type {function(payload: {appId: string}):string}
  */
 export const launchApp = createAction('greenfield/compositor/launchApp')
+/**
+ * @type {function(payload: {type: string, url: string, title: string}):string}
+ */
+export const launchWebApp = createAction('greenfield/compositor/launchWebApp')
+/**
+ * @type {function(payload: {type: string, url: string, title: string}):string}
+ */
+export const launchRemoteApp = createAction('greenfield/compositor/launchRemoteApp')
 /**
  * @type {function(payload: Object):string}
  */
