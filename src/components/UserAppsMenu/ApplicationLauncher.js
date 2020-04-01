@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Image from '../Image'
 import { useFirebase } from 'react-redux-firebase'
 import { useDispatch } from 'react-redux'
-import { launchRemoteApp, launchWebApp } from '../../middleware/compositor/actions'
+import { launchRemoteAppAction, launchWebAppAction } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles({
   root: {
@@ -35,13 +35,13 @@ export const ApplicationLauncher = React.memo(({ application, appId }) => {
 
   const onLaunchApplication = () => {
     if (type === 'remote') {
-      dispatch(launchRemoteApp(application))
+      dispatch(launchRemoteAppAction(application))
     } else if (type === 'web') {
       firebase
         .storage()
         .refFromURL(url)
         .getDownloadURL()
-        .then(downloadURL => dispatch(launchWebApp({ ...application, downloadURL })))
+        .then(downloadURL => dispatch(launchWebAppAction({ ...application, downloadURL })))
     }
   }
 

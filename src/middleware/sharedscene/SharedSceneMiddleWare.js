@@ -26,7 +26,7 @@ const importPeerModule = import('peerjs')
 
 class SharedSceneMiddleWare {
   /**
-   * @param {CompositorMiddleWare}compositorMiddleWare
+   * @param {CompositorService}compositorMiddleWare
    * @return {SharedSceneMiddleWare}
    */
   static create (compositorMiddleWare) {
@@ -34,11 +34,11 @@ class SharedSceneMiddleWare {
   }
 
   /**
-   * @param {CompositorMiddleWare}compositorMiddleWare
+   * @param {CompositorService}compositorMiddleWare
    */
   constructor (compositorMiddleWare) {
     /**
-     * @type {CompositorMiddleWare}
+     * @type {CompositorService}
      * @private
      */
     this._compositorMiddleWare = compositorMiddleWare

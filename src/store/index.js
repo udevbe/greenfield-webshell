@@ -4,7 +4,9 @@ import rootReducer from './reducers'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import { actionTypes } from 'react-redux-firebase'
-import { compositorMiddleWareReducers, sharedSceneMiddleWareReducers } from '../middleware/compositor'
+import createSagaMiddleware from 'redux-saga'
+import { createBrowserHistory } from 'history'
+import { routerMiddleware } from 'connected-react-router'
 
 const persistConfig = {
   key: 'root',
@@ -19,9 +21,10 @@ const persistConfig = {
   ]
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
-
 export default () => {
+  const history = createBrowserHistory()
+  const persistedReducer = persistReducer(persistConfig, rootReducer(history))
+  const sagaMiddleware = createSagaMiddleware()
   const store = configureStore({
     reducer: persistedReducer,
     middleware: [
@@ -38,10 +41,13 @@ export default () => {
           ]
         }
       }),
-      compositorMiddleWareReducers,
-      sharedSceneMiddleWareReducers
+      routerMiddleware(history),
+      sagaMiddleware
     ]
   })
   const persistor = persistStore(store)
-  return { store, persistor }
+
+  sagaMiddleware.run(mySaga)
+
+  return { store, persistor, history }
 }

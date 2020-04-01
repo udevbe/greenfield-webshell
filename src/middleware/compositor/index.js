@@ -1,4 +1,3 @@
-import CompositorMiddleWare from './CompositorMiddleWare'
 import SharedSceneMiddleWare from './SharedSceneMiddleWare'
 
 /**
@@ -20,8 +19,6 @@ function middleWareReducers (middleWare) {
   }
 }
 
-const compositorMiddleWare = CompositorMiddleWare.create()
 const sharedSceneMiddleWare = SharedSceneMiddleWare.create(compositorMiddleWare)
 
-export const compositorMiddleWareReducers = middleWareReducers(compositorMiddleWare)
 export const sharedSceneMiddleWareReducers = middleWareReducers(sharedSceneMiddleWare)

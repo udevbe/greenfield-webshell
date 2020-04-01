@@ -10,7 +10,7 @@ import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
-import { useHistory } from 'react-router'
+import { push } from 'connected-react-router'
 import ShareScene from './ShareScene'
 
 const useStyles = makeStyles(theme => ({
@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const SceneTabs = React.memo(({ sceneId }) => {
-  const history = useHistory()
   const dispatch = useDispatch()
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
@@ -52,15 +51,15 @@ const SceneTabs = React.memo(({ sceneId }) => {
 
   const addScene = () => {
     const sceneId = dispatch(createScene({ name: 'new scene', type: 'local', sharing: 'private' }))
-    history.push(`/workspace/${sceneId}`)
+    dispatch(push(`/workspace/${sceneId}`))
   }
   const removeScene = () => {
     const newActiveSceneId = dispatch(destroyScene(sceneId))
-    history.push(`/workspace/${newActiveSceneId}`)
+    dispatch(push(`/workspace/${newActiveSceneId}`))
   }
   const editScene = () => setEditSceneOpen(true)
   const shareScene = () => setShareSceneOpen(true)
-  const activateScene = id => history.push(`/workspace/${id}`)
+  const activateScene = id => dispatch(push(`/workspace/${id}`))
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,
@@ -85,7 +84,12 @@ const SceneTabs = React.memo(({ sceneId }) => {
         >
           {
             Object.entries(scenes).map(([sceneId, scene]) =>
-              <Tab key={sceneId} label={scene.name} value={sceneId} onClick={() => activateScene(sceneId)} />)
+              <Tab
+                key={sceneId}
+                label={scene.name}
+                value={sceneId}
+                onClick={() => activateScene(sceneId)}
+              />)
           }
         </Tabs>
         <ClickAwayListener onClickAway={handleSpeedDialClose}>

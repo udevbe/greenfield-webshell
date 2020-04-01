@@ -7,7 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
-import { useHistory } from 'react-router'
+import { push } from 'connected-react-router'
 
 /**
  * @param {DrawerActionItem}actionItem
@@ -16,7 +16,6 @@ import { useHistory } from 'react-router'
  * @constructor
  */
 const DrawerActionItem = React.memo(({ actionItem, selected }) => {
-  const history = useHistory()
   const params = useParams()
   const dispatch = useDispatch()
 
@@ -36,7 +35,7 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
     }
 
     if (actionItem.path && actionItem.path !== params.path) {
-      history.push(actionItem.path)
+      dispatch(push(actionItem.path))
     }
   }
 
@@ -51,14 +50,20 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
         }
       }}
     >
-      {actionItem.leftIcon && <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>}
-      {!useMinified && open && <ListItemText primary={actionItem.text} />}
-      {actionItem.onClickSecondary &&
-      <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
-          <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
-            {actionItem.rightIcon}
-          </IconButton>
-        </ListItemSecondaryAction>}
+      {
+        actionItem.leftIcon && <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>
+      }
+      {
+        !useMinified && open && <ListItemText primary={actionItem.text} />
+      }
+      {
+        actionItem.onClickSecondary &&
+          <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
+            <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
+              {actionItem.rightIcon}
+            </IconButton>
+          </ListItemSecondaryAction>
+      }
     </ListItem>
   )
 })

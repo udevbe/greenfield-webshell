@@ -1,12 +1,13 @@
 import React from 'react'
 import { Redirect, Route, useLocation } from 'react-router'
 import { useIsAuthenticated } from '../../utils/auth'
+import { useSelector } from 'react-redux'
 
 export const RestrictedRoute = React.memo(({
   type,
   ...rest
 }) => {
-  const location = useLocation()
+  const pathname = useSelector(({ router }) => router.location.pathname)
   const authorized = useIsAuthenticated()
   if (authorized || (type === 'public')) {
     return <Route {...rest} />
@@ -17,7 +18,7 @@ export const RestrictedRoute = React.memo(({
           pathname: '/signin',
           state: {
             fromRedirect: true,
-            fromLocation: { ...location }
+            fromLocation: pathname
           }
         }}
       />

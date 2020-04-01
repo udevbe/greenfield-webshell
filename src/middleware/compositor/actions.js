@@ -9,7 +9,7 @@ export const requestUserSurfaceActive = createAction('greenfield/compositor/requ
  */
 export const refreshScene = createAction('greenfield/compositor/refreshScene')
 /**
- * @type {function(payload: string):string}
+ * @type {function(payload: {userSurfaceKey: string}):string}
  */
 export const notifyUserSurfaceInactive = createAction('greenfield/compositor/notifyUserSurfaceInactive')
 /**
@@ -23,44 +23,44 @@ export const terminateClient = createAction('greenfield/compositor/terminateClie
 /**
  * @type {function(payload: {appId: string}):string}
  */
-export const launchApp = createAction('greenfield/compositor/launchApp')
+export const launchAppAction = createAction('greenfield/compositor/launchApp')
 /**
  * @type {function(payload: {type: string, url: string, title: string}):string}
  */
-export const launchWebApp = createAction('greenfield/compositor/launchWebApp')
+export const launchWebAppAction = createAction('greenfield/compositor/launchWebApp')
 /**
  * @type {function(payload: {type: string, url: string, title: string}):string}
  */
-export const launchRemoteApp = createAction('greenfield/compositor/launchRemoteApp')
+export const launchRemoteAppAction = createAction('greenfield/compositor/launchRemoteApp')
 /**
  * @type {function(payload: Object):string}
  */
-export const remotePointerMove = createAction('greenfield/compositor/remotePointerMove')
+export const remotePointerMoveAction = createAction('greenfield/compositor/remotePointerMove')
 /**
  * @type {function(payload: Object):string}
  */
-export const remoteButtonUp = createAction('greenfield/compositor/remoteButtonUp')
+export const remoteButtonUpAction = createAction('greenfield/compositor/remoteButtonUp')
 /**
  * @type {function(payload: Object):string}
  */
-export const remoteButtonDown = createAction('greenfield/compositor/remoteButtonDown')
+export const remoteButtonDownAction = createAction('greenfield/compositor/remoteButtonDown')
 /**
  * @type {function(payload: Object):string}
  */
-export const remoteAxis = createAction('greenfield/compositor/remoteAxis')
+export const remoteAxisAction = createAction('greenfield/compositor/remoteAxis')
 /**
  * @type {function(payload: Object):string}
  */
-export const remoteKey = createAction('greenfield/compositor/remoteKey')
+export const remoteKeyAction = createAction('greenfield/compositor/remoteKey')
 /**
  * @type {function(payload: string):string}
  */
-export const sendRemoteSceneUpdate = createAction('greenfield/compositor/sendRemoteSceneUpdate')
+export const sendRemoteSceneUpdateAction = createAction('greenfield/compositor/sendRemoteSceneUpdate')
 /**
  * @type {function(payload: {sceneId: string}):string}
  */
-export const requestSceneAccess = createAction('greenfield/compositor/requestSceneAccess')
+export const requestSceneAccessAction = createAction('greenfield/compositor/requestSceneAccess')
 /**
  * @type {function(payload: {sceneId: string}):string}
  */
-export const handleSceneAccessRequest = createAction('greenfield/compositor/handleSceneAccessRequest')
+export const handleSceneAccessRequestAction = createAction('greenfield/compositor/handleSceneAccessRequest')

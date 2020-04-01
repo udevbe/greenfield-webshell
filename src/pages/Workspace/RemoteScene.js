@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { Button, DialogActions } from '@material-ui/core'
-import { requestSceneAccess } from '../../middleware/compositor/actions'
+import { requestSceneAccessAction } from '../../middleware/compositor/actions'
 
 const RemoteScene = () => {
   const { sceneId, peerId } = useParams()
@@ -15,7 +15,7 @@ const RemoteScene = () => {
 
   if (confirmation) {
     if (openScene) {
-      dispatch(requestSceneAccess({ sceneId, peerId }))
+      dispatch(requestSceneAccessAction({ sceneId, peerId }))
       return <Redirect to={`/workspace/${sceneId}`} push />
     } else {
       return <Redirect to='/' push />

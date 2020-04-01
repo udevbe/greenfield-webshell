@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 /**
- * @typedef {{id:number, clientId: string, title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string, lastActive: number}}UserSurface
+ * @typedef {{id:number, clientId: string, title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string, lastActive: number, type: 'remote'|'local'}}UserSurface
  */
 /**
  * @typedef {{userSurfaceKey:string, sceneId: string}}UserSurfaceView
@@ -45,10 +45,13 @@ import { createSlice } from '@reduxjs/toolkit'
 /**
  * @type {CompositorState}
  */
+// TODO add app launch error state
+// TODO add last active scene id state
 const initialState = {
   clients: {},
   initialized: false,
   peerId: null,
+  // TODO wayland supports multi seat and so should we...
   seat: {
     pointerGrab: null,
     keyboardFocus: null,
@@ -81,113 +84,95 @@ const reducers = {
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {WaylandClient}client
    */
-  createClient: (state, action) => {
-    const client = action.payload
+  clientCreated: (state, { payload: { client } }) => {
     state.clients[client.id] = client
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {WaylandClient}client
    */
-  cleanUpDestroyedClient: (state, action) => {
-    const client = action.payload
+  clientDestroyed: (state, { payload: { client } }) => {
     delete state.clients[client.id]
   },
 
-  // TODO upsert?
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserSurface}userSurface
    */
-  createUserSurface: (state, action) => {
-    // TODO put userSurface in property
-    const userSurface = action.payload
-    state.userSurfaces[userSurface.key] = userSurface
-  },
-
-  // TODO upsert?
-  /**
-   * @param {CompositorState}state
-   * @param {Action}action
-   */
-  updateUserSurface: (state, action) => {
-    // TODO put userSurface in property
-    const userSurface = action.payload
+  createUserSurface: (state, { payload: { userSurface } }) => {
     state.userSurfaces[userSurface.key] = userSurface
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserSurface}userSurface
    */
-  destroyUserSurface: (state, action) => {
-    const userSurfaceKey = action.payload
+  updateUserSurface: (state, { payload: { userSurface } }) => {
+    const oldUserSurface = state.userSurfaces[userSurface.key]
+    state.userSurfaces[userSurface.key] = { ...oldUserSurface, ...userSurface }
+  },
+
+  /**
+   * @param {CompositorState}state
+   * @param {string}userSurfaceKey
+   */
+  userSurfaceDestroyed: (state, { payload: { userSurfaceKey } }) => {
     delete state.userSurfaces[userSurfaceKey]
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserSeat}userSeat
    */
-  updateUserSeat: (state, action) => {
-    const { keyboardFocus, pointerGrab, keyboard } = action.payload
-    state.seat = { pointerGrab, keyboardFocus, keyboard }
+  updateUserSeat: (state, { payload: { userSeat } }) => {
+    state.seat = { ...state.seat, ...userSeat }
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserConfiguration}userConfiguration
    */
-  updateUserConfiguration: (state, action) => {
-    state.userConfiguration = { ...state.userConfiguration, ...action.payload }
+  updateUserConfiguration: (state, { payload: { userConfiguration } }) => {
+    state.userConfiguration = { ...state.userConfiguration, ...userConfiguration }
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserSurfaceView}userSurfaceView
    */
-  createUserSurfaceView: (state, action) => {
-    const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].views.push({ userSurfaceKey, sceneId })
+  createUserSurfaceView: (state, { payload: { userSurfaceView } }) => {
+    state.scenes[userSurfaceView.sceneId].views.push(userSurfaceView)
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {UserSurfaceView}userSurfaceView
    */
-  destroyUserSurfaceView: (state, action) => {
-    const { userSurfaceKey, sceneId } = action.payload
-    state.scenes[sceneId].views = state.scenes[sceneId].views.filter(view =>
-      view.userSurfaceKey !== userSurfaceKey && view.sceneId !== sceneId)
+  destroyUserSurfaceView: (state, { payload: { userSurfaceView } }) => {
+    const { sceneId, userSurfaceKey } = userSurfaceView
+    state.scenes[sceneId].views = state.scenes[sceneId].views.filter(view => view.userSurfaceKey !== userSurfaceKey && view.sceneId !== sceneId)
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {Scene}scene
    */
-  createScene: (state, action) => {
-    const { name, id, type } = action.payload
-    const scene = { name, id, type, views: [] }
-    if (type === 'local') {
-      scene.state = /** @type{LocalSceneState} */{ sharing: 'private', shared_with: [] }
-    } else if (type === 'remote') {
-      scene.state = /** @type{RemoteSceneState} */{ shared_by: null, access: 'pending', scaling: { x: 1, y: 1 } }
-    }
-    state.scenes[id] = scene
+  createScene: (state, { payload: { scene } }) => {
+    state.scenes[scene.id] = scene
   },
 
   /**
    * @param {CompositorState}state
-   * @param {Action}action
+   * @param {string}sceneId
    */
-  destroyScene: (state, action) => {
-    const id = action.payload
-    delete state.scenes[id]
+  destroyScene: (state, { payload: { sceneId } }) => {
+    delete state.scenes[sceneId]
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {grantingUserId: string, remoteSceneId: string}}}action
@@ -198,6 +183,7 @@ const reducers = {
     state.scenes[sceneId].state.shared_by = grantingUserId
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {remoteSceneId: string}}}action
@@ -208,6 +194,7 @@ const reducers = {
     state.scenes[sceneId].state.shared_by = null
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {sceneId: string, requestingUserId:string}}}action
@@ -218,6 +205,7 @@ const reducers = {
     scene.state.shared_with.push(requestingUserId)
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {sceneId: string, requestingUserId:string}}}action
@@ -230,6 +218,7 @@ const reducers = {
     }
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {Action}action
@@ -239,6 +228,7 @@ const reducers = {
     state.scenes[sceneId].name = name
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {sceneId: string, sharing: string}}}action
@@ -248,6 +238,7 @@ const reducers = {
     state.scenes[sceneId].state.sharing = sharing
   },
 
+  // TODO refactor?
   /**
    * @param {CompositorState}state
    * @param {{payload: {sceneId: string, x: number, y: number}}}action
@@ -276,12 +267,12 @@ const slice = createSlice({
 export const {
   initializeCompositor,
 
-  createClient,
-  cleanUpDestroyedClient,
+  clientCreated,
+  clientDestroyed,
 
   createUserSurface,
   updateUserSurface,
-  destroyUserSurface,
+  userSurfaceDestroyed,
 
   updateUserSeat,
 
@@ -290,6 +281,8 @@ export const {
   destroyUserSurfaceView,
 
   createScene,
+  markSceneLastActive,
+
   notifySceneAccessGrant,
   notifySceneAccessDenied,
   denySceneAccess,
@@ -297,7 +290,7 @@ export const {
   changeSceneName,
   shareScene,
   destroyScene,
-  markSceneLastActive,
+
   setRemoteSceneScaling
 } = slice.actions
 

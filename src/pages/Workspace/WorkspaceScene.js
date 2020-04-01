@@ -46,9 +46,10 @@ const WorkspaceScene = React.memo(() => {
   const dispatch = useDispatch()
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
-  const userSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces))
-  const activeUserSurface = useSelector(({ compositor }) => Object.values(compositor.userSurfaces)
-    .find(userSurface => userSurface.active))
+  const sceneSurfaceKeys = useSelector(({ compositor }) => compositor.scenes[sceneId].views.map(userSurfaceView => userSurfaceView.userSurfaceKey))
+  const sceneUserSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces).filter(userSurface => sceneSurfaceKeys.includes(userSurface.key)))
+
+  const activeSceneUserSurface = sceneUserSurfaces.find(userSurface => userSurface.active)
   const sceneExists = useSelector(({ compositor }) => compositor.scenes[sceneId] != null)
   const lastActiveSceneId = useSelector(({ compositor }) => {
     if (sceneExists) {
@@ -74,16 +75,18 @@ const WorkspaceScene = React.memo(() => {
           <Tabs
             className={classes.tabsTop}
             variant='fullWidth'
-            value={activeUserSurface ? activeUserSurface.key : false}
+            value={activeSceneUserSurface ? activeSceneUserSurface.key : false}
           >
             {
-              userSurfaces.map(({ key, title }) => (
-                <UserSurfaceTab
-                  key={key}
-                  value={key}
-                  userSurfaceTitle={title}
-                />
-              ))
+              sceneUserSurfaces.map(({ key, title }) => {
+                return (
+                  <UserSurfaceTab
+                    key={key}
+                    value={key}
+                    userSurfaceTitle={title}
+                  />
+                )
+              })
             }
           </Tabs>
           <UserAppsMenu anchorElRef={mainRef} />
@@ -92,7 +95,7 @@ const WorkspaceScene = React.memo(() => {
       mainRef={mainRef}
     >
       {
-        sceneExists && userSurfaces.length === 0 &&
+        sceneExists && sceneUserSurfaces.length === 0 &&
         (
           <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
             <Typography variant='subtitle1'>
