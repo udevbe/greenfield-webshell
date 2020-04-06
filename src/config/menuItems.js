@@ -14,7 +14,7 @@ import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/au
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
 import { ListItemText } from '@material-ui/core'
-import { terminateClientAction } from '../middleware/compositor/actions'
+import { deleteClient } from '../middleware/compositor/actions'
 
 /**
  * @typedef {{
@@ -70,7 +70,7 @@ export const useMenuItems = handleSignOut => {
   const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
   const userSurfacesByAppId = {}
   useSelector(({ compositor }) =>
-    Object.values(compositor.userSurfaces).map(({ id, clientId, title, appId, key }) =>
+    Object.values(compositor.surfaces).map(({ id, clientId, title, appId, key }) =>
       ({ id, clientId, title, appId, key })
     ), shallowEqual).forEach(userSurface => {
     const appId = !userSurface.appId || userSurface.appId.length === 0 ? `app-${userSurface.clientId}` : userSurface.appId
@@ -158,8 +158,8 @@ export const useMenuItems = handleSignOut => {
                 // TODO raise all surfaces of selected client & activate surface that was the last to be active
               },
               onClickSecondary: () => {
-                const clientId = userSurfaces[0].clientId
-                dispatch(terminateClientAction(clientId))
+                const id = userSurfaces[0].clientId
+                dispatch(deleteClient({ id }))
               },
               rightIcon: <CloseIcon />
             }

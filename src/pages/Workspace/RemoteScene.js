@@ -7,7 +7,7 @@ import { Button, DialogActions } from '@material-ui/core'
 import { requestSceneAccessAction } from '../../middleware/compositor/actions'
 
 const RemoteScene = () => {
-  const { sceneId, peerId } = useParams()
+  const { id, peerId } = useParams()
   const dispatch = useDispatch()
 
   const [confirmation, setConfirmation] = useState(false)
@@ -15,8 +15,8 @@ const RemoteScene = () => {
 
   if (confirmation) {
     if (openScene) {
-      dispatch(requestSceneAccessAction({ sceneId, peerId }))
-      return <Redirect to={`/workspace/${sceneId}`} push />
+      dispatch(requestSceneAccessAction({ sceneId: id, peerId }))
+      return <Redirect to={`/workspace/${id}`} push />
     } else {
       return <Redirect to='/' push />
     }

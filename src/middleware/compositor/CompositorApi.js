@@ -1,8 +1,28 @@
 import CompositorModule from './CompositorModule'
-import { uuidv4 } from './index'
 
 /**
- * @typedef {{id: string, clientId: string}}UserShellSurface
+ * @return {string}
+ */
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+/**
+ * @typedef {{variant: 'web'|'remote', id: string}}CompositorClient
+ */
+
+/**
+ * @typedef {{id: string, clientId: string}}CompositorSurface
+ */
+
+/**
+ * @typedef {{title:string, appId:string, mapped:boolean, active: boolean, unresponsive: boolean, minimized: boolean, key: string, lastActive: number, type: 'remote'|'local'}}CompositorSurfaceState
+ */
+
+/**
+ * @typedef {string}UserShellSurfaceKey
  */
 
 class CompositorApi {
@@ -54,21 +74,21 @@ class CompositorApi {
   }
 
   /**
-   * @param {UserShellSurface}userShellSurface
-   * @return {string}
+   * @param {CompositorSurface}compositorSurface
+   * @return {UserShellSurfaceKey}
    * @private
    */
-  _userShellSurfaceKey (userShellSurface) {
-    return `${userShellSurface.id}@${userShellSurface.clientId}`
+  _userShellSurfaceKey (compositorSurface) {
+    return `${compositorSurface.id}@${compositorSurface.clientId}`
   }
 
   /**
-   * @param {string}userShellSurfaceKey
-   * @return {{id: string, clientId: string}}
+   * @param {UserShellSurfaceKey}surfaceKey
+   * @return {CompositorSurface}
    * @private
    */
-  _userShellSurface (userShellSurfaceKey) {
-    const [id, clientId] = userShellSurfaceKey.split('@')
+  _compositorSurface (surfaceKey) {
+    const [id, clientId] = surfaceKey.split('@')
     return { id, clientId }
   }
 
@@ -79,42 +99,43 @@ class CompositorApi {
   onNotify ({ variant, message }) {}
 
   /**
-   * @param {Client}client
+   * @param {UserShellClient}client
    */
-  onCreateApplicationClient ({ client }) {}
+  onCreateUserShellClient ({ client }) {}
 
   /**
-   * @param {string}clientId
+   * @param {string}id
    */
-  onDestroyApplicationClient ({ clientId }) {}
+  onDeleteUserShellClient ({ id }) {}
 
   /**
-   * @param {UserShellSurface}userShellSurface
-   * @param {Object}userShellSurfaceState
-   * @param {string}key
+   * @param {UserShellSurface}surface
    */
-  onCreateUserSurface ({ userShellSurface, userShellSurfaceState, key }) {}
+  onCreateUserShellSurface ({ surface }) {}
 
   /**
-   * @param {UserShellSurface}userShellSurface
-   * @param {Object}userShellSurfaceState
-   * @param {string}key
+   * @param {UserShellSurface}surface
    */
-  onUpdateUserSurface ({ userShellSurface, userShellSurfaceState, key }) {}
+  onUpdateUserShellSurface ({ surface }) {}
 
   /**
-   * @param {string}userSurfaceKey
+   * @param {UserShellSurfaceKey}key
    */
-  onDestroyUserSurface ({ userSurfaceKey }) {}
+  onDeleteUserShellSurface ({ key }) {}
 
   /**
-   * @param {string}keyboardFocus
-   * @param {string}pointerGrab
+   * @param {{pointerGrab: UserShellSurfaceKey, keyboardFocus: UserShellSurfaceKey}}seat
    */
-  onUpdateUserSeat ({ keyboardFocus, pointerGrab }) {}
+  onUpdateUserShellSeat ({ seat }) {}
 
-  onSceneRefresh ({ sceneId }) {}
+  /**
+   * @param {string}id
+   */
+  onUserShellSceneRefresh ({ id }) {}
 
+  /**
+   * @private
+   */
   _linkUserShellEvents () {
     const userShell = this.session.userShell
     /**
@@ -123,59 +144,73 @@ class CompositorApi {
      */
     userShell.events.notify = (variant, message) => this.onNotify({ variant, message })
     /**
-     * @param {Client}client
+     * @param {CompositorClient}client
      */
-    userShell.events.createApplicationClient = client => this.onCreateApplicationClient({ client })
+    userShell.events.createApplicationClient = client => this.onCreateUserShellClient({ client })
     /**
-     * @param {Client}client
+     * @param {CompositorClient}client
      */
-    userShell.events.destroyApplicationClient = client => this.onDestroyApplicationClient({ clientId: client.id })
+    userShell.events.destroyApplicationClient = client => this.onDeleteUserShellClient({ id: client.id })
     /**
-     * @param {UserShellSurface}userShellSurface
-     * @param {Object}userShellSurfaceState
+     * @param {CompositorSurface}compositorSurface
+     * @param {Object}compositorSurfaceState
      */
-    userShell.events.createUserSurface = (userShellSurface, userShellSurfaceState) => {
-      this.onCreateUserSurface({
-        userShellSurface, userShellSurfaceState, key: this._userShellSurfaceKey(userShellSurface)
-      })
+    userShell.events.createUserSurface = (compositorSurface, compositorSurfaceState) => {
+      const surface = {
+        ...compositorSurface,
+        ...compositorSurfaceState,
+        key: this._userShellSurfaceKey(compositorSurface)
+      }
+      this.onCreateUserShellSurface({ surface })
     }
     /**
-     * @param {UserShellSurface}userShellSurface
-     * @param {Object}userShellSurfaceState
+     * @param {CompositorSurface}compositorSurface
+     * @param {Object}compositorSurfaceState
      */
-    userShell.events.updateUserSurface = (userShellSurface, userShellSurfaceState) => {
-      this.onUpdateUserSurface({
-        userShellSurface, userShellSurfaceState, key: this._userShellSurfaceKey(userShellSurface)
-      })
+    userShell.events.updateUserSurface = (compositorSurface, compositorSurfaceState) => {
+      const surface = {
+        ...compositorSurface,
+        ...compositorSurfaceState,
+        key: this._userShellSurfaceKey(compositorSurface)
+      }
+      this.onUpdateUserShellSurface({ surface })
     }
     /**
-     * @param {UserShellSurface}userShellSurface
+     * @param {CompositorSurface}compositorSurface
      */
-    userShell.events.destroyUserSurface = userShellSurface => { this.onDestroyUserSurface({ userSurfaceKey: this._userShellSurfaceKey(userShellSurface) }) }
-    userShell.events.updateUserSeat = userSeatState => {
-      this.onUpdateUserSeat({
-        keyboardFocus: this._userShellSurfaceKey(userSeatState.keyboardFocus),
-        pointerGrab: this._userShellSurfaceKey(userSeatState.pointerGrab)
-      })
+    userShell.events.destroyUserSurface = compositorSurface => { this.onDeleteUserShellSurface({ key: this._userShellSurfaceKey(compositorSurface) }) }
+    userShell.events.updateUserSeat = ({ keyboardFocus, pointerGrab }) => {
+      const seat = {
+        keyboardFocus: keyboardFocus ? this._userShellSurfaceKey(keyboardFocus) : null,
+        pointerGrab: pointerGrab ? this._userShellSurfaceKey(pointerGrab) : null
+      }
+      this.onUpdateUserShellSeat({ seat })
     }
-
-    userShell.events.sceneRefresh = sceneId => this.onSceneRefresh({ sceneId })
+    userShell.events.sceneRefresh = sceneId => this.onUserShellSceneRefresh({ id: sceneId })
   }
 
-  // TODO refactor?
-  setUserConfiguration (userConfiguration) {
-    this.session.userShell.actions.setUserConfiguration(userConfiguration)
+  /**
+   * @param {UserShellConfiguration}userShellConfiguration
+   */
+  updateCompositorConfiguration (userShellConfiguration) {
+    this.session.userShell.actions.setUserConfiguration(userShellConfiguration)
   }
 
-  keyboardNrmlvoEntries () {
+  /**
+   * @return {Array<{name: string, rules: string, model: string, layout: string, variant: string, options: string}>}
+   */
+  compositorKeyboardNrmlvoEntries () {
     return this.session.globals.seat.keyboard.nrmlvoEntries
   }
 
-  keyboardDefaultNrmlvo () {
+  /**
+   * @return {{name: string, rules: string, model: string, layout: string, variant: string, options: string}}
+   */
+  compositorKeyboardDefaultNrmlvo () {
     return this.session.globals.seat.keyboard.defaultNrmlvo
   }
 
-  async initializeCompositor (eventConnector) {
+  async createCompositor () {
     const {
       remoteAppLauncher,
       webAppLauncher,
@@ -193,57 +228,57 @@ class CompositorApi {
     this.createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
     this.createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
 
-    this._linkUserShellEvents(eventConnector)
-
-    // TODO move to compositor saga
-    // this._restoreUserConfiguration(store)
+    this._linkUserShellEvents()
 
     this.session.globals.register()
   }
 
   /**
-   * @param {UserSurface}userSurface
+   * @param {UserShellSurfaceKey}surfaceKey
    */
-  requestUserSurfaceActive (userSurface) {
-    this.session.userShell.actions.requestActive(userSurface)
+  requestCompositorSurfaceActive (surfaceKey) {
+    const compositorSurface = this._compositorSurface(surfaceKey)
+    this.session.userShell.actions.requestActive(compositorSurface)
   }
 
   /**
-   * @param {UserSurface}userSurface
-   * @param {string}sceneId
+   * @param {UserShellSurfaceView}view
    */
-  raiseUserSurface (userSurface, sceneId) {
-    this.session.userShell.actions.raise(userSurface, sceneId)
+  raiseCompositorSurfaceView (view) {
+    const userShellSurfaceKey = view.surfaceKey
+    const compositorSurface = this._compositorSurface(userShellSurfaceKey)
+    this.session.userShell.actions.raise(compositorSurface, view.sceneId)
   }
 
   /**
-   * @param {string}sceneId
+   * @param {string}id
+   * @return {Promise<void>}
    */
-  refreshScene (sceneId) {
-    this.session.userShell.actions.refreshScene(sceneId)
+  refreshCompositorScene (id) {
+    return this.session.userShell.actions.refreshScene(id)
   }
 
   /**
-   * @param {string}userSurfaceKey
+   * @param {UserShellSurfaceKey}surfaceKey
    */
-  notifyUserSurfaceInactiveAction (userSurfaceKey) {
-    const userShellSurface = this._userShellSurface(userSurfaceKey)
-    this.session.userShell.actions.notifyInactive(userShellSurface)
+  notifyCompositorSurfaceInactive (surfaceKey) {
+    const compositorSurface = this._compositorSurface(surfaceKey)
+    this.session.userShell.actions.notifyInactive(compositorSurface)
   }
 
   /**
-   * @param {string}userSurfaceKey
+   * @param {UserShellSurfaceKey}surfaceKey
    */
-  userSurfaceKeyboardFocus (userSurfaceKey) {
-    const userShellSurface = this._userShellSurface(userSurfaceKey)
-    this.session.userShell.actions.setKeyboardFocus(userShellSurface)
+  updateCompositorKeyboardFocus (surfaceKey) {
+    const compositorSurface = this._compositorSurface(surfaceKey)
+    this.session.userShell.actions.setKeyboardFocus(compositorSurface)
   }
 
   /**
    * @param {string}type
    * @return {string}
    */
-  createScene (type) {
+  createCompositorScene (type) {
     if (type === 'local') {
       const id = uuidv4()
 
@@ -288,28 +323,28 @@ class CompositorApi {
   }
 
   /**
-   * @param {string}sceneId
+   * @param {string}id
    */
-  destroyScene (sceneId) {
-    const sceneElement = document.getElementById(sceneId)
+  deleteCompositorScene (id) {
+    const sceneElement = document.getElementById(id)
     sceneElement.parentElement.removeChild(sceneElement)
-    this.session.userShell.actions.destroyScene(sceneId)
+    this.session.userShell.actions.destroyScene(id)
   }
 
   /**
-   * @param {string}userSurfaceKey
-   * @param {string}sceneId
+   * @param {UserShellSurfaceView}view
    */
-  createUserSurfaceView ({ userSurfaceKey, sceneId }) {
-    const userShellSurface = this._userShellSurface(userSurfaceKey)
-    this.session.userShell.actions.createView(userShellSurface, sceneId)
+  createCompositorSurfaceView (view) {
+    const userShellSurfaceKey = view.surfaceKey
+    const compositorSurface = this._compositorSurface(userShellSurfaceKey)
+    this.session.userShell.actions.createView(compositorSurface, view.sceneId)
   }
 
   /**
-   * @param {string}clientId
+   * @param {string}id
    */
-  terminateClient (clientId) {
-    this.session.userShell.actions.closeClient({ id: clientId })
+  deleteCompositorClient (id) {
+    this.session.userShell.actions.closeClient({ id })
   }
 
   /**
@@ -331,4 +366,72 @@ class CompositorApi {
   }
 }
 
-export default CompositorApi.create()
+const compositorApi = CompositorApi.create()
+export default compositorApi
+
+/**
+ * @param {string}downloadURL
+ * @return {Promise<void>}
+ */
+export const launchWebApp = downloadURL => compositorApi.launchWebApp(downloadURL)
+/**
+ * @param {string}appId
+ * @param {string}url
+ * @param {string}title
+ * @return {Promise<void>}
+ */
+export const launchRemoteApp = (appId, url, title) => compositorApi.launchRemoteApp(appId, url, title)
+/**
+ * @param {string}id
+ */
+export const deleteCompositorClient = id => compositorApi.deleteCompositorClient(id)
+/**
+ * @param {UserShellSurfaceView}view
+ */
+export const createCompositorSurfaceView = view => compositorApi.createCompositorSurfaceView(view)
+/**
+ * @param {UserShellSurfaceView}view
+ */
+export const raiseCompositorSurfaceView = view => compositorApi.raiseCompositorSurfaceView(view)
+/**
+ * @param {'local'}type
+ * @return {string}
+ */
+export const createCompositorScene = type => compositorApi.createCompositorScene(type)
+/**
+ * @param {string}id
+ */
+export const deleteCompositorScene = id => compositorApi.deleteCompositorScene(id)
+/**
+ * @param {string}id
+ * @return {Promise<void>}
+ */
+export const refreshCompositorScene = id => compositorApi.refreshCompositorScene(id)
+/**
+ * @param {UserShellSurfaceKey}surfaceKey
+ */
+export const updateCompositorKeyboardFocus = surfaceKey => compositorApi.updateCompositorKeyboardFocus(surfaceKey)
+/**
+ * @param {UserShellSurfaceKey}surfaceKey
+ */
+export const requestCompositorSurfaceActive = surfaceKey => compositorApi.requestCompositorSurfaceActive(surfaceKey)
+/**
+ * @param {UserShellSurfaceKey}surfaceKey
+ */
+export const notifyCompositorSurfaceInactive = surfaceKey => compositorApi.notifyCompositorSurfaceInactive(surfaceKey)
+/**
+ * @return {Promise<void>}
+ */
+export const createCompositor = () => compositorApi.createCompositor()
+/**
+ * @return {{name: string, rules: string, model: string, layout: string, variant: string, options: string}}
+ */
+export const compositorKeyboardDefaultNrmlvo = () => compositorApi.compositorKeyboardDefaultNrmlvo()
+/**
+ * @return {Array<{name: string, rules: string, model: string, layout: string, variant: string, options: string}>}
+ */
+export const compositorKeyboardNrmlvoEntries = () => compositorApi.compositorKeyboardNrmlvoEntries()
+/**
+ * @param {UserShellConfiguration}configuration
+ */
+export const updateCompositorConfiguration = configuration => compositorApi.updateCompositorConfiguration(configuration)

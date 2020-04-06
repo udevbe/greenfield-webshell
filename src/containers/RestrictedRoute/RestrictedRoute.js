@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect, Route, useLocation } from 'react-router'
+import { Redirect, Route } from 'react-router'
 import { useIsAuthenticated } from '../../utils/auth'
 import { useSelector } from 'react-redux'
 

@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { isLoaded } from 'react-redux-firebase'
 import LoadingComponent from '../../components/LoadingComponent'
 import Fade from '@material-ui/core/Fade'
-import { initializeCompositor } from '../../store/compositor'
+import { createUserShellCompositor } from '../../middleware/compositor/actions'
 
 const Root = React.memo(() => {
   const dispatch = useDispatch()
-  dispatch(initializeCompositor())
+  dispatch(createUserShellCompositor())
   const loaded = useSelector(({ firebase }) => isLoaded(firebase.auth))
 
   if (loaded) {

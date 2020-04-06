@@ -53,10 +53,10 @@ export const Routes = React.memo(() => {
           <RestrictedRoute type='private' path='/workspace' exact>
             <Workspace />
           </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/workspace/:sceneId' exact>
+          <RestrictedRoute type='private' path='/workspace/:id' exact>
             <WorkspaceScene />
           </RestrictedRoute>
-          <RestrictedRoute type='private' path='/workspace/remote/:sceneId/:peerId' exact>
+          <RestrictedRoute type='private' path='/workspace/remote/:id/:peerId' exact>
             <RemoteScene />
           </RestrictedRoute>,
           <RestrictedRoute type='private' path='/webstore' exact>

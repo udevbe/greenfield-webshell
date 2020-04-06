@@ -4,7 +4,6 @@ import Tab from '@material-ui/core/Tab'
 import { makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { Add, Delete, Edit, Share } from '@material-ui/icons'
-import { createScene, destroyScene } from '../../store/compositor'
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
@@ -12,6 +11,7 @@ import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
 import { push } from 'connected-react-router'
 import ShareScene from './ShareScene'
+import { createScene, deleteScene } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const SceneTabs = React.memo(({ sceneId }) => {
+const SceneTabs = React.memo(({ id }) => {
   const dispatch = useDispatch()
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
@@ -50,11 +50,14 @@ const SceneTabs = React.memo(({ sceneId }) => {
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
   const addScene = () => {
-    const sceneId = dispatch(createScene({ name: 'new scene', type: 'local', sharing: 'private' }))
-    dispatch(push(`/workspace/${sceneId}`))
+    dispatch(createScene({
+      scene: { name: 'new scene', type: 'local' },
+      creationCallback: ({ id }) =>
+        dispatch(push(`/workspace/${id}`))
+    }))
   }
   const removeScene = () => {
-    const newActiveSceneId = dispatch(destroyScene(sceneId))
+    const newActiveSceneId = dispatch(deleteScene({ id }))
     dispatch(push(`/workspace/${newActiveSceneId}`))
   }
   const editScene = () => setEditSceneOpen(true)
@@ -63,7 +66,7 @@ const SceneTabs = React.memo(({ sceneId }) => {
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,
-    scenes[sceneId].type === 'local' ? { icon: <Share />, name: 'Share This Scene', action: shareScene } : null,
+    scenes[id].type === 'local' ? { icon: <Share />, name: 'Share This Scene', action: shareScene } : null,
     { icon: <Edit />, name: 'Edit This Scene', action: editScene },
     { icon: <Add />, name: 'Add New Scene', action: addScene }
   ]
@@ -71,13 +74,13 @@ const SceneTabs = React.memo(({ sceneId }) => {
   const classes = useStyles()
   return (
     <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
-      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} sceneId={sceneId} />
-      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} sceneId={sceneId} />
+      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} sceneId={id} />
+      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} sceneId={id} />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}
           variant='fullWidth'
-          value={sceneId}
+          value={id}
           classes={{
             indicator: classes.tabIndicator
           }}

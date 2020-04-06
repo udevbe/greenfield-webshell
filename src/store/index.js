@@ -7,6 +7,7 @@ import { actionTypes } from 'react-redux-firebase'
 import createSagaMiddleware from 'redux-saga'
 import { createBrowserHistory } from 'history'
 import { routerMiddleware } from 'connected-react-router'
+import compositorSaga from '../middleware/compositor/compositorSaga'
 
 const persistConfig = {
   key: 'root',
@@ -47,7 +48,7 @@ export default () => {
   })
   const persistor = persistStore(store)
 
-  sagaMiddleware.run(mySaga)
+  sagaMiddleware.run(compositorSaga)
 
   return { store, persistor, history }
 }

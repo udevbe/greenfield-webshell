@@ -10,8 +10,8 @@ import Backdrop from '@material-ui/core/Backdrop'
 import Typography from '@material-ui/core/Typography'
 import Scene from '../../components/Workspace/Scene'
 import { useParams } from 'react-router'
-import { markSceneLastActive } from '../../store/compositor'
 import { Link } from 'react-router-dom'
+import { markSceneLastActive } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles(theme => ({
   tabsTop: {
@@ -42,15 +42,15 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const WorkspaceScene = React.memo(() => {
-  const { sceneId } = useParams()
+  const { id } = useParams()
   const dispatch = useDispatch()
 
   const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
-  const sceneSurfaceKeys = useSelector(({ compositor }) => compositor.scenes[sceneId].views.map(userSurfaceView => userSurfaceView.userSurfaceKey))
-  const sceneUserSurfaces = useSelector(({ compositor }) => Object.values(compositor.userSurfaces).filter(userSurface => sceneSurfaceKeys.includes(userSurface.key)))
+  const sceneSurfaceKeys = useSelector(({ compositor }) => compositor.scenes[id] ? compositor.scenes[id].views.map(userSurfaceView => userSurfaceView.surfaceKey) : [])
+  const sceneUserSurfaces = useSelector(({ compositor }) => Object.values(compositor.surfaces).filter(userSurface => sceneSurfaceKeys.includes(userSurface.key)))
 
   const activeSceneUserSurface = sceneUserSurfaces.find(userSurface => userSurface.active)
-  const sceneExists = useSelector(({ compositor }) => compositor.scenes[sceneId] != null)
+  const sceneExists = useSelector(({ compositor }) => compositor.scenes[id] != null)
   const lastActiveSceneId = useSelector(({ compositor }) => {
     if (sceneExists) {
       return Object.values(compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
@@ -59,8 +59,8 @@ const WorkspaceScene = React.memo(() => {
     }
   })
 
-  if (sceneExists && lastActiveSceneId !== sceneId) {
-    dispatch(markSceneLastActive({ sceneId, lastActive: Date.now() }))
+  if (sceneExists && lastActiveSceneId !== id) {
+    dispatch(markSceneLastActive({ sceneId: id, lastActive: Date.now() }))
   }
 
   // TODO i18n
@@ -115,7 +115,7 @@ const WorkspaceScene = React.memo(() => {
         )
       }
       {/* TODO render all scenes stacked and update order using the scene tabs. This fixes the flash when creating a new scene. */}
-      {sceneExists && <Scene sceneId={sceneId} />}
+      {sceneExists && <Scene id={id} />}
     </Activity>
   )
 })
