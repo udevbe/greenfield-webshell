@@ -60,7 +60,7 @@ const WorkspaceScene = React.memo(() => {
   })
 
   if (sceneExists && lastActiveSceneId !== id) {
-    dispatch(markSceneLastActive({ sceneId: id, lastActive: Date.now() }))
+    dispatch(markSceneLastActive({ id, lastActive: Date.now() }))
   }
 
   // TODO i18n

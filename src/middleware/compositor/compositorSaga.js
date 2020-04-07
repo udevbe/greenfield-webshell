@@ -332,11 +332,11 @@ function * handleRefreshLocalScene (id) {
 }
 
 function * watchRefreshLocalScene (id) {
-  yield takeLatest(action => (action.type === refreshScene) && (action.payload.id === id), handleRefreshLocalScene, id)
+  yield takeLatest(action => (action.type === `${refreshScene}`) && (action.payload.id === id), handleRefreshLocalScene, id)
 }
 
 function * handleMarkSceneLastActive ({ payload: { id } }) {
-  yield put(updateUserShellScene({ id, lastActive: Date.now() }))
+  yield put(updateUserShellScene({ scene: { id, lastActive: Date.now() } }))
 }
 
 function * watchSceneMarkLastActive () {
@@ -356,13 +356,12 @@ function * handleSceneLifecycle ({ payload: { scene: { type, name }, creationCal
     }
     yield put(createUserShellScene({ scene }))
     yield call(watchRefreshLocalScene, id)
-    yield call(refreshCompositorScene, id)
 
     if (creationCallback) {
       yield call(creationCallback, { id })
     }
 
-    yield take(action => (action.type === deleteUserShellScene) && (action.payload.sceneId === id))
+    yield take(action => (action.type === `${deleteUserShellScene}`) && (action.payload.sceneId === id))
     yield call(deleteCompositorScene, id)
     const newActiveScene = yield select(lastActiveSceneExcludingSelector, id)
     yield put(markSceneLastActive({ id: newActiveScene.id }))

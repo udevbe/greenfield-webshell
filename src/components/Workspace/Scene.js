@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import SceneTabs from './SceneTabs'
 import { makeStyles } from '@material-ui/styles'
-import { refreshScene, } from '../../middleware/compositor/actions'
+import { refreshScene } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -44,7 +44,9 @@ const Scene = React.memo(({ id }) => {
 
     const contentElement = /** @type  {HTMLElement} */contentRef.current
     const sceneElement = document.getElementById(id)
-    const resizeListener = () => dispatch(refreshScene({ id }))
+    const resizeListener = () => {
+      dispatch(refreshScene({ id }))
+    }
 
     if (sceneElement.parentElement !== contentElement) {
       configureSceneElement(sceneElement)

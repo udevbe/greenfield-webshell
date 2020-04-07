@@ -184,9 +184,9 @@ const reducers = {
    * @param {{payload: {grantingUserId: string, remoteSceneId: string}}}action
    */
   notifySceneAccessGrant: (state, action) => {
-    const { grantingUserId, userShellSceneId } = action.payload
-    state.scenes[userShellSceneId].state.access = 'granted'
-    state.scenes[userShellSceneId].state.shared_by = grantingUserId
+    const { grantingUserId, sceneId } = action.payload
+    state.scenes[sceneId].state.access = 'granted'
+    state.scenes[sceneId].state.shared_by = grantingUserId
   },
 
   // TODO refactor?
@@ -195,30 +195,30 @@ const reducers = {
    * @param {{payload: {remoteSceneId: string}}}action
    */
   notifySceneAccessDenied: (state, action) => {
-    const { userShellSceneId } = action.payload
-    state.scenes[userShellSceneId].state.access = 'denied'
-    state.scenes[userShellSceneId].state.shared_by = null
+    const { sceneId } = action.payload
+    state.scenes[sceneId].state.access = 'denied'
+    state.scenes[sceneId].state.shared_by = null
   },
 
   // TODO refactor?
   /**
    * @param {UserShellCompositorState}state
-   * @param {{payload: {userShellSceneId: string, requestingUserId:string}}}action
+   * @param {{payload: {sceneId: string, requestingUserId:string}}}action
    */
   grantSceneAccess: (state, action) => {
-    const { userShellSceneId, requestingUserId } = action.payload
-    const scene = state.scenes[userShellSceneId]
+    const { sceneId, requestingUserId } = action.payload
+    const scene = state.scenes[sceneId]
     scene.state.shared_with.push(requestingUserId)
   },
 
   // TODO refactor?
   /**
    * @param {UserShellCompositorState}state
-   * @param {{payload: {userShellSceneId: string, requestingUserId:string}}}action
+   * @param {{payload: {sceneId: string, requestingUserId:string}}}action
    */
   denySceneAccess: (state, action) => {
-    const { userShellSceneId, requestingUserId } = action.payload
-    const scene = state.scenes[userShellSceneId]
+    const { sceneId, requestingUserId } = action.payload
+    const scene = state.scenes[sceneId]
     if (scene) {
       scene.state.shared_with = scene.state.shared_with.filter(uid => uid !== requestingUserId)
     }
@@ -230,38 +230,28 @@ const reducers = {
    * @param {Action}action
    */
   changeSceneName: (state, action) => {
-    const { userShellSceneId, name } = action.payload
-    state.scenes[userShellSceneId].name = name
+    const { sceneId, name } = action.payload
+    state.scenes[sceneId].name = name
   },
 
   // TODO refactor?
   /**
    * @param {UserShellCompositorState}state
-   * @param {{payload: {userShellSceneId: string, sharing: string}}}action
+   * @param {{payload: {sceneId: string, sharing: string}}}action
    */
   shareScene: (state, action) => {
-    const { userShellSceneId, sharing } = action.payload
-    state.scenes[userShellSceneId].state.sharing = sharing
+    const { sceneId, sharing } = action.payload
+    state.scenes[sceneId].state.sharing = sharing
   },
 
   // TODO refactor?
   /**
    * @param {UserShellCompositorState}state
-   * @param {{payload: {userShellSceneId: string, x: number, y: number}}}action
+   * @param {{payload: {sceneId: string, x: number, y: number}}}action
    */
   setRemoteSceneScaling: (state, action) => {
-    const { userShellSceneId, x, y } = action.payload
-    state.scenes[userShellSceneId].state.scaling = { x, y }
-  },
-
-  // TODO refactor
-  /**
-   * @param {UserShellCompositorState}state
-   * @param {{payload: {userShellSceneId: string, lastActive: number}}}action
-   */
-  markSceneLastActive: (state, action) => {
-    const { userShellSceneId, lastActive } = action.payload
-    Object.values(state.scenes).find(scene => scene.id === userShellSceneId).lastActive = lastActive
+    const { sceneId, x, y } = action.payload
+    state.scenes[sceneId].state.scaling = { x, y }
   },
 
   /**
