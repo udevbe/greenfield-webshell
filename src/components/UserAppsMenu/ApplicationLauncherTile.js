@@ -10,11 +10,11 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export const ApplicationLauncherTile = React.memo(({ appId }) => {
-  useFirebaseConnect([{ path: `/apps/${appId}` }])
-  const app = useSelector(({ firebase }) => {
+export const ApplicationLauncherTile = React.memo(({ id }) => {
+  useFirebaseConnect([{ path: `/apps/${id}` }])
+  const application = useSelector(({ firebase }) => {
     if (firebase.data.apps) {
-      return firebase.data.apps[appId] || null
+      return firebase.data.apps[id] || null
     }
     return null
   })
@@ -22,8 +22,8 @@ export const ApplicationLauncherTile = React.memo(({ appId }) => {
   const classes = useStyles()
   return (
     <Grid item className={classes.root}>
-      {app
-        ? <ApplicationLauncher application={app} appId={appId} />
+      {application
+        ? <ApplicationLauncher application={application} id={id} />
         : <CircularProgress />}
     </Grid>
   )

@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   }
 })
 
-export const ApplicationLauncher = React.memo(({ application, appId }) => {
+export const ApplicationLauncher = React.memo(({ application, id }) => {
   const { icon, title, type, url } = application
   const [appIcon, setAppIcon] = useState(null)
   const dispatch = useDispatch()
@@ -35,13 +35,13 @@ export const ApplicationLauncher = React.memo(({ application, appId }) => {
 
   const onLaunchApplication = () => {
     if (type === 'remote') {
-      dispatch(launchRemoteAppAction(application))
+      dispatch(launchRemoteAppAction({ application, id }))
     } else if (type === 'web') {
       firebase
         .storage()
         .refFromURL(url)
         .getDownloadURL()
-        .then(downloadURL => dispatch(launchWebAppAction({ ...application, downloadURL })))
+        .then(downloadURL => dispatch(launchWebAppAction({ application, downloadURL })))
     }
   }
 
@@ -49,7 +49,7 @@ export const ApplicationLauncher = React.memo(({ application, appId }) => {
   return (
     <div className={classes.root}>
       <CardActionArea onClick={onLaunchApplication}>
-        <Card className={classes.card} key={appId} elevation={3}>
+        <Card className={classes.card} key={id} elevation={3}>
           <CardMedia title={title}>
             <Image src={appIcon || ''} alt={title} />
           </CardMedia>

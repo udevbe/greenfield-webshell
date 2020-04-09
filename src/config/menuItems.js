@@ -136,17 +136,17 @@ export const useMenuItems = handleSignOut => {
         path: '/workspace',
         // TODO show clients instead of surfaces, show surfaces as tabs of active client
         entries: Object.entries(userSurfacesByAppId).length === 0 ? {
-          noRunningApps: {
-            variant: 'infoItem',
-            component:
-          <ListItemText
-            unselectable='on'
-            secondary='Running applications will appear here.'
-            inset
-          />,
-            visible: true
+            noRunningApps: {
+              variant: 'infoItem',
+              component:
+                <ListItemText
+                  unselectable='on'
+                  secondary='Running applications will appear here.'
+                  inset
+                />,
+              visible: true
+            }
           }
-        }
           : Object.entries(userSurfacesByAppId).reduce((nestedMenu, [appId, userSurfaces]) => ({
             ...nestedMenu,
             [appId]: {
@@ -159,7 +159,7 @@ export const useMenuItems = handleSignOut => {
               },
               onClickSecondary: () => {
                 const id = userSurfaces[0].clientId
-                dispatch(deleteClient({ id }))
+                dispatch(deleteClient({ client: { id } }))
               },
               rightIcon: <CloseIcon />
             }

@@ -174,7 +174,7 @@ const reducers = {
    * @param {UserShellCompositorState}state
    * @param {string}id
    */
-  deleteUserShellScene: (state, { payload: { id } }) => {
+  deleteUserShellScene: (state, { payload: { scene: { id } } }) => {
     delete state.scenes[id]
   },
 

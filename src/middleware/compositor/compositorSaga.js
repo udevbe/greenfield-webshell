@@ -1,12 +1,15 @@
 import {
+  activateScene,
   createScene,
   createUserShellCompositor,
   deleteClient,
+  deleteScene,
   launchRemoteAppAction,
   launchWebAppAction,
   markSceneLastActive,
   refreshScene,
-  requestSurfaceActive
+  requestSurfaceActive,
+  updateScene
 } from './actions'
 import { all, call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { buffers, eventChannel } from 'redux-saga'
@@ -44,6 +47,7 @@ import {
   updateUserShellSurface
 } from '../../store/compositor'
 import { showNotification } from '../../store/notification'
+import { push } from 'connected-react-router'
 
 const subscribeToCompositorApi = eventName => eventChannel(emitter => {
   compositorApi[eventName] = event => emitter(event)
@@ -101,14 +105,14 @@ const lastActiveSceneExcludingSelector = (state, sceneId) => lastActiveScene(Obj
 const userSurfacesFromClientSelector = (state, clientId) => Object.values(state.compositor.surfaces).filter(userSurface => userSurface.clientId === clientId)
 
 /**
- * @param {string} appId
  * @param {string} url
  * @param {string} title
+ * @param {string} id
  * @return {Generator<*, void, ?>}
  */
-function * handleLaunchRemoteApp ({ payload: { appId, url, title } }) {
+function * handleLaunchRemoteApp ({ payload: { application: { url, title }, id } }) {
   try {
-    yield call(launchRemoteApp, appId, url, title)
+    yield call(launchRemoteApp, id, url, title)
   } catch (error) {
     yield put(showNotification({
       variant: 'error',
@@ -117,7 +121,7 @@ function * handleLaunchRemoteApp ({ payload: { appId, url, title } }) {
   }
 }
 
-function * handleLaunchWebApp ({ payload: { title, downloadURL } }) {
+function * handleLaunchWebApp ({ payload: { application: { title }, downloadURL } }) {
   try {
     yield call(launchWebApp, downloadURL)
   } catch (error) {
@@ -343,7 +347,7 @@ function * watchSceneMarkLastActive () {
   yield takeLatest(markSceneLastActive, handleMarkSceneLastActive)
 }
 
-function * handleSceneLifecycle ({ payload: { scene: { type, name }, creationCallback } }) {
+function * handleSceneLifecycle ({ payload: { scene: { type, name } } }) {
   if (type === 'local') {
     const id = yield call(createCompositorScene, type)
     const scene = {
@@ -355,21 +359,43 @@ function * handleSceneLifecycle ({ payload: { scene: { type, name }, creationCal
       state: { sharing: 'private', shared_with: [] }
     }
     yield put(createUserShellScene({ scene }))
-    yield call(watchRefreshLocalScene, id)
+    yield fork(watchRefreshLocalScene, id)
+    yield put(activateScene({ scene: { id } }))
 
-    if (creationCallback) {
-      yield call(creationCallback, { id })
-    }
-
-    yield take(action => (action.type === `${deleteUserShellScene}`) && (action.payload.sceneId === id))
-    yield call(deleteCompositorScene, id)
+    yield take(action => (action.type === `${deleteUserShellScene}`) && (action.payload.scene.id === id))
     const newActiveScene = yield select(lastActiveSceneExcludingSelector, id)
-    yield put(markSceneLastActive({ id: newActiveScene.id }))
+    yield put(activateScene({ scene: { id: newActiveScene.id } }))
+    yield call(deleteCompositorScene, id)
   }
 }
 
 function * watchSceneCreation () {
   yield takeEvery(createScene, handleSceneLifecycle)
+}
+
+function * handleActivateScene ({ payload: { scene: { id } } }) {
+  yield put(markSceneLastActive({ id }))
+  yield put(push(`/workspace/${id}`))
+}
+
+function * watchSceneActivation () {
+  yield takeLatest(activateScene, handleActivateScene)
+}
+
+function * handleDeleteScene ({ payload: { scene: { id } } }) {
+  yield put(deleteUserShellScene({ scene: { id } }))
+}
+
+function * watchSceneDeletion () {
+  yield takeEvery(deleteScene, handleDeleteScene)
+}
+
+function * handleSceneUpdate ({ payload: { scene } }) {
+  yield put(updateUserShellScene({ scene }))
+}
+
+function * watchSceneUpdate () {
+  yield takeEvery(updateScene, handleSceneUpdate)
 }
 
 function * handleRequestSurfaceActive ({ payload: { key } }) {
@@ -380,7 +406,7 @@ function * watchRequestUserSurfaceActive () {
   yield takeLatest(requestSurfaceActive, handleRequestSurfaceActive)
 }
 
-function * handleDeleteClient ({ payload: { id } }) {
+function * handleDeleteClient ({ payload: { client: { id } } }) {
   yield call(deleteCompositorClient, id)
 }
 
@@ -451,7 +477,10 @@ export default function * rootSaga () {
   yield fork(watchClientDestruction)
 
   yield fork(watchSceneCreation)
+  yield fork(watchSceneDeletion)
   yield fork(watchSceneMarkLastActive)
+  yield fork(watchSceneUpdate)
+  yield fork(watchSceneActivation)
 
   yield fork(watchTerminateClient)
 

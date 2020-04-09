@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { shareScene } from '../../store/compositor'
 import Typography from '@material-ui/core/Typography'
 
-const ShareScene = ({ open, handleClose, sceneId }) => {
+const ShareScene = ({ open, handleClose, id }) => {
   const dispatch = useDispatch()
-  const isPublic = useSelector(({ compositor }) => compositor.scenes[sceneId].state.sharing === 'public')
+  const isPublic = useSelector(({ compositor }) => compositor.scenes[id].state.sharing === 'public')
   const peerId = useSelector(({ compositor }) => compositor.peerId)
 
-  const publicURL = `${window.location.protocol}//${window.location.host}/workspace/remote/${sceneId}/${peerId}`
+  const publicURL = `${window.location.protocol}//${window.location.host}/workspace/remote/${id}/${peerId}`
   const publicURLStyle = {
     visibility: isPublic ? 'visible' : 'hidden',
     opacity: isPublic ? '1' : '0',
@@ -31,7 +31,7 @@ const ShareScene = ({ open, handleClose, sceneId }) => {
         <Switch
           checked={isPublic}
           onChange={event => dispatch(shareScene({
-            sceneId,
+            sceneId: id,
             sharing: event.target.checked ? 'public' : 'private'
           }))}
           value='public'

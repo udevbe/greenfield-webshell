@@ -5,6 +5,8 @@ export const createUserShellCompositor = createAction('greenfield/compositor/cre
 export const createScene = createAction('greenfield/compositor/createScene')
 export const refreshScene = createAction('greenfield/compositor/refreshScene')
 export const markSceneLastActive = createAction('greenfield/compositor/markSceneLastActive')
+export const activateScene = createAction(('greenfield/compositor/activateScene'))
+export const updateScene = createAction('greenfield/compositor/updateScene')
 export const deleteScene = createAction('greenfield/compositor/deleteScene')
 
 export const requestSurfaceActive = createAction('greenfield/compositor/requestUserSurfaceActive')

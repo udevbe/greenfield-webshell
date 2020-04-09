@@ -9,9 +9,8 @@ import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
 import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
-import { push } from 'connected-react-router'
 import ShareScene from './ShareScene'
-import { createScene, deleteScene } from '../../middleware/compositor/actions'
+import { activateScene, createScene, deleteScene } from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,20 +48,11 @@ const SceneTabs = React.memo(({ id }) => {
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
-  const addScene = () => {
-    dispatch(createScene({
-      scene: { name: 'new scene', type: 'local' },
-      creationCallback: ({ id }) =>
-        dispatch(push(`/workspace/${id}`))
-    }))
-  }
-  const removeScene = () => {
-    const newActiveSceneId = dispatch(deleteScene({ id }))
-    dispatch(push(`/workspace/${newActiveSceneId}`))
-  }
+  const addScene = () => dispatch(createScene({ scene: { name: 'new scene', type: 'local' } }))
+  const removeScene = () => dispatch(deleteScene({ scene: { id } }))
   const editScene = () => setEditSceneOpen(true)
   const shareScene = () => setShareSceneOpen(true)
-  const activateScene = id => dispatch(push(`/workspace/${id}`))
+  const makeSceneActive = id => dispatch(activateScene({ scene: { id } }))
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,
@@ -74,8 +64,8 @@ const SceneTabs = React.memo(({ id }) => {
   const classes = useStyles()
   return (
     <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
-      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} sceneId={id} />
-      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} sceneId={id} />
+      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} id={id} />
+      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} id={id} />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}
@@ -91,7 +81,7 @@ const SceneTabs = React.memo(({ id }) => {
                 key={sceneId}
                 label={scene.name}
                 value={sceneId}
-                onClick={() => activateScene(sceneId)}
+                onClick={() => makeSceneActive(sceneId)}
               />)
           }
         </Tabs>

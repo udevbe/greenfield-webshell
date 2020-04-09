@@ -68,17 +68,16 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
                   >
                     {/* TODO intl */}
                     No applications here. Visit the <Link
-                    component={WebstoreLink} to='/webstore'
-                    underline='always'
-                    color='inherit'
-                  >Webstore
+                      component={WebstoreLink} to='/webstore' underline='always'
+                      color='inherit'
+                    >Webstore
                     </Link> and add some!
                   </Typography>
                 </Box>
               )
-              : <Grid container spacing={2} alignItems='stretch'>{userAppIds.map(appId =>
+              : <Grid container spacing={2} alignItems='stretch'>{userAppIds.map(id =>
                 <ApplicationLauncherTile
-                  key={appId} appId={appId}
+                  key={id} id={id}
                 />)}
               </Grid>}
         </Container>
