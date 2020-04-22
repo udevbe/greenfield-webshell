@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     left: 0,
     right: 0,
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   root: {
     flexGrow: 1,
@@ -21,8 +21,8 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
-    width: '100%'
-  }
+    width: '100%',
+  },
 })
 
 export const AppLayout = React.memo(() => {

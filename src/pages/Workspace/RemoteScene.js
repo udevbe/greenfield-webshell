@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { Button, DialogActions } from '@material-ui/core'
-import { requestSceneAccessAction } from '../../middleware/compositor/actions'
+import { requestSceneAccess } from '../../middleware/compositor/actions'
 
 const RemoteScene = () => {
   const { id, peerId } = useParams()
@@ -15,28 +15,32 @@ const RemoteScene = () => {
 
   if (confirmation) {
     if (openScene) {
-      dispatch(requestSceneAccessAction({ sceneId: id, peerId }))
+      dispatch(requestSceneAccess({ scene: { id }, peer: { id: peerId } }))
       return <Redirect to={`/workspace/${id}`} push />
     } else {
-      return <Redirect to='/' push />
+      return <Redirect to="/" push />
     }
   } else {
     // TODO i18n
     return (
-      <Dialog aria-labelledby='open-remote-scene-dialog-title' open>
-        <DialogTitle id='open-remote-scene-dialog-title'>Open Remote Scene?</DialogTitle>
+      <Dialog aria-labelledby="open-remote-scene-dialog-title" open>
+        <DialogTitle id="open-remote-scene-dialog-title">
+          Open Remote Scene?
+        </DialogTitle>
         <DialogActions>
-          <Button onClick={() => {
-            setConfirmation(true)
-            setOpenScene(true)
-          }}
+          <Button
+            onClick={() => {
+              setConfirmation(true)
+              setOpenScene(true)
+            }}
           >
             Open
           </Button>
-          <Button onClick={() => {
-            setConfirmation(true)
-            setOpenScene(false)
-          }}
+          <Button
+            onClick={() => {
+              setConfirmation(true)
+              setOpenScene(false)
+            }}
           >
             Cancel
           </Button>

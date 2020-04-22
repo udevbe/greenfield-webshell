@@ -10,11 +10,18 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
-import { queryAddAppToUser, queryRemoveAppFromUser } from '../../database/queries'
+import {
+  queryAddAppToUser,
+  queryRemoveAppFromUser,
+} from '../../database/queries'
 import { useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 import { useUserId } from '../../utils/auth'
 import { useUserAppLinkId } from '../../database/hooks'
-import { useNotifyError, useNotifyInfo, useNotifySuccess } from '../../utils/notify'
+import {
+  useNotifyError,
+  useNotifyInfo,
+  useNotifySuccess,
+} from '../../utils/notify'
 import CardMedia from '@material-ui/core/CardMedia'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import Image from '../../components/Image'
@@ -28,8 +35,8 @@ import { push } from 'connected-react-router'
 
 const useStyles = makeStyles({
   card: {
-    margin: 20
-  }
+    margin: 20,
+  },
 })
 
 const AppDetails = React.memo(() => {
@@ -69,27 +76,35 @@ const AppDetails = React.memo(() => {
   const notifyError = useNotifyError()
 
   if (appIconURL) {
-    firebase.storage().refFromURL(appIconURL).getDownloadURL().then(iconURL => setIcon(iconURL))
+    firebase
+      .storage()
+      .refFromURL(appIconURL)
+      .getDownloadURL()
+      .then((iconURL) => setIcon(iconURL))
   }
 
   if (appAboutURL) {
-    fetchAppStorageProperty(firebase, appAboutURL).then(aboutText => {
-      setAboutTxt(aboutText)
-    }).catch(error => {
-      // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
-      switch (error.code) {
-        case 'storage/object-not-found':
-          notifyError(`${appTitle} about text could not be found on server.`)
-          break
-        case 'storage/unauthorized':
-          notifyError(`Not authorized to read about ${appTitle}.`)
-          break
-        case 'storage/unknown':
-        default:
-          notifyError(`${appTitle} failed to retrieve about text. ${error.message}`)
-          break
-      }
-    })
+    fetchAppStorageProperty(firebase, appAboutURL)
+      .then((aboutText) => {
+        setAboutTxt(aboutText)
+      })
+      .catch((error) => {
+        // TODO A full list of error codes is available at https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/object-not-found':
+            notifyError(`${appTitle} about text could not be found on server.`)
+            break
+          case 'storage/unauthorized':
+            notifyError(`Not authorized to read about ${appTitle}.`)
+            break
+          case 'storage/unknown':
+          default:
+            notifyError(
+              `${appTitle} failed to retrieve about text. ${error.message}`
+            )
+            break
+        }
+      })
   }
 
   const removeApp = async () => {
@@ -117,8 +132,9 @@ const AppDetails = React.memo(() => {
   }
 
   const goToWebStore = () => dispatch(push('/webstore'))
-  const link = React.forwardRef((props, ref) =>
-    <RouterLink innerRef={ref} {...props} />)
+  const link = React.forwardRef((props, ref) => (
+    <RouterLink innerRef={ref} {...props} />
+  ))
   const classes = useStyles()
   // TODO i18n
   return (
@@ -127,68 +143,74 @@ const AppDetails = React.memo(() => {
       appBarContent={
         <>
           <IconButton onClick={goToWebStore}>
-            <ArrowBackIcon fontSize='large' />
+            <ArrowBackIcon fontSize="large" />
           </IconButton>
-          <Breadcrumbs aria-label='breadcrumb'>
-            <Link underline='hover' color='inherit' component={link} to='/webstore'>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="inherit"
+              component={link}
+              to="/webstore"
+            >
               Web Store
             </Link>
-            <Typography color='textPrimary'>
-              {appid}
-            </Typography>
+            <Typography color="textPrimary">{appid}</Typography>
           </Breadcrumbs>
         </>
       }
       style={{ maxHeight: '100%' }}
       isLoading={appTitle === null}
     >
-      {
-        appTitle &&
-          <Grid
-            container
-            direction='column'
-            alignItems='center'
-            justify='center'
-            style={{ minHeight: '90vh' }}
-          >
-            <Grid item xs={12}>
-              <Card className={classes.card} elevation={3}>
-                <CardMedia style={{
-                  maxWidth: 448
+      {appTitle && (
+        <Grid
+          container
+          direction="column"
+          alignItems="center"
+          justify="center"
+          style={{ minHeight: '90vh' }}
+        >
+          <Grid item xs={12}>
+            <Card className={classes.card} elevation={3}>
+              <CardMedia
+                style={{
+                  maxWidth: 448,
                 }}
-                >
-                  <Image
-                    color='rgba(0,0,0,0)'
-                    src={icon}
-                    alt={appTitle}
-                  />
-                </CardMedia>
-                <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom variant='h5' align='center'>
-                    {appTitle}
-                  </Typography>
-                  {
-                    aboutTxt ? <Markdown>{aboutTxt}</Markdown> : <> <Skeleton /> <Skeleton /> <Skeleton /> </>
-                  }
-                </CardContent>
-                <Divider />
+              >
+                <Image color="rgba(0,0,0,0)" src={icon} alt={appTitle} />
+              </CardMedia>
+              <CardContent className={classes.cardContent}>
+                <Typography gutterBottom variant="h5" align="center">
+                  {appTitle}
+                </Typography>
+                {aboutTxt ? (
+                  <Markdown>{aboutTxt}</Markdown>
+                ) : (
+                  <>
+                    {' '}
+                    <Skeleton /> <Skeleton /> <Skeleton />{' '}
+                  </>
+                )}
+              </CardContent>
+              <Divider />
 
-                <CardActions>
-                  <Button
-                    disabled={addAppBusy}
-                    size='large'
-                    color='primary'
-                    onClick={() => { userAppLinkId ? removeApp() : addApp() }}
-                    variant='contained'
-                    fullWidth
-                  >
-                    {userAppLinkId ? 'Remove' : 'Add'}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
+              <CardActions>
+                <Button
+                  disabled={addAppBusy}
+                  size="large"
+                  color="primary"
+                  onClick={() => {
+                    userAppLinkId ? removeApp() : addApp()
+                  }}
+                  variant="contained"
+                  fullWidth
+                >
+                  {userAppLinkId ? 'Remove' : 'Add'}
+                </Button>
+              </CardActions>
+            </Card>
           </Grid>
-      }
+        </Grid>
+      )}
     </Activity>
   )
 })

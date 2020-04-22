@@ -29,21 +29,21 @@ import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 import { goBack, push } from 'connected-react-router'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   tabs: {
     flex: 1,
-    width: '100%'
+    width: '100%',
   },
   form: {
     backgroundColor: theme.palette.background.default,
     margin: 15,
     display: 'flex',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 }))
 
 const emptyValues = { name: '', description: '' }
@@ -63,9 +63,9 @@ export const Role = React.memo(() => {
 
   useEffect(() => {
     if (!values.name || values.name === '') {
-      setErrors(errors => ({ ...errors, displayName: 'Required' }))
+      setErrors((errors) => ({ ...errors, displayName: 'Required' }))
     } else {
-      setErrors(errors => {
+      setErrors((errors) => {
         const { displayName, ...noDisplayNameErrors } = errors
         return noDisplayNameErrors
       })
@@ -73,20 +73,29 @@ export const Role = React.memo(() => {
   }, [values.name])
 
   useFirebaseConnect([{ path: `roles/${uid}` }])
-  const role = useSelector(({ firebase }) => firebase.data.roles ? (firebase.data.roles[uid] || emptyValues) : emptyValues)
+  const role = useSelector(({ firebase }) =>
+    firebase.data.roles ? firebase.data.roles[uid] || emptyValues : emptyValues
+  )
   useEffect(() => setValues(role), [role])
 
-  const clean = obj => {
-    Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
+  const clean = (obj) => {
+    Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key])
     return obj
   }
 
-  const submit = () => firebase.database().ref(`roles/${uid}`).update(clean(values)).then(() => dispatch(push('/roles')))
-  const handleTabActive = (e, value) => dispatch(push(`/roles/edit/${uid}/${value}`))
-  const handleValueChange = (name, value) => setValues({ ...values, [name]: value })
+  const submit = () =>
+    firebase
+      .database()
+      .ref(`roles/${uid}`)
+      .update(clean(values))
+      .then(() => dispatch(push('/roles')))
+  const handleTabActive = (e, value) =>
+    dispatch(push(`/roles/edit/${uid}/${value}`))
+  const handleValueChange = (name, value) =>
+    setValues({ ...values, [name]: value })
 
   useFirebaseConnect([{ path: 'role_grants' }])
-  const roleGrants = useSelector(state => state.firebase.ordered.role_grants)
+  const roleGrants = useSelector((state) => state.firebase.ordered.role_grants)
 
   const handleClose = () => dispatch(setDialogIsOpen('delete_role', false))
 
@@ -94,7 +103,7 @@ export const Role = React.memo(() => {
     if (uid) {
       Promise.all([
         firebase.database().ref().child(`/role_grants/${uid}`).remove(),
-        firebase.database().ref().child(`/roles/${uid}`).remove()
+        firebase.database().ref().child(`/roles/${uid}`).remove(),
       ]).then(() => {
         handleClose()
         dispatch(goBack())
@@ -113,21 +122,22 @@ export const Role = React.memo(() => {
         <div>
           {editType === 'main' && (
             <IconButton
-              color='inherit'
+              color="inherit"
               disabled={!canSave()}
-              aria-label='open drawer'
+              aria-label="open drawer"
               onClick={submit}
             >
-              <Save className='material-icons' />
+              <Save className="material-icons" />
             </IconButton>
           )}
 
           {editType === 'main' && (
             <IconButton
-              color='inherit' aria-label='open drawer'
+              color="inherit"
+              aria-label="open drawer"
               onClick={() => dispatch(setDialogIsOpen('delete_role', true))}
             >
-              <Delete className='material-icons' />
+              <Delete className="material-icons" />
             </IconButton>
           )}
         </div>
@@ -137,70 +147,106 @@ export const Role = React.memo(() => {
     >
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
-          <AppBar position='static'>
-            <Tabs value={editType} onChange={handleTabActive} fullWidth centered>
-              <Tab value='main' icon={<AccountBox className='material-icons' />} />
-              <Tab value='grants' icon={<Lock className='material-icons' />} />
+          <AppBar position="static">
+            <Tabs
+              value={editType}
+              onChange={handleTabActive}
+              fullWidth
+              centered
+            >
+              <Tab
+                value="main"
+                icon={<AccountBox className="material-icons" />}
+              />
+              <Tab value="grants" icon={<Lock className="material-icons" />} />
             </Tabs>
           </AppBar>
 
           {editType === 'main' && (
             <div className={classes.form}>
-              <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
+              <div
+                style={{
+                  margin: 15,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <FormControl
                   className={classNames(classes.margin, classes.textField)}
                   error={!!errors.name}
                 >
-                  <InputLabel htmlFor='name'>{intl.formatMessage({ id: 'name_label' })}</InputLabel>
+                  <InputLabel htmlFor="name">
+                    {intl.formatMessage({
+                      id: 'name_label',
+                    })}
+                  </InputLabel>
                   <Input
-                    id='name'
+                    id="name"
                     fullWidth
                     value={values.name}
-                    placeholder={intl.formatMessage({ id: 'name_hint' })}
-                    onChange={e => handleValueChange('name', e.target.value)}
+                    placeholder={intl.formatMessage({
+                      id: 'name_hint',
+                    })}
+                    onChange={(e) => handleValueChange('name', e.target.value)}
                   />
                   {errors.displayName && (
-                    <FormHelperText id='name-helper-text'>{errors.displayName}</FormHelperText>
+                    <FormHelperText id="name-helper-text">
+                      {errors.displayName}
+                    </FormHelperText>
                   )}
                 </FormControl>
                 <br />
-                <FormControl className={classNames(classes.margin, classes.textField)}>
-                  <InputLabel htmlFor='description'>
-                    {intl.formatMessage({ id: 'description_label' })}
+                <FormControl
+                  className={classNames(classes.margin, classes.textField)}
+                >
+                  <InputLabel htmlFor="description">
+                    {intl.formatMessage({
+                      id: 'description_label',
+                    })}
                   </InputLabel>
                   <Input
-                    id='description'
+                    id="description"
                     fullWidth
                     multiline
                     value={values.description}
-                    placeholder={intl.formatMessage({ id: 'description_hint' })}
-                    onChange={e => handleValueChange('description', e.target.value)}
+                    placeholder={intl.formatMessage({
+                      id: 'description_hint',
+                    })}
+                    onChange={(e) =>
+                      handleValueChange('description', e.target.value)
+                    }
                   />
                 </FormControl>
               </div>
             </div>
           )}
-          {editType === 'grants' && isLoaded(roleGrants) && <RoleGrants roleGrants={roleGrants} />}
+          {editType === 'grants' && isLoaded(roleGrants) && (
+            <RoleGrants roleGrants={roleGrants} />
+          )}
         </div>
       </Scrollbar>
 
       <Dialog
         open={dialogDeleteRole}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id='alert-dialog-title'>{intl.formatMessage({ id: 'delete_role_dialog_title' })}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {intl.formatMessage({ id: 'delete_role_dialog_title' })}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
-            {intl.formatMessage({ id: 'delete_role_dialog_message' })}
+          <DialogContentText id="alert-dialog-description">
+            {intl.formatMessage({
+              id: 'delete_role_dialog_message',
+            })}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
+          <Button onClick={handleClose} color="primary">
             {intl.formatMessage({ id: 'cancel' })}
           </Button>
-          <Button onClick={handleDelete} color='secondary'>
+          <Button onClick={handleDelete} color="secondary">
             {intl.formatMessage({ id: 'delete' })}
           </Button>
         </DialogActions>

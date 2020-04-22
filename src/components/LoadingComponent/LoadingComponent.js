@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.palette.background.default,
     height: '100vh',
@@ -10,11 +10,11 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   loader: {
-    height: '80px'
-  }
+    height: '80px',
+  },
 }))
 
 export const LoadingComponent = () => {

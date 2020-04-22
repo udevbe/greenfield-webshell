@@ -18,15 +18,15 @@ import { makeStyles } from '@material-ui/core/styles'
 import { push } from 'connected-react-router'
 import { useDispatch } from 'react-redux'
 
-const useWebAppTileStyles = makeStyles(theme => ({
+const useWebAppTileStyles = makeStyles((theme) => ({
   card: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    position: 'relative'
+    position: 'relative',
   },
   cardContent: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   overlay: {
     position: 'absolute',
@@ -38,8 +38,8 @@ const useWebAppTileStyles = makeStyles(theme => ({
     backgroundColor: 'rgba(0,0,0,0.75)',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 }))
 
 const WebAppTile = React.memo(({ appId, app, index }) => {
@@ -52,9 +52,11 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
   const notifyInfo = useNotifyInfo()
 
   if (app && icon === null) {
-    firebase.storage().refFromURL(app.icon).getDownloadURL().then(iconURL =>
-      setIcon(iconURL)
-    )
+    firebase
+      .storage()
+      .refFromURL(app.icon)
+      .getDownloadURL()
+      .then((iconURL) => setIcon(iconURL))
   }
 
   const removeApp = async () => {
@@ -64,51 +66,55 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
     notifyInfo('Application removed')
   }
 
-  const goToAboutApp = () => { dispatch(push(`/webstore/${appId}`)) }
+  const goToAboutApp = () => {
+    dispatch(push(`/webstore/${appId}`))
+  }
 
   const classes = useWebAppTileStyles()
   // TODO i18n
   return (
-    <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
+    <Grow
+      in
+      appear
+      style={{ transformOrigin: '0 0 0' }}
+      timeout={{ enter: index * 100 }}
+    >
       <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
         <Card className={classes.card} elevation={5}>
-          <CardMedia
-            title={app.title}
-          >
+          <CardMedia title={app.title}>
             <Image src={icon} alt={app.title} />
           </CardMedia>
           <CardContent className={classes.cardContent}>
-            <Typography gutterBottom variant='h6' align='center'>
+            <Typography gutterBottom variant="h6" align="center">
               {app.title}
             </Typography>
-            <Typography gutterBottom vaiant='caption' align='center' />
+            <Typography gutterBottom vaiant="caption" align="center" />
           </CardContent>
           <CardActions>
-            {
-              userAppLinkIdLoading
-                ? <CircularProgress />
-                : <>
+            {userAppLinkIdLoading ? (
+              <CircularProgress />
+            ) : (
+              <>
+                <Button
+                  size="large"
+                  color="primary"
+                  onClick={() => goToAboutApp()}
+                  variant="contained"
+                >
+                  Details
+                </Button>
+                {userAppLinkId && (
                   <Button
-                    size='large'
-                    color='primary'
-                    onClick={() => goToAboutApp()}
-                    variant='contained'
+                    size="large"
+                    color="primary"
+                    onClick={removeApp}
+                    variant="contained"
                   >
-                    Details
+                    Remove
                   </Button>
-                  {
-                    userAppLinkId &&
-                      <Button
-                        size='large'
-                        color='primary'
-                        onClick={removeApp}
-                        variant='contained'
-                      >
-                        Remove
-                      </Button>
-                  }
-                </>
-            }
+                )}
+              </>
+            )}
           </CardActions>
         </Card>
       </Grid>

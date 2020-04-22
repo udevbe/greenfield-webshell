@@ -2,7 +2,7 @@ import * as types from './types'
 
 const initialState = {
   themeId: 'default',
-  isNightModeOn: false
+  isNightModeOn: false,
 }
 
 const themeSource = (state = initialState, action) => {

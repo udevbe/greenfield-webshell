@@ -25,9 +25,9 @@ const Users = React.memo(() => {
   const dispatch = useDispatch()
   const intl = useIntl()
   useFirebaseConnect([{ path: '/users' }])
-  const users = useSelector(state => state.firebase.ordered.users)
+  const users = useSelector((state) => state.firebase.ordered.users)
 
-  const getProviderIcon = provider => {
+  const getProviderIcon = (provider) => {
     const color = 'primary'
 
     switch (provider.providerId) {
@@ -44,15 +44,18 @@ const Users = React.memo(() => {
     const userEntry = users[index]
     const user = userEntry.value
     const userKey = userEntry.key
-    const handleRowClick = () => dispatch(push(isSelecting ? `/${isSelecting}/${userKey}` : `/users/edit/${userKey}/profile`))
+    const handleRowClick = () =>
+      dispatch(
+        push(
+          isSelecting
+            ? `/${isSelecting}/${userKey}`
+            : `/users/edit/${userKey}/profile`
+        )
+      )
 
     return (
       <div key={key}>
-        <ListItem
-          key={key}
-          onClick={handleRowClick}
-          id={key}
-        >
+        <ListItem key={key} onClick={handleRowClick} id={key}>
           <AltIconAvatar src={user.photoURL} icon={<Person />} />
           <ListItemText
             primary={user.displayName}
@@ -64,11 +67,13 @@ const Users = React.memo(() => {
           />
           <Toolbar>
             {user.providerData &&
-            user.providerData.map((p, i) => <div key={i}>{getProviderIcon(p)}</div>)}
+              user.providerData.map((p, i) => (
+                <div key={i}>{getProviderIcon(p)}</div>
+              ))}
           </Toolbar>
           <OfflinePin color={user.connections ? 'primary' : 'disabled'} />
         </ListItem>
-        <Divider variant='inset' />
+        <Divider variant="inset" />
       </div>
     )
   }
@@ -80,8 +85,12 @@ const Users = React.memo(() => {
     >
       <div style={{ height: '100%', overflow: 'none' }}>
         <Scrollbar>
-          <List component='div'>
-            <ReactList itemRenderer={renderItem} length={users ? users.length : 0} type='simple' />
+          <List component="div">
+            <ReactList
+              itemRenderer={renderItem}
+              length={users ? users.length : 0}
+              type="simple"
+            />
           </List>
         </Scrollbar>
       </div>

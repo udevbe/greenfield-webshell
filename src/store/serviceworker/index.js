@@ -10,7 +10,12 @@ import { createSlice } from '@reduxjs/toolkit'
 /**
  * @type {ServiceWorkerState}
  */
-const initialState = { registered: false, canUpdate: false, registration: null, registrationUpdate: null }
+const initialState = {
+  registered: false,
+  canUpdate: false,
+  registration: null,
+  registrationUpdate: null,
+}
 
 const reducers = {
   /**
@@ -28,13 +33,13 @@ const reducers = {
   updateAvailable: (state, action) => {
     state.canUpdate = true
     state.registrationUpdate = action.payload
-  }
+  },
 }
 
 const slice = createSlice({
   reducers,
   initialState,
-  name: 'greenfield/serviceworker'
+  name: 'greenfield/serviceworker',
 })
 
 export const { registrationSuccess, updateAvailable } = slice.actions

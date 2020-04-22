@@ -7,14 +7,16 @@ import CloseIcon from '@material-ui/icons/Close'
 
 const UpdateNotification = React.memo(() => {
   const canUpdate = useSelector(({ serviceWorker }) => serviceWorker.canUpdate)
-  const registration = useSelector(({ serviceWorker }) => serviceWorker.registrationUpdate)
+  const registration = useSelector(
+    ({ serviceWorker }) => serviceWorker.registrationUpdate
+  )
 
   const [closed, setClosed] = useState(false)
 
   const doUpdate = () => {
     const registrationWaiting = registration.waiting
 
-    registrationWaiting.addEventListener('statechange', e => {
+    registrationWaiting.addEventListener('statechange', (e) => {
       if (e.target.state === 'activated') {
         window.location.reload()
       }
@@ -22,22 +24,31 @@ const UpdateNotification = React.memo(() => {
     registrationWaiting.postMessage({ type: 'SKIP_WAITING' })
   }
 
-  const handleClose = () => { setClosed(true) }
+  const handleClose = () => {
+    setClosed(true)
+  }
 
   // TODO i18n
   return canUpdate ? (
     <Snackbar
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'right'
+        horizontal: 'right',
       }}
       open={canUpdate && !closed}
-      message='A new version is available.'
+      message="A new version is available."
       action={
         <>
-          <Button color='secondary' size='small' onClick={doUpdate}>Refresh</Button>
-          <IconButton size='medium' aria-label='close' color='inherit' onClick={handleClose}>
-            <CloseIcon fontSize='default' />
+          <Button color="secondary" size="small" onClick={doUpdate}>
+            Refresh
+          </Button>
+          <IconButton
+            size="medium"
+            aria-label="close"
+            color="inherit"
+            onClick={handleClose}
+          >
+            <CloseIcon fontSize="default" />
           </IconButton>
         </>
       }

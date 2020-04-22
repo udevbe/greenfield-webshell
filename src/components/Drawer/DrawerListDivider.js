@@ -6,6 +6,8 @@ import React from 'react'
  * @return {React.Component}
  * @constructor
  */
-const DrawerListDivider = React.memo(({ divider }) => <Divider inset={divider.inset} style={divider.style} />)
+const DrawerListDivider = React.memo(({ divider }) => (
+  <Divider inset={divider.inset} style={divider.style} />
+))
 
 export default DrawerListDivider

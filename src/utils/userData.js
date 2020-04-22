@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
  * @param {function():void}[equalityFn]
  * @return {string}
  */
-export function useUserProp (uid, propName, equalityFn) {
+export function useUserProp(uid, propName, equalityFn) {
   useFirebaseConnect([{ path: `/users/${uid}/${propName}` }])
   return useSelector(({ firebase }) => {
     if (firebase.data.users && firebase.data.users[uid]) {
@@ -23,6 +23,8 @@ export function useUserProp (uid, propName, equalityFn) {
  * @param {'displayName'|'photoURL'|'providerData'}propName
  * @return {boolean}
  */
-export function useUserPropLoading (uid, propName) {
-  return useSelector(state => state.firebase.requesting[`users/${uid}/${propName}`])
+export function useUserPropLoading(uid, propName) {
+  return useSelector(
+    (state) => state.firebase.requesting[`users/${uid}/${propName}`]
+  )
 }

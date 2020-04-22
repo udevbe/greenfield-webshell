@@ -18,7 +18,10 @@ export const DrawerContent = React.memo(() => {
   const firebase = useFirebase()
   const uid = useUserId()
   const dispatch = useDispatch()
-  const drawerPath = useSelector(({ drawer: { drawerPath } }) => drawerPath, shallowEqual)
+  const drawerPath = useSelector(
+    ({ drawer: { drawerPath } }) => drawerPath,
+    shallowEqual
+  )
 
   const handleSignOut = async () => {
     await firebase.ref(`/users/${uid}/connections`).remove()
@@ -28,48 +31,49 @@ export const DrawerContent = React.memo(() => {
   }
   const rootMenuItem = appConfig.useMenuItems(handleSignOut)
 
-  const { selectedMenuItem, listItem } = drawerPath.reduce(({ selectedMenuItem }, drawerPathSegment) => {
-    const selectedItem = selectedMenuItem.entries[drawerPathSegment]
-    return {
-      selectedMenuItem: selectedItem,
-      listItem: selectedItem.variant === 'listItem' ? selectedItem : selectedMenuItem
-    }
-  }, { selectedMenuItem: rootMenuItem, listItem: rootMenuItem })
+  const { selectedMenuItem, listItem } = drawerPath.reduce(
+    ({ selectedMenuItem }, drawerPathSegment) => {
+      const selectedItem = selectedMenuItem.entries[drawerPathSegment]
+      return {
+        selectedMenuItem: selectedItem,
+        listItem:
+          selectedItem.variant === 'listItem' ? selectedItem : selectedMenuItem,
+      }
+    },
+    { selectedMenuItem: rootMenuItem, listItem: rootMenuItem }
+  )
 
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%'
+        height: '100%',
       }}
     >
       <Scrollbar>
         <List>
-          {
-            listItem !== rootMenuItem &&
-              <div>
-                <ListItem
-                  button
-                  onClick={() => dispatch(popDrawerPath())}
-                >
-                  <ListItemIcon>
-                    <ArrowBack />
-                  </ListItemIcon>
-                  <ListItemText primary={listItem.text} />
-                </ListItem>
-                <Divider />
-              </div>
-          }
-          {
-            Object.entries(listItem.entries).filter(([_, entry]) => entry.visible !== false).map(([key, entry]) =>
+          {listItem !== rootMenuItem && (
+            <div>
+              <ListItem button onClick={() => dispatch(popDrawerPath())}>
+                <ListItemIcon>
+                  <ArrowBack />
+                </ListItemIcon>
+                <ListItemText primary={listItem.text} />
+              </ListItem>
+              <Divider />
+            </div>
+          )}
+          {Object.entries(listItem.entries)
+            .filter(([_, entry]) => entry.visible !== false)
+            .map(([key, entry]) => (
               <DrawerListEntry
                 key={key}
                 drawerPathSegment={key}
                 drawerEntry={entry}
                 selected={entry === selectedMenuItem}
-              />)
-          }
+              />
+            ))}
         </List>
       </Scrollbar>
     </div>

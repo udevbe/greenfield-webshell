@@ -4,7 +4,7 @@ import SceneTabs from './SceneTabs'
 import { makeStyles } from '@material-ui/styles'
 import { refreshScene } from '../../middleware/compositor/actions'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   content: {
     height: '100%',
     width: '100%',
@@ -16,11 +16,11 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
     flexGrow: 1,
     overflow: 'hidden',
-    backgroundColor: '#43464B'
-  }
+    backgroundColor: '#43464B',
+  },
 }))
 
-const configureSceneElement = sceneElement => {
+const configureSceneElement = (sceneElement) => {
   sceneElement.style.display = 'inline'
   sceneElement.style.width = '100%'
   sceneElement.style.overflow = 'hidden'
@@ -42,7 +42,7 @@ const Scene = React.memo(({ id }) => {
       return
     }
 
-    const contentElement = /** @type  {HTMLElement} */contentRef.current
+    const contentElement = /** @type  {HTMLElement} */ contentRef.current
     const sceneElement = document.getElementById(id)
     const resizeListener = () => {
       dispatch(refreshScene({ id }))

@@ -20,14 +20,19 @@ const reducers = {
   /**
    * @param {AddToHomeScreenState}state
    */
-  onPromptToAddToHomeScreen: state => { state.proposalEvent = null }
+  onPromptToAddToHomeScreen: (state) => {
+    state.proposalEvent = null
+  },
 }
 
 const slice = createSlice({
   reducers,
   initialState,
-  name: 'greenfield/addToHomeScreen'
+  name: 'greenfield/addToHomeScreen',
 })
 
-export const { saveInstallProposalEvent, onPromptToAddToHomeScreen } = slice.actions
+export const {
+  saveInstallProposalEvent,
+  onPromptToAddToHomeScreen,
+} = slice.actions
 export default slice.reducer

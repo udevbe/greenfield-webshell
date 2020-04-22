@@ -6,15 +6,17 @@ import { ApplicationLauncher } from './ApplicationLauncher'
 const application = {
   appIconURL: 'https://source.unsplash.com/random',
   appTitle: 'Test Application',
-  appId: 'abc'
+  appId: 'abc',
 }
 
 const actions = {
-  onLaunchApplication: action('onLaunchApplication')
+  onLaunchApplication: action('onLaunchApplication'),
 }
 
 export default {
   component: ApplicationLauncher,
-  title: 'ApplicationLauncher'
+  title: 'ApplicationLauncher',
 }
-export const userApplication = () => <ApplicationLauncher application={application} {...actions} />
+export const userApplication = () => (
+  <ApplicationLauncher application={application} {...actions} />
+)

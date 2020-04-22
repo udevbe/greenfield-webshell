@@ -19,15 +19,14 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
   const params = useParams()
   const dispatch = useDispatch()
 
-  const {
-    mobileOpen,
-    useMinified,
-    open
-  } = useSelector(({ drawer: { mobileOpen, useMinified, open } }) => ({
-    mobileOpen,
-    useMinified,
-    open
-  }), shallowEqual)
+  const { mobileOpen, useMinified, open } = useSelector(
+    ({ drawer: { mobileOpen, useMinified, open } }) => ({
+      mobileOpen,
+      useMinified,
+      open,
+    }),
+    shallowEqual
+  )
 
   const handleItemPath = () => {
     if (actionItem.path && mobileOpen) {
@@ -50,20 +49,17 @@ const DrawerActionItem = React.memo(({ actionItem, selected }) => {
         }
       }}
     >
-      {
-        actionItem.leftIcon && <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>
-      }
-      {
-        !useMinified && open && <ListItemText primary={actionItem.text} />
-      }
-      {
-        actionItem.onClickSecondary &&
-          <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
-            <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
-              {actionItem.rightIcon}
-            </IconButton>
-          </ListItemSecondaryAction>
-      }
+      {actionItem.leftIcon && (
+        <ListItemIcon>{actionItem.leftIcon}</ListItemIcon>
+      )}
+      {!useMinified && open && <ListItemText primary={actionItem.text} />}
+      {actionItem.onClickSecondary && (
+        <ListItemSecondaryAction onClick={() => actionItem.onClickSecondary()}>
+          <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
+            {actionItem.rightIcon}
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   )
 })

@@ -6,7 +6,9 @@ import { hideNotification } from '../../store/notification'
 
 const Notification = React.memo(() => {
   const dispatch = useDispatch()
-  const notification = useSelector(({ notification }) => notification.notification)
+  const notification = useSelector(
+    ({ notification }) => notification.notification
+  )
   const [showingNotification, setShowingNotification] = useState(notification)
   const [open, setOpen] = useState(false)
 
@@ -34,7 +36,7 @@ const Notification = React.memo(() => {
     <Snackbar
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'left'
+        horizontal: 'left',
       }}
       open={open}
       autoHideDuration={5000}

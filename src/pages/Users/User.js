@@ -16,21 +16,21 @@ import { useIsAdmin, useIsAdminLoading } from '../../utils/auth'
 import { push } from 'connected-react-router'
 import { useDispatch } from 'react-redux'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   tabs: {
     flex: 1,
-    width: '100%'
+    width: '100%',
   },
   form: {
     backgroundColor: theme.palette.background.default,
     margin: 15,
     display: 'flex',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 }))
 
 export const User = React.memo(() => {
@@ -42,7 +42,8 @@ export const User = React.memo(() => {
   const loading = useIsAdminLoading(uid)
   const [isLoading, setIsLoading] = useState(loading)
 
-  const handleTabActive = (e, value) => dispatch(push(`/users/edit/${uid}/${value}`))
+  const handleTabActive = (e, value) =>
+    dispatch(push(`/users/edit/${uid}/${value}`))
 
   const handleAdminChange = (e, isInputChecked) => {
     if (isInputChecked) {
@@ -61,10 +62,21 @@ export const User = React.memo(() => {
     >
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
-          <AppBar position='static'>
-            <Tabs value={editType || 'data'} onChange={handleTabActive} fullWidth centered>
-              <Tab value='profile' icon={<Person className='material-icons' />} />
-              <Tab value='roles' icon={<AccountBox className='material-icons' />} />
+          <AppBar position="static">
+            <Tabs
+              value={editType || 'data'}
+              onChange={handleTabActive}
+              fullWidth
+              centered
+            >
+              <Tab
+                value="profile"
+                icon={<Person className="material-icons" />}
+              />
+              <Tab
+                value="roles"
+                icon={<AccountBox className="material-icons" />}
+              />
             </Tabs>
           </AppBar>
 

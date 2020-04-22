@@ -8,16 +8,16 @@ import CardActionArea from '@material-ui/core/CardActionArea'
 import { useDispatch } from 'react-redux'
 import { push } from 'connected-react-router'
 
-const useSettingTileStyles = makeStyles(theme => ({
+const useSettingTileStyles = makeStyles((theme) => ({
   card: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    position: 'relative'
+    position: 'relative',
   },
   cardContent: {
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 }))
 
 const SettingTile = ({ title, description, index, icon, path }) => {
@@ -32,10 +32,10 @@ const SettingTile = ({ title, description, index, icon, path }) => {
         <CardActionArea onClick={navigateTo}>
           {icon}
           <CardContent className={classes.cardContent}>
-            <Typography gutterBottom variant='h5' align='center'>
+            <Typography gutterBottom variant="h5" align="center">
               {title}
             </Typography>
-            <Typography gutterBottom vaiant='caption' align='center'>
+            <Typography gutterBottom vaiant="caption" align="center">
               {description}
             </Typography>
           </CardContent>

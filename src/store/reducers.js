@@ -12,19 +12,20 @@ import notification from './notification'
 import serviceWorker from './serviceworker'
 import { connectRouter } from 'connected-react-router'
 
-const createRootReducer = history => combineReducers({
-  firebase,
-  dialogs,
-  locale,
-  persistentValues,
-  simpleValues,
-  drawer,
-  themeSource,
-  addToHomeScreen,
-  compositor,
-  notification,
-  serviceWorker,
-  router: connectRouter(history)
-})
+const createRootReducer = (history) =>
+  combineReducers({
+    firebase,
+    dialogs,
+    locale,
+    persistentValues,
+    simpleValues,
+    drawer,
+    themeSource,
+    addToHomeScreen,
+    compositor,
+    notification,
+    serviceWorker,
+    router: connectRouter(history),
+  })
 
 export default createRootReducer

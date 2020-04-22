@@ -4,10 +4,10 @@ import { CircularProgress, Grid, makeStyles } from '@material-ui/core'
 import { ApplicationLauncher } from './ApplicationLauncher'
 import { useSelector } from 'react-redux'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    margin: 2
-  }
+    margin: 2,
+  },
 }))
 
 export const ApplicationLauncherTile = React.memo(({ id }) => {
@@ -22,9 +22,11 @@ export const ApplicationLauncherTile = React.memo(({ id }) => {
   const classes = useStyles()
   return (
     <Grid item className={classes.root}>
-      {application
-        ? <ApplicationLauncher application={application} id={id} />
-        : <CircularProgress />}
+      {application ? (
+        <ApplicationLauncher application={application} id={id} />
+      ) : (
+        <CircularProgress />
+      )}
     </Grid>
   )
 })

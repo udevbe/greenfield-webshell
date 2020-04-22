@@ -10,28 +10,32 @@ import SpeedDial from '@material-ui/lab/SpeedDial'
 import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import EditScene from './EditScene'
 import ShareScene from './ShareScene'
-import { activateScene, createScene, deleteScene } from '../../middleware/compositor/actions'
+import {
+  activateScene,
+  createScene,
+  deleteScene,
+} from '../../middleware/compositor/actions'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: 'auto',
     order: 999,
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   sceneTabsContainer: {
-    display: 'flex'
+    display: 'flex',
   },
   sceneTabs: {
-    flex: '1 0 auto'
+    flex: '1 0 auto',
   },
   tabIndicator: {
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
   },
   speedDial: {
     position: 'absolute',
     bottom: theme.spacing(2),
-    right: theme.spacing(2)
-  }
+    right: theme.spacing(2),
+  },
 }))
 
 const SceneTabs = React.memo(({ id }) => {
@@ -48,63 +52,84 @@ const SceneTabs = React.memo(({ id }) => {
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
-  const addScene = () => dispatch(createScene({ scene: { name: 'new scene', type: 'local' } }))
+  const addScene = () =>
+    dispatch(createScene({ scene: { name: 'new scene', type: 'local' } }))
   const removeScene = () => dispatch(deleteScene({ scene: { id } }))
   const editScene = () => setEditSceneOpen(true)
   const shareScene = () => setShareSceneOpen(true)
-  const makeSceneActive = id => dispatch(activateScene({ scene: { id } }))
+  const makeSceneActive = (id) => dispatch(activateScene({ scene: { id } }))
 
   const sceneActionOptions = [
-    Object.keys(scenes).length > 1 ? { icon: <Delete />, name: 'Remove This Scene', action: removeScene } : null,
-    scenes[id].type === 'local' ? { icon: <Share />, name: 'Share This Scene', action: shareScene } : null,
+    Object.keys(scenes).length > 1
+      ? {
+          icon: <Delete />,
+          name: 'Remove This Scene',
+          action: removeScene,
+        }
+      : null,
+    scenes[id].type === 'local'
+      ? { icon: <Share />, name: 'Share This Scene', action: shareScene }
+      : null,
     { icon: <Edit />, name: 'Edit This Scene', action: editScene },
-    { icon: <Add />, name: 'Add New Scene', action: addScene }
+    { icon: <Add />, name: 'Add New Scene', action: addScene },
   ]
 
   const classes = useStyles()
   return (
-    <Box component='div' boxShadow={10} zIndex='appBar' className={classes.root}>
-      <EditScene open={editSceneOpen} handleClose={handleEditSceneClose} id={id} />
-      <ShareScene open={shareSceneOpen} handleClose={handleShareSceneClose} id={id} />
+    <Box
+      component="div"
+      boxShadow={10}
+      zIndex="appBar"
+      className={classes.root}
+    >
+      <EditScene
+        open={editSceneOpen}
+        handleClose={handleEditSceneClose}
+        id={id}
+      />
+      <ShareScene
+        open={shareSceneOpen}
+        handleClose={handleShareSceneClose}
+        id={id}
+      />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}
-          variant='fullWidth'
+          variant="fullWidth"
           value={id}
           classes={{
-            indicator: classes.tabIndicator
+            indicator: classes.tabIndicator,
           }}
         >
-          {
-            Object.entries(scenes).map(([sceneId, scene]) =>
-              <Tab
-                key={sceneId}
-                label={scene.name}
-                value={sceneId}
-                onClick={() => makeSceneActive(sceneId)}
-              />)
-          }
+          {Object.entries(scenes).map(([sceneId, scene]) => (
+            <Tab
+              key={sceneId}
+              label={scene.name}
+              value={sceneId}
+              onClick={() => makeSceneActive(sceneId)}
+            />
+          ))}
         </Tabs>
         <ClickAwayListener onClickAway={handleSpeedDialClose}>
           <SpeedDial
             FabProps={{
-              size: 'small'
+              size: 'small',
             }}
-            ariaLabel='Scene Actions'
+            ariaLabel="Scene Actions"
             className={classes.speedDial}
             icon={<SpeedDialIcon />}
             onOpen={handleSpeedDialOpen}
             open={speedDialOpen}
-            direction='up'
+            direction="up"
             fab={{
-              size: 'large'
+              size: 'large',
             }}
           >
-            {sceneActionOptions.map(sceneActionOption =>
+            {sceneActionOptions.map((sceneActionOption) =>
               sceneActionOption ? (
                 <SpeedDialAction
                   FabProps={{
-                    size: 'small'
+                    size: 'small',
                   }}
                   key={sceneActionOption.name}
                   icon={sceneActionOption.icon}
@@ -115,7 +140,8 @@ const SceneTabs = React.memo(({ id }) => {
                   }}
                   title={sceneActionOption.name}
                 />
-              ) : null)}
+              ) : null
+            )}
           </SpeedDial>
         </ClickAwayListener>
       </Toolbar>

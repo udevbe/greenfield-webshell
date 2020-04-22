@@ -6,4 +6,3 @@ import config from './config/config'
 const GreenfieldWebShell = () => <App appConfig={{ ...config }} />
 
 render(<GreenfieldWebShell />, document.querySelector('#root'))
-

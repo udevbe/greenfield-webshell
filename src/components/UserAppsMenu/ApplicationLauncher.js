@@ -4,23 +4,26 @@ import { makeStyles } from '@material-ui/core/styles'
 import Image from '../Image'
 import { useFirebase } from 'react-redux-firebase'
 import { useDispatch } from 'react-redux'
-import { launchRemoteAppAction, launchWebAppAction } from '../../middleware/compositor/actions'
+import {
+  launchRemoteAppAction,
+  launchWebAppAction,
+} from '../../middleware/compositor/actions'
 
 const useStyles = makeStyles({
   root: {
     // TODO increase width for bigger screen (responsive)
-    width: 58
+    width: 58,
   },
   card: {
     display: 'flex',
     flexDirection: 'column',
-    position: 'relative'
+    position: 'relative',
   },
   appTitle: {
     paddingTop: 5,
     color: 'white',
-    textStroke: 'thin rgba(0,0,0,0.3)'
-  }
+    textStroke: 'thin rgba(0,0,0,0.3)',
+  },
 })
 
 export const ApplicationLauncher = React.memo(({ application, id }) => {
@@ -30,7 +33,11 @@ export const ApplicationLauncher = React.memo(({ application, id }) => {
   const firebase = useFirebase()
 
   if (appIcon === null) {
-    firebase.storage().refFromURL(icon).getDownloadURL().then(iconURL => setAppIcon(iconURL))
+    firebase
+      .storage()
+      .refFromURL(icon)
+      .getDownloadURL()
+      .then((iconURL) => setAppIcon(iconURL))
   }
 
   const onLaunchApplication = () => {
@@ -41,7 +48,9 @@ export const ApplicationLauncher = React.memo(({ application, id }) => {
         .storage()
         .refFromURL(url)
         .getDownloadURL()
-        .then(downloadURL => dispatch(launchWebAppAction({ application, downloadURL })))
+        .then((downloadURL) =>
+          dispatch(launchWebAppAction({ application, downloadURL }))
+        )
     }
   }
 
@@ -56,8 +65,8 @@ export const ApplicationLauncher = React.memo(({ application, id }) => {
         </Card>
         <Typography
           className={classes.appTitle}
-          align='center'
-          variant='body2'
+          align="center"
+          variant="body2"
           gutterBottom={false}
         >
           {title}

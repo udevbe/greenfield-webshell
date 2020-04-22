@@ -31,11 +31,11 @@ if (global.Intl) {
 const locales = [
   {
     locale: 'en',
-    messages: en
-  }
+    messages: en,
+  },
 ]
 
-export function getLocaleMessages (l, ls) {
+export function getLocaleMessages(l, ls) {
   if (ls) {
     for (let i = 0; i < ls.length; i++) {
       if (ls[i].locale === l) {

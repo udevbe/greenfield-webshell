@@ -13,14 +13,15 @@ const AppProviders = ({ appConfig, children }) => {
   const source = getThemeSource(themeSource, appConfig.themes)
   const theme = createMuiTheme(source)
 
-  const messages = { ...getLocaleMessages(locale, locales), ...getLocaleMessages(locale, appConfig.locales) }
+  const messages = {
+    ...getLocaleMessages(locale, locales),
+    ...getLocaleMessages(locale, appConfig.locales),
+  }
 
   return (
     <AppConfigProvider appConfig={appConfig}>
       <IntlProvider locale={locale} key={locale} messages={messages}>
-        <ThemeProvider theme={theme}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </IntlProvider>
     </AppConfigProvider>
   )

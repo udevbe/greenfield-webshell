@@ -14,7 +14,9 @@ const AuthUI = () => {
           signInFlow: 'popup',
           signInSuccessUrl: '/workspace',
           signInOptions: appConfig.firebase_providers,
-          callbacks: { signInSuccessWithAuthResult: (authResult, redirectUrl) => false }
+          callbacks: {
+            signInSuccessWithAuthResult: (authResult, redirectUrl) => false,
+          },
         }}
         firebaseAuth={firebase.auth()}
       />

@@ -1,6 +1,13 @@
 import AccountBox from '@material-ui/icons/AccountBox'
 import AltIconAvatar from '../../components/AltIconAvatar'
-import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
+import {
+  Divider,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Switch,
+} from '@material-ui/core'
 import React from 'react'
 import ReactList from 'react-list'
 import { useParams } from 'react-router-dom'
@@ -20,11 +27,13 @@ const UserRoleItem = ({ uid, roleEntry, handleRoleToggleChange }) => {
         <ListItemSecondaryAction>
           <Switch
             checked={hasUserRole}
-            onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, roleId)}
+            onChange={(e, isInputChecked) =>
+              handleRoleToggleChange(e, isInputChecked, roleId)
+            }
           />
         </ListItemSecondaryAction>
       </ListItem>
-      <Divider variant='inset' />
+      <Divider variant="inset" />
     </div>
   )
 }
@@ -48,16 +57,15 @@ const UserRoles = ({ setIsLoading }) => {
     <div style={{ height: '100%' }}>
       <List style={{ height: '100%' }}>
         <ReactList
-          itemRenderer={
-            idx => (
-              <UserRoleItem
-                roleEntry={roles[idx]} uid={uid}
-                handleRoleToggleChange={handleRoleToggleChange}
-              />
-            )
-          }
+          itemRenderer={(idx) => (
+            <UserRoleItem
+              roleEntry={roles[idx]}
+              uid={uid}
+              handleRoleToggleChange={handleRoleToggleChange}
+            />
+          )}
           length={roles ? roles.length : 0}
-          type='simple'
+          type="simple"
         />
       </List>
     </div>

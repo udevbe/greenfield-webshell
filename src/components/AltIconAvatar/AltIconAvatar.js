@@ -2,7 +2,7 @@ import Avatar from '@material-ui/core/Avatar'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import React from 'react'
 
-const AltIconAvatar = props => {
+const AltIconAvatar = (props) => {
   const { src, iconName, icon, ...rest } = props
 
   if (src) {

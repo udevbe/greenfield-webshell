@@ -8,7 +8,13 @@ const Workspace = () => {
   // TODO use reselect
   const lastActiveSceneId = useSelector(({ compositor }) => {
     if (compositor.initialized) {
-      return Object.values(compositor.scenes).reduce((previousValue, currentValue) => previousValue.lastActive > currentValue.lastActive ? previousValue : currentValue).id
+      return Object.values(
+        compositor.scenes
+      ).reduce((previousValue, currentValue) =>
+        previousValue.lastActive > currentValue.lastActive
+          ? previousValue
+          : currentValue
+      ).id
     } else {
       return null
     }

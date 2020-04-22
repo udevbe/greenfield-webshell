@@ -11,24 +11,24 @@ const drawerWidth = 240
 
 const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: '0 8px',
-    ...theme.mixins.toolbar
+    ...theme.mixins.toolbar,
   },
   drawerPaper: {
     height: '100vh',
     width: drawerWidth,
     [theme.breakpoints.up('md')]: {
-      position: 'relative'
+      position: 'relative',
     },
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   drawerPaperOpen: {
     height: '100vh',
@@ -36,25 +36,25 @@ const useStyles = makeStyles(theme => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   drawerPaperMinified: {
     height: '100vh',
     overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(1) * 7,
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(1) * 9
-    }
+      width: theme.spacing(1) * 9,
+    },
   },
 
   hide: {
-    display: 'none'
-  }
+    display: 'none',
+  },
 }))
 
 const ResponsiveDrawer = ({ children }) => {
@@ -62,15 +62,14 @@ const ResponsiveDrawer = ({ children }) => {
   const theme = useTheme()
   const width = useWidth(theme)
   const dispatch = useDispatch()
-  const {
-    mobileOpen,
-    open,
-    useMinified
-  } = useSelector(({ drawer: { mobileOpen, open, useMinified } }) => ({
-    mobileOpen,
-    open,
-    useMinified
-  }), shallowEqual)
+  const { mobileOpen, open, useMinified } = useSelector(
+    ({ drawer: { mobileOpen, open, useMinified } }) => ({
+      mobileOpen,
+      open,
+      useMinified,
+    }),
+    shallowEqual
+  )
 
   const handleDrawerToggle = () => dispatch(setDrawerMobileOpen(!mobileOpen))
 
@@ -81,22 +80,26 @@ const ResponsiveDrawer = ({ children }) => {
       <SwipeableDrawer
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
-        variant={smDown ? 'temporary' : useMinified ? 'permanent' : 'persistent'}
+        variant={
+          smDown ? 'temporary' : useMinified ? 'permanent' : 'persistent'
+        }
         onClose={handleDrawerToggle}
-        anchor={smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'}
+        anchor={
+          smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'
+        }
         classes={{
           paper: smDown
             ? classes.drawerPaper
             : classNames(
-              classes.drawerPaperOpen,
-              useMinified && classes.drawerPaperMinified,
-              !useMinified && !open && classes.hide
-            )
+                classes.drawerPaperOpen,
+                useMinified && classes.drawerPaperMinified,
+                !useMinified && !open && classes.hide
+              ),
         }}
         open={smDown ? mobileOpen : open}
         onOpen={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true // Better open performance on mobile.
+          keepMounted: true, // Better open performance on mobile.
         }}
       >
         {children}

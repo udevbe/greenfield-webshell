@@ -16,18 +16,20 @@ import React from 'react'
  * @return {React.Component}
  * @constructor
  */
-const DrawerListItem = ({ listItem: { path, leftIcon, text }, drawerPathSegment }) => {
+const DrawerListItem = ({
+  listItem: { path, leftIcon, text },
+  drawerPathSegment,
+}) => {
   const dispatch = useDispatch()
   const params = useParams()
-  const {
-    mobileOpen,
-    useMinified,
-    open
-  } = useSelector(({ drawer: { mobileOpen, useMinified, open } }) => ({
-    mobileOpen,
-    useMinified,
-    open
-  }), shallowEqual)
+  const { mobileOpen, useMinified, open } = useSelector(
+    ({ drawer: { mobileOpen, useMinified, open } }) => ({
+      mobileOpen,
+      useMinified,
+      open,
+    }),
+    shallowEqual
+  )
 
   const handleItemPath = () => {
     if (path && mobileOpen) {
@@ -42,14 +44,18 @@ const DrawerListItem = ({ listItem: { path, leftIcon, text }, drawerPathSegment 
   return (
     <ListItem
       button
-      onClick={() => { handleItemPath() }}
+      onClick={() => {
+        handleItemPath()
+      }}
     >
       {leftIcon && <ListItemIcon>{leftIcon}</ListItemIcon>}
       {!useMinified && open && <ListItemText primary={text} />}
       {!useMinified && open && (
-        <ListItemSecondaryAction onClick={() => dispatch(pushDrawerPath(drawerPathSegment))}>
+        <ListItemSecondaryAction
+          onClick={() => dispatch(pushDrawerPath(drawerPathSegment))}
+        >
           <IconButton style={{ marginRight: useMinified ? 150 : undefined }}>
-            <KeyboardArrowRight color='action' />
+            <KeyboardArrowRight color="action" />
           </IconButton>
         </ListItemSecondaryAction>
       )}

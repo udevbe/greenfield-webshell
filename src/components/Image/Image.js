@@ -36,9 +36,11 @@ const Image = ({
       filterBrightness: imageLoaded ? 100 : 0,
       filterSaturate: imageLoaded ? 100 : 20,
       transition: `
-        filterBrightness ${animationDuration * 0.75}ms cubic-bezier(0.4, 0.0, 0.2, 1),
+        filterBrightness ${
+          animationDuration * 0.75
+        }ms cubic-bezier(0.4, 0.0, 0.2, 1),
         filterSaturate ${animationDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1),
-        opacity ${animationDuration / 2}ms cubic-bezier(0.4, 0.0, 0.2, 1)`
+        opacity ${animationDuration / 2}ms cubic-bezier(0.4, 0.0, 0.2, 1)`,
     }
 
     return {
@@ -46,7 +48,7 @@ const Image = ({
         backgroundColor: color,
         paddingTop: '100%',
         position: 'relative',
-        ...style
+        ...style,
       },
       image: {
         width: '100%',
@@ -55,7 +57,7 @@ const Image = ({
         top: 0,
         left: 0,
         ...imageTransition,
-        ...imageStyle
+        ...imageStyle,
       },
       iconContainer: {
         width: '100%',
@@ -67,8 +69,8 @@ const Image = ({
         alignItems: 'center',
         justifyContent: 'center',
         pointerEvents: 'none',
-        ...iconContainerStyle
-      }
+        ...iconContainerStyle,
+      },
     }
   }
 
@@ -90,18 +92,16 @@ const Image = ({
 
   const styles = getStyles()
   return (
-    <div
-      style={styles.root}
-      onClick={onClick}
-    >
-      {image.src &&
-      <img
-        {...image}
-        alt={alt}
-        style={styles.image}
-        onLoad={handleLoadImage}
-        onError={handleImageError}
-      />}
+    <div style={styles.root} onClick={onClick}>
+      {image.src && (
+        <img
+          {...image}
+          alt={alt}
+          style={styles.image}
+          onLoad={handleLoadImage}
+          onError={handleImageError}
+        />
+      )}
       <div style={styles.iconContainer}>
         {!disableSpinner && !imageLoaded && !imageError && loading}
         {!disableError && imageError && errorIcon}
@@ -117,8 +117,10 @@ Image.defaultProps = {
   disableError: false,
   disableSpinner: false,
   disableTransition: false,
-  errorIcon: <BrokenImage style={{ width: 48, height: 48, color: grey[300] }} />,
-  loading: <Skeleton variant='rect' width={320} height={200} />
+  errorIcon: (
+    <BrokenImage style={{ width: 48, height: 48, color: grey[300] }} />
+  ),
+  loading: <Skeleton variant="rect" width={320} height={200} />,
 }
 
 Image.propTypes = {
@@ -153,7 +155,7 @@ Image.propTypes = {
   /** Specifies the URL of an image. */
   src: PropTypes.string.isRequired,
   /** Override the inline-styles of the root element. */
-  style: PropTypes.object
+  style: PropTypes.object,
 }
 
 export default Image

@@ -23,7 +23,7 @@ const config = {
     storageBucket: 'greenfield-preview.appspot.com',
     messagingSenderId: '213447278801',
     appId: '1:213447278801:web:56460a58be75b16168c5f0',
-    measurementId: 'G-V42XC9PBP5'
+    measurementId: 'G-V42XC9PBP5',
   },
   firebase_config_dev: {
     apiKey: 'AIzaSyBMng9cUwSyWhS_9JyCJqGKlvfD3NtzoNM',
@@ -33,20 +33,16 @@ const config = {
     storageBucket: 'greenfield-dev-38bf7.appspot.com',
     messagingSenderId: '479563718289',
     appId: '1:479563718289:web:ec8b3b518c27499943a930',
-    measurementId: 'G-84RFF1PNSR'
+    measurementId: 'G-84RFF1PNSR',
   },
-  firebase_providers: [
-    'password',
-    'google.com',
-    'anonymous'
-  ],
+  firebase_providers: ['password', 'google.com', 'anonymous'],
   drawer_width: 240,
   appIcon: GreenfieldIcon,
   configureStore,
   useMenuItems,
   locales,
   themes,
-  grants
+  grants,
 }
 
 export default config

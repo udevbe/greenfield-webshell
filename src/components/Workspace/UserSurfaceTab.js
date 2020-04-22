@@ -6,7 +6,9 @@ import Typography from '@material-ui/core/Typography'
 
 const UserSurfaceTab = React.memo(({ userSurfaceTitle, value }) => {
   const dispatch = useDispatch()
-  const requestActive = () => { dispatch(requestSurfaceActive({ key: value })) }
+  const requestActive = () => {
+    dispatch(requestSurfaceActive({ surface: { key: value } }))
+  }
   return (
     <Tab
       label={
@@ -16,7 +18,8 @@ const UserSurfaceTab = React.memo(({ userSurfaceTitle, value }) => {
       }
       onClick={requestActive}
       value={value}
-    />)
+    />
+  )
 })
 
 export default UserSurfaceTab

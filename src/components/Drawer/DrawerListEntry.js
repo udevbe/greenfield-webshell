@@ -12,21 +12,28 @@ import DrawerInfoItem from './DrawerInfoItem'
  * @return {React.Component}
  * @constructor
  */
-const DrawerListEntry = React.memo(({ drawerEntry, drawerPathSegment, selected }) => {
-  switch (drawerEntry.variant) {
-    case 'divider':
-      return <DrawerListDivider divider={drawerEntry} />
-    case 'subheader':
-      return <DrawerListSubheader subheader={drawerEntry} />
-    case 'actionItem':
-      return <DrawerActionItem actionItem={drawerEntry} selected={selected} />
-    case 'listItem':
-      return <DrawerListItem listItem={drawerEntry} drawerPathSegment={drawerPathSegment} />
-    case 'infoItem':
-      return <DrawerInfoItem infoItem={drawerEntry} />
-    default:
-      return null
+const DrawerListEntry = React.memo(
+  ({ drawerEntry, drawerPathSegment, selected }) => {
+    switch (drawerEntry.variant) {
+      case 'divider':
+        return <DrawerListDivider divider={drawerEntry} />
+      case 'subheader':
+        return <DrawerListSubheader subheader={drawerEntry} />
+      case 'actionItem':
+        return <DrawerActionItem actionItem={drawerEntry} selected={selected} />
+      case 'listItem':
+        return (
+          <DrawerListItem
+            listItem={drawerEntry}
+            drawerPathSegment={drawerPathSegment}
+          />
+        )
+      case 'infoItem':
+        return <DrawerInfoItem infoItem={drawerEntry} />
+      default:
+        return null
+    }
   }
-})
+)
 
 export default DrawerListEntry

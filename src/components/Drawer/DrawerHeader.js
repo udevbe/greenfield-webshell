@@ -13,39 +13,50 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import React from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { setDrawerOpen, setDrawerPath, setDrawerUseMinified } from '../../store/drawer'
+import {
+  setDrawerOpen,
+  setDrawerPath,
+  setDrawerUseMinified,
+} from '../../store/drawer'
 import { useWidth } from '../../utils/theme'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: theme.palette.primary.dark,
     margin: 0,
-    padding: 0
+    padding: 0,
   },
   listItem: {
-    color: theme.palette.primary.contrastText
+    color: theme.palette.primary.contrastText,
   },
   icon: {
-    color: theme.palette.primary.contrastText
+    color: theme.palette.primary.contrastText,
   },
   button: {
     // width: 15
-  }
+  },
 }))
 
 export const DrawerHeader = React.memo(() => {
   const dispatch = useDispatch()
-  const { photoURL, displayName, email } = useSelector(({ firebase: { auth: { photoURL, displayName, email } } }) => ({
-    photoURL,
-    displayName,
-    email
-  }), shallowEqual)
+  const { photoURL, displayName, email } = useSelector(
+    ({
+      firebase: {
+        auth: { photoURL, displayName, email },
+      },
+    }) => ({
+      photoURL,
+      displayName,
+      email,
+    }),
+    shallowEqual
+  )
   const notMinified = useSelector(({ drawer }) => !drawer.useMinified)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const theme = useTheme()
@@ -57,19 +68,25 @@ export const DrawerHeader = React.memo(() => {
         <List>
           <ListItem>
             <ListItemAvatar>
-              <Avatar src={photoURL} alt='user' />
+              <Avatar src={photoURL} alt="user" />
             </ListItemAvatar>
-            <Hidden smDown implementation='css'>
+            <Hidden smDown implementation="css">
               <ListItemSecondaryAction>
-                <IconButton onClick={() => dispatch(setDrawerUseMinified(true))}>
+                <IconButton
+                  onClick={() => dispatch(setDrawerUseMinified(true))}
+                >
                   <ChromeReaderMode classes={{ root: classes.icon }} />
                 </IconButton>
                 <IconButton
                   className={classes.button}
                   onClick={() => dispatch(setDrawerOpen(false))}
                 >
-                  {theme.direction === 'rtl' && <ChevronRight classes={{ root: classes.icon }} />}
-                  {theme.direction !== 'rtl' && <ChevronLeft classes={{ root: classes.icon }} />}
+                  {theme.direction === 'rtl' && (
+                    <ChevronRight classes={{ root: classes.icon }} />
+                  )}
+                  {theme.direction !== 'rtl' && (
+                    <ChevronLeft classes={{ root: classes.icon }} />
+                  )}
                 </IconButton>
               </ListItemSecondaryAction>
             </Hidden>
@@ -78,22 +95,38 @@ export const DrawerHeader = React.memo(() => {
           <ListItem>
             {!notMinified && width !== 'sm' && width !== 'xs' && photoURL && (
               <ListItemAvatar>
-                <Avatar src={photoURL} alt='person' style={{ marginLeft: -7, marginTop: 3 }} />
+                <Avatar
+                  src={photoURL}
+                  alt="person"
+                  style={{ marginLeft: -7, marginTop: 3 }}
+                />
               </ListItemAvatar>
             )}
             <ListItemText
-              classes={{ primary: classes.listItem, secondary: classes.listItem }}
+              classes={{
+                primary: classes.listItem,
+                secondary: classes.listItem,
+              }}
               style={{
-                marginLeft: !notMinified && width !== 'sm' && width !== 'xs' && photoURL ? 7 : undefined
+                marginLeft:
+                  !notMinified && width !== 'sm' && width !== 'xs' && photoURL
+                    ? 7
+                    : undefined,
               }}
               primary={displayName}
               secondary={email}
             />
             {notMinified && (
-              <ListItemSecondaryAction onClick={() => dispatch(setDrawerPath(['user']))}>
+              <ListItemSecondaryAction
+                onClick={() => dispatch(setDrawerPath(['user']))}
+              >
                 <IconButton>
-                  {isAuthMenu && <ArrowDropUp classes={{ root: classes.icon }} />}
-                  {!isAuthMenu && <ArrowDropDown classes={{ root: classes.icon }} />}
+                  {isAuthMenu && (
+                    <ArrowDropUp classes={{ root: classes.icon }} />
+                  )}
+                  {!isAuthMenu && (
+                    <ArrowDropDown classes={{ root: classes.icon }} />
+                  )}
                 </IconButton>
               </ListItemSecondaryAction>
             )}

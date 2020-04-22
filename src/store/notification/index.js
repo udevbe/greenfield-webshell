@@ -22,14 +22,18 @@ const reducers = {
    * @param {NotificationState}state
    * @param {Action}action
    */
-  showNotification: (state, action) => { state.notification = action.payload },
-  hideNotification: (state) => { state.notification = null }
+  showNotification: (state, action) => {
+    state.notification = action.payload
+  },
+  hideNotification: (state) => {
+    state.notification = null
+  },
 }
 
 const slice = createSlice({
   reducers,
   initialState,
-  name: 'greenfield/notification'
+  name: 'greenfield/notification',
 })
 
 export const { showNotification, hideNotification } = slice.actions

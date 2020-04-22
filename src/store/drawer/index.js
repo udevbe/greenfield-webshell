@@ -11,7 +11,7 @@ const initialState = {
   mobileOpen: false,
   open: false,
   useMinified: false,
-  drawerPath: []
+  drawerPath: [],
 }
 
 /**
@@ -32,7 +32,9 @@ const reducers = {
    * @param {DrawerState}state
    * @param {Action}action
    */
-  setDrawerMobileOpen: (state, action) => { state.mobileOpen = action.payload },
+  setDrawerMobileOpen: (state, action) => {
+    state.mobileOpen = action.payload
+  },
   /**
    * @param {DrawerState}state
    * @param {Action}action
@@ -45,23 +47,29 @@ const reducers = {
    * @param {DrawerState}state
    * @param {Action}action
    */
-  pushDrawerPath: (state, action) => { state.drawerPath.push(action.payload) },
+  pushDrawerPath: (state, action) => {
+    state.drawerPath.push(action.payload)
+  },
   /**
    * @param {DrawerState}state
    * @param {Action}action
    */
-  popDrawerPath: state => { state.drawerPath.pop() },
+  popDrawerPath: (state) => {
+    state.drawerPath.pop()
+  },
   /**
    * @param {DrawerState}state
    * @param {Action}action
    */
-  setDrawerPath: (state, action) => { state.drawerPath = action.payload}
+  setDrawerPath: (state, action) => {
+    state.drawerPath = action.payload
+  },
 }
 
 const slice = createSlice({
   reducers,
   initialState,
-  name: 'greenfield/drawer'
+  name: 'greenfield/drawer',
 })
 
 export const {
@@ -70,6 +78,6 @@ export const {
   pushDrawerPath,
   popDrawerPath,
   setDrawerPath,
-  setDrawerUseMinified
+  setDrawerUseMinified,
 } = slice.actions
 export default slice.reducer

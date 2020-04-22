@@ -9,50 +9,50 @@ export const themes = [
     id: 'default',
     color: green[500],
     source: {
-      'palette': {
-        'common': {
-          'black': '#000',
-          'white': 'rgba(240, 240, 240, 1)'
+      palette: {
+        common: {
+          black: '#000',
+          white: 'rgba(240, 240, 240, 1)',
         },
-        'background': {
-          'paper': 'rgba(220, 220, 220, 1)',
-          'default': 'rgba(240, 240, 240, 1)'
+        background: {
+          paper: 'rgba(220, 220, 220, 1)',
+          default: 'rgba(240, 240, 240, 1)',
         },
-        'primary': {
-          'light': 'rgba(167, 230, 97, 1)',
-          'main': 'rgba(111, 174, 42, 1)',
-          'dark': 'rgba(55, 121, 0, 1)',
-          'contrastText': '#fff'
+        primary: {
+          light: 'rgba(167, 230, 97, 1)',
+          main: 'rgba(111, 174, 42, 1)',
+          dark: 'rgba(55, 121, 0, 1)',
+          contrastText: '#fff',
         },
-        'secondary': {
-          'light': 'rgba(127, 247, 255, 1)',
-          'main': 'rgba(50, 191, 249, 1)',
-          'dark': 'rgba(0, 138, 192, 1)',
-          'contrastText': '#fff'
+        secondary: {
+          light: 'rgba(127, 247, 255, 1)',
+          main: 'rgba(50, 191, 249, 1)',
+          dark: 'rgba(0, 138, 192, 1)',
+          contrastText: '#fff',
         },
-        'error': {
-          'light': 'rgba(255, 128, 169, 1)',
-          'main': 'rgba(250, 67, 117, 1)',
-          'dark': 'rgba(187, 0, 69, 1)',
-          'contrastText': '#fff'
+        error: {
+          light: 'rgba(255, 128, 169, 1)',
+          main: 'rgba(250, 67, 117, 1)',
+          dark: 'rgba(187, 0, 69, 1)',
+          contrastText: '#fff',
         },
-        'text': {
-          'primary': 'rgba(0, 0, 0, 0.87)',
-          'secondary': 'rgba(0, 0, 0, 0.54)',
-          'disabled': 'rgba(0, 0, 0, 0.38)',
-          'hint': 'rgba(0, 0, 0, 0.38)'
-        }
-      }
-    }
+        text: {
+          primary: 'rgba(0, 0, 0, 0.87)',
+          secondary: 'rgba(0, 0, 0, 0.54)',
+          disabled: 'rgba(0, 0, 0, 0.38)',
+          hint: 'rgba(0, 0, 0, 0.38)',
+        },
+      },
+    },
   },
   {
     id: 'blue',
     color: blue[500],
     source: {
       palette: {
-        primary: blue
-      }
-    }
+        primary: blue,
+      },
+    },
   },
   {
     id: 'red',
@@ -61,10 +61,10 @@ export const themes = [
       palette: {
         primary: red,
         secondary: pink,
-        error: red
-      }
-    }
-  }
+        error: red,
+      },
+    },
+  },
 ]
 
 const getThemeSource = (t, ts) => {
@@ -78,9 +78,9 @@ const getThemeSource = (t, ts) => {
           ...source,
           typography: {
             useNextVariants: true,
-            fontSize: 12
+            fontSize: 12,
           },
-          palette: { ...palette }
+          palette: { ...palette },
         })
       }
     }
@@ -88,9 +88,9 @@ const getThemeSource = (t, ts) => {
 
   return createMuiTheme({
     typography: {
-      useNextVariants: true
+      useNextVariants: true,
     },
-    palette: { ...themes[0].source.palette }
+    palette: { ...themes[0].source.palette },
   }) // Default theme
 }
 

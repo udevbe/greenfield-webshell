@@ -10,7 +10,9 @@ const Role = lazy(() => import('../../pages/Roles/Role'))
 const Roles = lazy(() => import('../../pages/Roles/Roles'))
 
 const Workspace = lazy(() => import('../../pages/Workspace'))
-const WorkspaceScene = lazy(() => import('../../pages/Workspace/WorkspaceScene'))
+const WorkspaceScene = lazy(() =>
+  import('../../pages/Workspace/WorkspaceScene')
+)
 const RemoteScene = lazy(() => import('../../pages/Workspace/RemoteScene'))
 
 const WebStore = lazy(() => import('../../pages/WebStore/WebStore'))
@@ -29,52 +31,78 @@ export const Routes = React.memo(() => {
     <div style={{ width: '100%', height: '100%' }}>
       <Suspense fallback={<LoadingComponent />}>
         <Switch>
-          <RestrictedRoute type='private' path='/users' exact>
+          <RestrictedRoute type="private" path="/users" exact>
             <Users />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/users/:select' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/users/:select" exact>
             <Users />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/users/edit/:uid/:editType' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute
+            type="private"
+            path="/users/edit/:uid/:editType"
+            exact
+          >
             <User />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/my_account' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/my_account" exact>
             <MyAccount />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/roles' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/roles" exact>
             <Roles />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/roles/edit/:uid/:editType' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute
+            type="private"
+            path="/roles/edit/:uid/:editType"
+            exact
+          >
             <Role />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/" exact>
             <Workspace />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/workspace' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/workspace" exact>
             <Workspace />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/workspace/:id' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/workspace/:id" exact>
             <WorkspaceScene />
           </RestrictedRoute>
-          <RestrictedRoute type='private' path='/workspace/remote/:id/:peerId' exact>
+          <RestrictedRoute
+            type="private"
+            path="/workspace/remote/:id/:peerId"
+            exact
+          >
             <RemoteScene />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/webstore' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/webstore" exact>
             <WebStore />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/webstore/:appid' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/webstore/:appid" exact>
             <AboutApp />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/settings' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/settings" exact>
             <Settings />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/settings/site' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/settings/site" exact>
             <SiteSettings />
-          </RestrictedRoute>,
-          <RestrictedRoute type='private' path='/settings/input' exact>
+          </RestrictedRoute>
+          ,
+          <RestrictedRoute type="private" path="/settings/input" exact>
             <InputSettings />
-          </RestrictedRoute>,
-          <Route path='/signin' exact strict>
+          </RestrictedRoute>
+          ,
+          <Route path="/signin" exact strict>
             <SignIn />
           </Route>
           <Route>

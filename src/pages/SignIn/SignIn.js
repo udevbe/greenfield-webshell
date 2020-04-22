@@ -13,18 +13,18 @@ const useStyles = makeStyles({
   wrap: {
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh'
+    height: '100vh',
   },
   text: {
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 })
 
-function updateUserOnlineStatus (firebase, auth) {
+function updateUserOnlineStatus(firebase, auth) {
   // TODO use firebase build in functionality for this
   const myConnectionsRef = firebase.ref(`users/${auth.uid}/connections`)
   const lastOnlineRef = firebase.ref(`users/${auth.uid}/lastOnline`)
@@ -33,13 +33,13 @@ function updateUserOnlineStatus (firebase, auth) {
   con.onDisconnect().remove()
 }
 
-function updateUserPublicData (firebase, auth) {
+function updateUserPublicData(firebase, auth) {
   const publicProviderData = []
 
-  auth.providerData.forEach(provider => {
+  auth.providerData.forEach((provider) => {
     publicProviderData.push({
       providerId: provider.providerId,
-      displayName: provider.displayName ? provider.displayName : null
+      displayName: provider.displayName ? provider.displayName : null,
     })
   })
 
@@ -47,7 +47,7 @@ function updateUserPublicData (firebase, auth) {
     displayName: auth.displayName ? auth.displayName : 'UserName',
     photoURL: auth.photoURL,
     uid: auth.uid,
-    providerData: publicProviderData
+    providerData: publicProviderData,
   }
 
   firebase.ref(`users/${auth.uid}`).update(publicUserData)
@@ -55,7 +55,9 @@ function updateUserPublicData (firebase, auth) {
 
 const SignIn = React.memo(() => {
   const firebase = useFirebase()
-  const locationState = useSelector(({ router }) => router.location.state || null)
+  const locationState = useSelector(
+    ({ router }) => router.location.state || null
+  )
   const auth = useSelector(({ firebase: { auth } }) => auth, shallowEqual)
   if (!isLoaded(auth)) {
     return <LoadingComponent />
@@ -69,7 +71,7 @@ const SignIn = React.memo(() => {
         <div className={classes.wrap}>
           <div className={classes.text}>
             <Logo />
-            <Typography variant='h6' color='textSecondary' noWrap>
+            <Typography variant="h6" color="textSecondary" noWrap>
               The Cloud Desktop.
             </Typography>
             <AuthUI />
@@ -84,7 +86,7 @@ const SignIn = React.memo(() => {
     if (locationState && locationState.fromRedirect) {
       return <Redirect to={locationState.fromLocation} />
     } else {
-      return <Redirect to='/' />
+      return <Redirect to="/" />
     }
   }
 })

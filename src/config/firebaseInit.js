@@ -5,7 +5,9 @@ import 'firebase/database'
 import 'firebase/storage'
 
 const firebase = firebaseApp.initializeApp(
-  process.env.NODE_ENV !== 'production' ? config.firebase_config_dev : config.firebase_config
+  process.env.NODE_ENV !== 'production'
+    ? config.firebase_config_dev
+    : config.firebase_config
 )
 
 // if (process.env.NODE_ENV === 'development') {

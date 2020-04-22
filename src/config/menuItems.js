@@ -10,7 +10,12 @@ import SettingsIcon from '@material-ui/icons/SettingsApplications'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
+import {
+  useGrant,
+  useIsAdmin,
+  useIsAuthenticated,
+  useUserId,
+} from '../utils/auth'
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
 import { ListItemText } from '@material-ui/core'
@@ -58,7 +63,7 @@ import { deleteClient } from '../middleware/compositor/actions'
  * @typedef {DrawerDivider|DrawerSubheader|DrawerActionItem|DrawerListItem}DrawerEntry
  */
 
-export const useMenuItems = handleSignOut => {
+export const useMenuItems = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
@@ -67,13 +72,27 @@ export const useMenuItems = handleSignOut => {
   const webStoreAccess = useGrant(uid, 'read web store applications')
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
-  const addToHomeScreenProposalEvent = useSelector(({ addToHomeScreen }) => addToHomeScreen.proposalEvent)
+  const addToHomeScreenProposalEvent = useSelector(
+    ({ addToHomeScreen }) => addToHomeScreen.proposalEvent
+  )
   const userSurfacesByAppId = {}
-  useSelector(({ compositor }) =>
-    Object.values(compositor.surfaces).map(({ id, clientId, title, appId, key }) =>
-      ({ id, clientId, title, appId, key })
-    ), shallowEqual).forEach(userSurface => {
-    const appId = !userSurface.appId || userSurface.appId.length === 0 ? `app-${userSurface.clientId}` : userSurface.appId
+  useSelector(
+    ({ compositor }) =>
+      Object.values(compositor.surfaces).map(
+        ({ id, clientId, title, appId, key }) => ({
+          id,
+          clientId,
+          title,
+          appId,
+          key,
+        })
+      ),
+    shallowEqual
+  ).forEach((userSurface) => {
+    const appId =
+      !userSurface.appId || userSurface.appId.length === 0
+        ? `app-${userSurface.clientId}`
+        : userSurface.appId
     const groupedUserSurfaces = userSurfacesByAppId[appId]
     if (groupedUserSurfaces) {
       groupedUserSurfaces.push(userSurface)
@@ -91,16 +110,16 @@ export const useMenuItems = handleSignOut => {
           variant: 'actionItem',
           path: '/my_account',
           text: intl.formatMessage({ id: 'my_account' }),
-          leftIcon: <AccountBoxIcon />
+          leftIcon: <AccountBoxIcon />,
         },
         sign_in: {
           variant: 'actionItem',
           path: '/signin',
           onClick: handleSignOut,
           text: intl.formatMessage({ id: 'sign_out' }),
-          leftIcon: <ExitToAppIcon />
-        }
-      }
+          leftIcon: <ExitToAppIcon />,
+        },
+      },
     }
   }
 
@@ -117,16 +136,16 @@ export const useMenuItems = handleSignOut => {
             variant: 'actionItem',
             path: '/my_account',
             text: intl.formatMessage({ id: 'my_account' }),
-            leftIcon: <AccountBoxIcon />
+            leftIcon: <AccountBoxIcon />,
           },
           sign_in: {
             variant: 'actionItem',
             path: '/signin',
             onClick: handleSignOut,
             text: intl.formatMessage({ id: 'sign_out' }),
-            leftIcon: <ExitToAppIcon />
-          }
-        }
+            leftIcon: <ExitToAppIcon />,
+          },
+        },
       },
       workspace: {
         variant: 'listItem',
@@ -135,46 +154,52 @@ export const useMenuItems = handleSignOut => {
         leftIcon: <SettingsSystemDaydreamIcon />,
         path: '/workspace',
         // TODO show clients instead of surfaces, show surfaces as tabs of active client
-        entries: Object.entries(userSurfacesByAppId).length === 0 ? {
-            noRunningApps: {
-              variant: 'infoItem',
-              component:
-                <ListItemText
-                  unselectable='on'
-                  secondary='Running applications will appear here.'
-                  inset
-                />,
-              visible: true
-            }
-          }
-          : Object.entries(userSurfacesByAppId).reduce((nestedMenu, [appId, userSurfaces]) => ({
-            ...nestedMenu,
-            [appId]: {
-              // TODO use client icon as left icon
-              visible: authorised,
-              variant: 'actionItem',
-              text: appId,
-              onClick: () => {
-                // TODO raise all surfaces of selected client & activate surface that was the last to be active
-              },
-              onClickSecondary: () => {
-                const id = userSurfaces[0].clientId
-                dispatch(deleteClient({ client: { id } }))
-              },
-              rightIcon: <CloseIcon />
-            }
-          }), {})
+        entries:
+          Object.entries(userSurfacesByAppId).length === 0
+            ? {
+                noRunningApps: {
+                  variant: 'infoItem',
+                  component: (
+                    <ListItemText
+                      unselectable="on"
+                      secondary="Running applications will appear here."
+                      inset
+                    />
+                  ),
+                  visible: true,
+                },
+              }
+            : Object.entries(userSurfacesByAppId).reduce(
+                (nestedMenu, [appId, userSurfaces]) => ({
+                  ...nestedMenu,
+                  [appId]: {
+                    // TODO use client icon as left icon
+                    visible: authorised,
+                    variant: 'actionItem',
+                    text: appId,
+                    onClick: () => {
+                      // TODO raise all surfaces of selected client & activate surface that was the last to be active
+                    },
+                    onClickSecondary: () => {
+                      const id = userSurfaces[0].clientId
+                      dispatch(deleteClient({ client: { id } }))
+                    },
+                    rightIcon: <CloseIcon />,
+                  },
+                }),
+                {}
+              ),
       },
       webStore: {
         variant: 'actionItem',
         visible: authorised && webStoreAccess,
         text: intl.formatMessage({ id: 'web_store' }),
         leftIcon: <PublicIcon />,
-        path: '/webstore'
+        path: '/webstore',
       },
       _divider0: {
         variant: 'divider',
-        visible: authorised
+        visible: authorised,
       },
       administration: {
         variant: 'listItem',
@@ -187,16 +212,16 @@ export const useMenuItems = handleSignOut => {
             path: '/users',
             visible: isAdmin,
             text: intl.formatMessage({ id: 'users' }),
-            leftIcon: <GroupIcon />
+            leftIcon: <GroupIcon />,
           },
           roles: {
             variant: 'actionItem',
             path: '/roles',
             visible: isAdmin,
             text: intl.formatMessage({ id: 'roles' }),
-            leftIcon: <AccountBoxIcon />
-          }
-        }
+            leftIcon: <AccountBoxIcon />,
+          },
+        },
       },
       settings: {
         variant: 'listItem',
@@ -209,23 +234,23 @@ export const useMenuItems = handleSignOut => {
             variant: 'actionItem',
             text: intl.formatMessage({ id: 'input' }),
             path: '/settings/input',
-            leftIcon: <Keyboard />
+            leftIcon: <Keyboard />,
           },
           site: {
             variant: 'actionItem',
             text: intl.formatMessage({ id: 'site' }),
             path: '/settings/site',
-            leftIcon: <Flag />
-          }
-        }
+            leftIcon: <Flag />,
+          },
+        },
       },
       install: {
         variant: 'actionItem',
         visible: addToHomeScreenProposalEvent != null,
         onClick: () => addToHomeScreenProposalEvent.prompt(),
         text: intl.formatMessage({ id: 'install' }),
-        leftIcon: <VerticalAlignBottomIcon />
-      }
-    }
+        leftIcon: <VerticalAlignBottomIcon />,
+      },
+    },
   }
 }

@@ -8,27 +8,27 @@ import { useIntl } from 'react-intl'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   icon: {
     width: 192,
     height: 192,
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   container: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%'
+    height: '100%',
   },
   paper: {
     backgroundColor: theme.palette.background.default,
     height: '100vh',
-    margin: 0
+    margin: 0,
   },
   button: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
 }))
 
 const PageNotFound = () => {
@@ -41,9 +41,18 @@ const PageNotFound = () => {
       <Paper className={classes.paper}>
         <div className={classes.container}>
           <AppIcon className={classes.icon} />
-          <Typography variant='h4'>{intl.formatMessage({ id: 'warning_404_message' })}</Typography>
-          <Typography variant='subtitle1'>{intl.formatMessage({ id: 'warning_404_description' })}</Typography>
-          <Fab color='secondary' aria-label='home' href='/' className={classes.button}>
+          <Typography variant="h4">
+            {intl.formatMessage({ id: 'warning_404_message' })}
+          </Typography>
+          <Typography variant="subtitle1">
+            {intl.formatMessage({ id: 'warning_404_description' })}
+          </Typography>
+          <Fab
+            color="secondary"
+            aria-label="home"
+            href="/"
+            className={classes.button}
+          >
             <Home />
           </Fab>
         </div>

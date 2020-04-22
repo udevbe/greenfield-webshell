@@ -30,7 +30,10 @@ export const RoleGrants = ({ roleGrants }) => {
 
   const grantList = appConfig.grants.map((grant, index) => ({
     key: index,
-    val: { name: intl.formatMessage({ id: `grant ${grant}` }), value: grant }
+    val: {
+      name: intl.formatMessage({ id: `grant ${grant}` }),
+      value: grant,
+    },
   }))
 
   const renderGrantItem = (i, k) => {
@@ -39,7 +42,7 @@ export const RoleGrants = ({ roleGrants }) => {
     let roleGrantValues = []
 
     if (roleGrants) {
-      roleGrants.map(role => {
+      roleGrants.map((role) => {
         if (role.key === uid) {
           if (role.value !== undefined) {
             roleGrantValues = role.value
@@ -53,13 +56,18 @@ export const RoleGrants = ({ roleGrants }) => {
       <div key={key}>
         <ListItem key={i} id={i}>
           <AltIconAvatar icon={<Check />} />
-          <ListItemText primary={intl.formatMessage({ id: `grant ${val}` })} secondary={val} />
+          <ListItemText
+            primary={intl.formatMessage({ id: `grant ${val}` })}
+            secondary={val}
+          />
           <Switch
             checked={roleGrantValues[val] === true}
-            onChange={(e, isInputChecked) => handleGrantToggleChange(e, isInputChecked, val)}
+            onChange={(e, isInputChecked) =>
+              handleGrantToggleChange(e, isInputChecked, val)
+            }
           />
         </ListItem>
-        <Divider variant='inset' />
+        <Divider variant="inset" />
       </div>
     )
   }
@@ -70,7 +78,7 @@ export const RoleGrants = ({ roleGrants }) => {
         <ReactList
           itemRenderer={renderGrantItem}
           length={grantList.length}
-          type='simple'
+          type="simple"
         />
       </List>
     </div>

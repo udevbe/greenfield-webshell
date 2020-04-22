@@ -2,12 +2,22 @@ import storage from 'redux-persist/es/storage'
 
 import rootReducer from './reducers'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist'
 import { actionTypes } from 'react-redux-firebase'
 import createSagaMiddleware from 'redux-saga'
 import { createBrowserHistory } from 'history'
 import { routerMiddleware } from 'connected-react-router'
 import compositorSaga from '../middleware/compositor/compositorSaga'
+import sharedSceneSaga from '../middleware/compositor/sharedSceneSaga'
 
 const persistConfig = {
   key: 'root',
@@ -18,8 +28,8 @@ const persistConfig = {
     'addToHomeScreen',
     'compositor',
     'notification',
-    'serviceWorker'
-  ]
+    'serviceWorker',
+  ],
 }
 
 export default () => {
@@ -38,17 +48,18 @@ export default () => {
             PERSIST,
             PURGE,
             REGISTER,
-            ...Object.values(actionTypes)
-          ]
-        }
+            ...Object.values(actionTypes),
+          ],
+        },
       }),
       routerMiddleware(history),
-      sagaMiddleware
-    ]
+      sagaMiddleware,
+    ],
   })
   const persistor = persistStore(store)
 
   sagaMiddleware.run(compositorSaga)
+  sagaMiddleware.run(sharedSceneSaga)
 
   return { store, persistor, history }
 }

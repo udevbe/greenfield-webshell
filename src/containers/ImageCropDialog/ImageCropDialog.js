@@ -1,4 +1,13 @@
-import { AppBar, Button, CircularProgress, Dialog, IconButton, Slide, Toolbar, Typography } from '@material-ui/core'
+import {
+  AppBar,
+  Button,
+  CircularProgress,
+  Dialog,
+  IconButton,
+  Slide,
+  Toolbar,
+  Typography,
+} from '@material-ui/core'
 import Close from '@material-ui/icons/Close'
 import Dropzone from 'react-dropzone'
 import React, { useState } from 'react'
@@ -7,9 +16,19 @@ import { useIntl } from 'react-intl'
 import { useTheme } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
 
-const Transition = React.forwardRef((props, ref) => <Slide direction='up' {...props} ref={ref} />)
+const Transition = React.forwardRef((props, ref) => (
+  <Slide direction="up" {...props} ref={ref} />
+))
 
-const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSuccess, handleClose }) => {
+const ImageCropDialog = ({
+  open,
+  title,
+  cropperProps,
+  path,
+  fileName,
+  onUploadSuccess,
+  handleClose,
+}) => {
   const intl = useIntl()
   const firebase = useFirebase()
   const [src, setSrc] = useState(undefined)
@@ -18,29 +37,33 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
   const [file, setFile] = useState(undefined)
   let cropper = null
 
-  const handlePhotoURLUpload = photoUrl => {
+  const handlePhotoURLUpload = (photoUrl) => {
     setIsUploading(true)
     setUploadProgress(0)
 
-    const uploadTask = firebase.storage().ref(`${path}/${fileName}`).putString(photoUrl, 'data_url')
+    const uploadTask = firebase
+      .storage()
+      .ref(`${path}/${fileName}`)
+      .putString(photoUrl, 'data_url')
 
     uploadTask.on(
       firebase.firebase_.storage.TaskEvent.STATE_CHANGED,
-      snapshot => {
+      (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         setIsUploading(true)
         setUploadProgress(progress)
       },
-      error => console.log(error),
+      (error) => console.log(error),
       () => {
         setIsUploading(false)
         setUploadProgress(100)
         setSrc(undefined)
         onUploadSuccess(uploadTask.snapshot)
-      })
+      }
+    )
   }
 
-  const handlePhotoULRChange = files => {
+  const handlePhotoULRChange = (files) => {
     const reader = new FileReader()
     reader.onload = () => {
       setSrc(reader.result)
@@ -61,18 +84,26 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
       TransitionComponent={Transition}
       open={open}
       onClose={handleOwnClose}
-      aria-labelledby='responsive-dialog-title'
+      aria-labelledby="responsive-dialog-title"
     >
       <AppBar style={{ position: 'relative' }}>
         <Toolbar>
-          <IconButton edge='start' color='inherit' onClick={handleOwnClose} aria-label='close'>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleOwnClose}
+            aria-label="close"
+          >
             <Close />
           </IconButton>
-          <Typography style={{ marginLeft: theme.spacing(2), flex: 1 }} variant='h6'>
+          <Typography
+            style={{ marginLeft: theme.spacing(2), flex: 1 }}
+            variant="h6"
+          >
             {title}
           </Typography>
           <Button
-            color='inherit'
+            color="inherit"
             disabled={!src || isUploading}
             onClick={() => handlePhotoURLUpload(cropper.crop())}
           >
@@ -81,7 +112,14 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
         </Toolbar>
       </AppBar>
 
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
         {!src && !isUploading && (
           <Dropzone onDrop={handlePhotoULRChange}>
             {({ getRootProps, getInputProps }) => {
@@ -92,18 +130,24 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
                     src
                       ? undefined
                       : {
-                        height: '50vh',
-                        width: '50vw',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderStyle: 'dashed',
-                        borderColor: theme.palette.secondary.main
-                      }
+                          height: '50vh',
+                          width: '50vw',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderStyle: 'dashed',
+                          borderColor: theme.palette.secondary.main,
+                        }
                   }
                 >
                   <input {...getInputProps()} />
-                  <Typography>{src ? file.name : intl.formatMessage({ id: 'drop_or_select_file_label' })}</Typography>
+                  <Typography>
+                    {src
+                      ? file.name
+                      : intl.formatMessage({
+                          id: 'drop_or_select_file_label',
+                        })}
+                  </Typography>
                 </div>
               )
             }}
@@ -113,7 +157,7 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
         {isUploading && (
           <div>
             <CircularProgress
-              variant='static'
+              variant="static"
               value={uploadProgress}
               style={{ width: 200, height: 200 }}
               size={50}
@@ -126,7 +170,9 @@ const ImageCropDialog = ({ open, title, cropperProps, path, fileName, onUploadSu
           <div style={{ maxWidth: '80vw', maxHeight: '80vh' }}>
             <Cropper
               src={src}
-              ref={ref => { cropper = ref }}
+              ref={(ref) => {
+                cropper = ref
+              }}
               aspectRatio={9 / 9}
               {...cropperProps}
             />

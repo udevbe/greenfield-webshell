@@ -5,7 +5,7 @@ import { useMediaQuery } from '@material-ui/core'
  * breakpoints in theme is static. It will break once you change the number of
  * breakpoints. See https://reactjs.org/docs/hooks-rules.html#only-call-hooks-at-the-top-level
  */
-export function useWidth (theme) {
+export function useWidth(theme) {
   const keys = [...theme.breakpoints.keys].reverse()
   return (
     keys.reduce((output, key) => {

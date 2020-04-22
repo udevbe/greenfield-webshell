@@ -5,6 +5,8 @@ import React from 'react'
  * @return {React.Component}
  * @constructor
  */
-const DrawerListSubheader = React.memo(({ subheader }) => (<div style={subheader.style}>{subheader.text}</div>))
+const DrawerListSubheader = React.memo(({ subheader }) => (
+  <div style={subheader.style}>{subheader.text}</div>
+))
 
 export default DrawerListSubheader

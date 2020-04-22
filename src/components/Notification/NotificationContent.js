@@ -15,67 +15,78 @@ const variantIcon = {
   success: CheckCircleIcon,
   warning: WarningIcon,
   error: ErrorIcon,
-  info: InfoIcon
+  info: InfoIcon,
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   success: {
-    backgroundColor: green[600]
+    backgroundColor: green[600],
   },
   error: {
-    backgroundColor: theme.palette.error.dark
+    backgroundColor: theme.palette.error.dark,
   },
   info: {
-    backgroundColor: lightBlue[600]
+    backgroundColor: lightBlue[600],
   },
   warning: {
-    backgroundColor: amber[700]
+    backgroundColor: amber[700],
   },
   icon: {
     fontSize: 24,
     opacity: 0.9,
-    flex: 'none'
+    flex: 'none',
   },
   message: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   messageText: {
-    paddingLeft: 5
-  }
+    paddingLeft: 5,
+  },
 }))
 
-const NotificationContent = React.memo(({ message, onClose, variant, ...other }) => {
-  const classes = useStyles()
-  const Icon = variantIcon[variant]
+const NotificationContent = React.memo(
+  ({ message, onClose, variant, ...other }) => {
+    const classes = useStyles()
+    const Icon = variantIcon[variant]
 
-  return (
-    <SnackbarContent
-      className={classes[variant]}
-      aria-describedby='client-snackbar'
-      message={
-        <span id='client-snackbar' className={classes.message}>
-          <Icon className={classes.icon} />
-          <Typography className={classes.messageText} variant='body1' align='center'>
-            {message}
-          </Typography>
-        </span>
-      }
-      action={[
-        <IconButton key='close' aria-label='close' color='inherit' onClick={onClose}>
-          <CloseIcon className={classes.icon} />
-        </IconButton>
-      ]}
-      {...other}
-    />
-  )
-})
+    return (
+      <SnackbarContent
+        className={classes[variant]}
+        aria-describedby="client-snackbar"
+        message={
+          <span id="client-snackbar" className={classes.message}>
+            <Icon className={classes.icon} />
+            <Typography
+              className={classes.messageText}
+              variant="body1"
+              align="center"
+            >
+              {message}
+            </Typography>
+          </span>
+        }
+        action={[
+          <IconButton
+            key="close"
+            aria-label="close"
+            color="inherit"
+            onClick={onClose}
+          >
+            <CloseIcon className={classes.icon} />
+          </IconButton>,
+        ]}
+        {...other}
+      />
+    )
+  }
+)
 
 NotificationContent.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
   onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired
+  variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired,
 }
 
 export default NotificationContent

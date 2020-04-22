@@ -18,40 +18,40 @@ import { useWidth } from '../../utils/theme'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    height: '100vh'
+    height: '100vh',
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    maxHeight: 64
+    maxHeight: 64,
   },
   menuButton: {
-    marginLeft: -12
+    marginLeft: -12,
   },
   toolbar: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    ...theme.mixins.toolbar
+    ...theme.mixins.toolbar,
   },
   content: {
     flex: 1,
     backgroundColor: theme.palette.background.default,
-    overflow: 'auto'
+    overflow: 'auto',
   },
 
   appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`
+    width: `calc(100% - ${drawerWidth}px)`,
   },
   hide: {
-    display: 'none'
+    display: 'none',
   },
   grow: {
-    flex: '1 1 auto'
-  }
+    flex: '1 1 auto',
+  },
 }))
 
 const Activity = ({
@@ -61,23 +61,23 @@ const Activity = ({
   appBarContent,
   isLoading,
   onBackClick,
-  mainRef
+  mainRef,
 }) => {
   const theme = useTheme()
   const classes = useStyles()
   const width = useWidth(theme)
   const intl = useIntl()
-  const drawer = useSelector(state => state.drawer, shallowEqual)
+  const drawer = useSelector((state) => state.drawer, shallowEqual)
   const [isOffline, setIsOffline] = useState(!window.navigator.onLine)
   window.onoffline = () => setIsOffline(true)
   window.ononline = () => setIsOffline(false)
-  const {
-    mobileOpen,
-    open
-  } = useSelector(({ drawer: { mobileOpen, open } }) => ({
-    mobileOpen,
-    open
-  }), shallowEqual)
+  const { mobileOpen, open } = useSelector(
+    ({ drawer: { mobileOpen, open } }) => ({
+      mobileOpen,
+      open,
+    }),
+    shallowEqual
+  )
   const dispatch = useDispatch()
 
   const handleDrawerMenuClick = () => {
@@ -98,14 +98,20 @@ const Activity = ({
   return (
     <div className={classes.root}>
       <Helmet>
-        <meta name='theme-color' content={theme.palette.primary.main} />
-        <meta name='apple-mobile-web-app-status-bar-style' content={theme.palette.primary.main} />
-        <meta name='msapplication-navbutton-color' content={theme.palette.primary.main} />
+        <meta name="theme-color" content={theme.palette.primary.main} />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content={theme.palette.primary.main}
+        />
+        <meta
+          name="msapplication-navbutton-color"
+          content={theme.palette.primary.main}
+        />
         <title>{pageTitle || 'Greenfield'}</title>
       </Helmet>
 
       <AppBar
-        color='default'
+        color="default"
         position={width !== 'sm' && width !== 'xs' ? 'absolute' : undefined}
         className={
           width !== 'sm' && width !== 'xs'
@@ -115,8 +121,8 @@ const Activity = ({
       >
         <Toolbar>
           <IconButton
-            color='inherit'
-            aria-label='open drawer'
+            color="inherit"
+            aria-label="open drawer"
             onClick={handleDrawerMenuClick}
             className={classNames(
               classes.menuButton,
@@ -127,21 +133,25 @@ const Activity = ({
             <MenuIcon />
           </IconButton>
           <IconButton
-            color='inherit'
-            aria-label='open drawer'
+            color="inherit"
+            aria-label="open drawer"
             onClick={onBackClick}
-            className={classNames(classes.menuButton, !onBackClick && classes.hide)}
+            className={classNames(
+              classes.menuButton,
+              !onBackClick && classes.hide
+            )}
           >
             <ChevronLeft />
           </IconButton>
-          {!onBackClick && drawer.open && false && <div style={{ marginRight: 32 }} />}
+          {!onBackClick && drawer.open && false && (
+            <div style={{ marginRight: 32 }} />
+          )}
 
-          {
-            appBarTitle &&
-            <Typography variant='h6' color='inherit' noWrap>
-                {appBarTitle}
-              </Typography>
-          }
+          {appBarTitle && (
+            <Typography variant="h6" color="inherit" noWrap>
+              {appBarTitle}
+            </Typography>
+          )}
 
           {appBarContent}
         </Toolbar>
@@ -155,15 +165,17 @@ const Activity = ({
             justifyContent: 'center',
             width: '100%',
             height: 17,
-            backgroundColor: theme.palette.error.light
+            backgroundColor: theme.palette.error.light,
           }}
         >
-          <Typography variant='subtitle2' color='textPrimary' noWrap>
+          <Typography variant="subtitle2" color="textPrimary" noWrap>
             {intl.formatMessage({ id: 'offline' })}
           </Typography>
         </div>
       )}
-      <main className={classes.content} ref={mainRef}>{children}</main>
+      <main className={classes.content} ref={mainRef}>
+        {children}
+      </main>
     </div>
   )
 }

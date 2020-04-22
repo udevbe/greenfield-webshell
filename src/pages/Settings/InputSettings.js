@@ -21,57 +21,77 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import IconButton from '@material-ui/core/IconButton'
 import { push } from 'connected-react-router'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   spacer: {
-    marginTop: theme.spacing(6)
-  }
+    marginTop: theme.spacing(6),
+  },
 }))
 
 const InputSettings = React.memo(() => {
   const dispatch = useDispatch()
 
-  const nrmlvoEntries = useSelector(({ compositor }) => compositor.seat.keyboard.nrmlvoEntries)
-  const defaultNrmlvo = useSelector(({ compositor }) => compositor.seat.keyboard.defaultNrmlvo)
+  const nrmlvoEntries = useSelector(
+    ({ compositor }) => compositor.seat.keyboard.nrmlvoEntries
+  )
+  const defaultNrmlvo = useSelector(
+    ({ compositor }) => compositor.seat.keyboard.defaultNrmlvo
+  )
   const isInitialized = useSelector(({ compositor }) => compositor.initialized)
 
   const keyboardLayoutNames = useRef(null)
-  keyboardLayoutNames.current = isInitialized ? nrmlvoEntries.map(nrmlvo => nrmlvo.name) : []
+  keyboardLayoutNames.current = isInitialized
+    ? nrmlvoEntries.map((nrmlvo) => nrmlvo.name)
+    : []
   const keyboardLayoutName = useSelector(({ compositor }) => {
     if (isInitialized) {
-      return compositor.userConfiguration.keyboardLayoutName || defaultNrmlvo.name
+      return (
+        compositor.userConfiguration.keyboardLayoutName || defaultNrmlvo.name
+      )
     } else {
       return ''
     }
   })
-  const handleKeyboardLayoutChange = (event, value) => { dispatch(updateUserShellConfiguration({ keyboardLayoutName: value })) }
+  const handleKeyboardLayoutChange = (event, value) => {
+    dispatch(updateUserShellConfiguration({ keyboardLayoutName: value }))
+  }
 
-  const scrollFactor = useSelector(({ compositor }) => compositor.userConfiguration.scrollFactor)
+  const scrollFactor = useSelector(
+    ({ compositor }) => compositor.userConfiguration.scrollFactor
+  )
   const [scrollSpeed, setScrollSpeed] = useState(scrollFactor * 100)
-  const handleScrollSpeedUpdate = value => { setScrollSpeed(value) }
-  const handleScrollSpeedCommit = value => { dispatch(updateUserShellConfiguration({ scrollFactor: scrollSpeed / 100 })) }
-  const handleScrollSpeedLabelUpdate = value => `${value}%`
+  const handleScrollSpeedUpdate = (value) => {
+    setScrollSpeed(value)
+  }
+  const handleScrollSpeedCommit = (value) => {
+    dispatch(updateUserShellConfiguration({ scrollFactor: scrollSpeed / 100 }))
+  }
+  const handleScrollSpeedLabelUpdate = (value) => `${value}%`
 
   const goToSettings = () => dispatch(push('/settings'))
-  const link = React.forwardRef((props, ref) =>
-    <RouterLink innerRef={ref} {...props} />)
+  const link = React.forwardRef((props, ref) => (
+    <RouterLink innerRef={ref} {...props} />
+  ))
   const classes = useStyles()
   // TODO i18n
   return (
     <Activity
-      pageTitle='Greenfield - Input Settings'
+      pageTitle="Greenfield - Input Settings"
       isLoading={!isInitialized}
       appBarContent={
         <>
           <IconButton onClick={goToSettings}>
-            <ArrowBackIcon fontSize='large' />
+            <ArrowBackIcon fontSize="large" />
           </IconButton>
-          <Breadcrumbs aria-label='breadcrumb'>
-            <Link underline='hover' color='inherit' component={link} to='/settings'>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="inherit"
+              component={link}
+              to="/settings"
+            >
               Settings
             </Link>
-            <Typography color='textPrimary'>
-              Input
-            </Typography>
+            <Typography color="textPrimary">Input</Typography>
           </Breadcrumbs>
         </>
       }
@@ -83,25 +103,23 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <Keyboard />
             </ListItemIcon>
-            <ListItemText
-              primary='Keyboard'
-            />
+            <ListItemText primary="Keyboard" />
           </ListItem>
-          <Divider variant='fullWidth' />
+          <Divider variant="fullWidth" />
           <ListItem>
             <Autocomplete
               loading={!isInitialized}
-              id='keyboard-layout'
+              id="keyboard-layout"
               disableClearable
               options={keyboardLayoutNames.current}
               defaultValue={keyboardLayoutName}
               style={{ width: '100%' }}
               onChange={handleKeyboardLayoutChange}
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
-                  label='Layout'
-                  variant='standard'
+                  label="Layout"
+                  variant="standard"
                   fullWidth
                 />
               )}
@@ -113,38 +131,40 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <Mouse />
             </ListItemIcon>
-            <ListItemText primary='Mouse' />
+            <ListItemText primary="Mouse" />
           </ListItem>
-          <Divider variant='fullWidth' />
+          <Divider variant="fullWidth" />
           <ListItem
             style={{
-              paddingBottom: 0
+              paddingBottom: 0,
             }}
           >
             <Typography
-              id='scroll-speed-slider'
+              id="scroll-speed-slider"
               gutterBottom={false}
-              variant='caption'
-              color='textSecondary'
+              variant="caption"
+              color="textSecondary"
             >
               Scroll Speed
             </Typography>
           </ListItem>
           <ListItem
             style={{
-              paddingTop: 0
+              paddingTop: 0,
             }}
           >
             <Slider
               min={1}
               max={300}
               step={1}
-              aria-labelledby='scroll-speed-slider'
-              valueLabelDisplay='on'
+              aria-labelledby="scroll-speed-slider"
+              valueLabelDisplay="on"
               value={scrollSpeed}
-              valueLabelFormat={value => handleScrollSpeedLabelUpdate(value)}
+              valueLabelFormat={(value) => handleScrollSpeedLabelUpdate(value)}
               onChange={(event, value) => handleScrollSpeedUpdate(value)}
-              onChangeCommitted={(event, value) => handleScrollSpeedCommit(value)}
+              onChangeCommitted={(event, value) =>
+                handleScrollSpeedCommit(value)
+              }
             />
           </ListItem>
 

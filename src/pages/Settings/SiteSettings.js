@@ -5,7 +5,12 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import { Link as RouterLink } from 'react-router-dom'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
-import { Container, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core'
+import {
+  Container,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+} from '@material-ui/core'
 import ListItem from '@material-ui/core/ListItem'
 import List from '@material-ui/core/List'
 import StyleIcon from '@material-ui/icons/Style'
@@ -27,13 +32,13 @@ import { updateLocale } from '../../store/locale/actions'
 import IconButton from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(3)
+    margin: theme.spacing(3),
   },
   wrapIcon: {
-    verticalAlign: 'middle'
-  }
+    verticalAlign: 'middle',
+  },
 }))
 
 const InputSettings = React.memo(() => {
@@ -41,31 +46,38 @@ const InputSettings = React.memo(() => {
   const dispatch = useDispatch()
 
   const currentThemeId = useSelector(({ themeSource }) => themeSource.themeId)
-  const onThemeChange = event => dispatch(updateTheme(event.target.value))
+  const onThemeChange = (event) => dispatch(updateTheme(event.target.value))
 
   const currentLocale = useSelector(({ locale }) => locale)
-  const onLocaleChange = event => dispatch(updateLocale(event.target.value))
+  const onLocaleChange = (event) => dispatch(updateLocale(event.target.value))
 
   const goToSettings = () => dispatch(push('/settings'))
-  const link = React.forwardRef((props, ref) =>
-    <RouterLink innerRef={ref} {...props} />)
+  const link = React.forwardRef((props, ref) => (
+    <RouterLink innerRef={ref} {...props} />
+  ))
   const classes = useStyles()
   // TODO i18n
   return (
     <Activity
-      pageTitle='Greenfield - Site Settings'
+      pageTitle="Greenfield - Site Settings"
       appBarContent={
         <>
           <IconButton onClick={goToSettings}>
-            <ArrowBackIcon fontSize='large' />
+            <ArrowBackIcon fontSize="large" />
           </IconButton>
-          <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-            <Link underline='hover' color='inherit' component={link} to='/settings'>
-            Settings
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
+          >
+            <Link
+              underline="hover"
+              color="inherit"
+              component={link}
+              to="/settings"
+            >
+              Settings
             </Link>
-            <Typography color='textPrimary'>
-            Site
-            </Typography>
+            <Typography color="textPrimary">Site</Typography>
           </Breadcrumbs>
         </>
       }
@@ -77,28 +89,36 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <StyleIcon />
             </ListItemIcon>
-            <ListItemText
-              primary='Theme'
-            />
+            <ListItemText primary="Theme" />
           </ListItem>
-          <Divider variant='fullWidth' />
+          <Divider variant="fullWidth" />
           <ListItem>
-            <FormControl component='fieldset' className={classes.formControl}>
-              <FormLabel component='legend'>{intl.formatMessage({ id: 'theme' })}</FormLabel>
-              <RadioGroup aria-label='theme' name='theme' value={currentThemeId} onChange={onThemeChange}>
-                {
-                  themes.map(({ id, color }) =>
-                    <FormControlLabel
-                      key={id}
-                      value={id}
-                      control={<Radio />}
-                      label={
-                        <Typography>
-                          <StyleIcon style={{ color }} className={classes.wrapIcon} /> {intl.formatMessage({ id })}
-                        </Typography>
-                      }
-                    />)
-                }
+            <FormControl component="fieldset" className={classes.formControl}>
+              <FormLabel component="legend">
+                {intl.formatMessage({ id: 'theme' })}
+              </FormLabel>
+              <RadioGroup
+                aria-label="theme"
+                name="theme"
+                value={currentThemeId}
+                onChange={onThemeChange}
+              >
+                {themes.map(({ id, color }) => (
+                  <FormControlLabel
+                    key={id}
+                    value={id}
+                    control={<Radio />}
+                    label={
+                      <Typography>
+                        <StyleIcon
+                          style={{ color }}
+                          className={classes.wrapIcon}
+                        />{' '}
+                        {intl.formatMessage({ id })}
+                      </Typography>
+                    }
+                  />
+                ))}
               </RadioGroup>
             </FormControl>
           </ListItem>
@@ -108,28 +128,34 @@ const InputSettings = React.memo(() => {
             <ListItemIcon>
               <LanguageIcon />
             </ListItemIcon>
-            <ListItemText
-              primary='Site Language'
-            />
+            <ListItemText primary="Site Language" />
           </ListItem>
-          <Divider variant='fullWidth' />
+          <Divider variant="fullWidth" />
           <ListItem>
-            <FormControl component='fieldset' className={classes.formControl}>
-              <FormLabel component='legend'>{intl.formatMessage({ id: 'language' })}</FormLabel>
-              <RadioGroup aria-label='locale' name='locale' value={currentLocale} onChange={onLocaleChange}>
-                {
-                  allLocales.map(({ locale }) =>
-                    <FormControlLabel
-                      key={locale}
-                      value={locale}
-                      control={<Radio />}
-                      label={
-                        <Typography>
-                          {intl.formatMessage({ id: locale })}
-                        </Typography>
-                      }
-                    />)
-                }
+            <FormControl component="fieldset" className={classes.formControl}>
+              <FormLabel component="legend">
+                {intl.formatMessage({ id: 'language' })}
+              </FormLabel>
+              <RadioGroup
+                aria-label="locale"
+                name="locale"
+                value={currentLocale}
+                onChange={onLocaleChange}
+              >
+                {allLocales.map(({ locale }) => (
+                  <FormControlLabel
+                    key={locale}
+                    value={locale}
+                    control={<Radio />}
+                    label={
+                      <Typography>
+                        {intl.formatMessage({
+                          id: locale,
+                        })}
+                      </Typography>
+                    }
+                  />
+                ))}
               </RadioGroup>
             </FormControl>
           </ListItem>

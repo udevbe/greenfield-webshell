@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux'
 
 export const useNotifySuccess = () => {
   const dispatch = useDispatch()
-  return (message) => dispatch(showNotification({ variant: 'success', message }))
+  return (message) =>
+    dispatch(showNotification({ variant: 'success', message }))
 }
 export const useNotifyInfo = () => {
   const dispatch = useDispatch()
