@@ -1,8 +1,4 @@
-import type {
-  ActionCreatorWithPayload,
-  AnyAction,
-  PayloadAction,
-} from '@reduxjs/toolkit'
+import type { AnyAction, PayloadAction } from '@reduxjs/toolkit'
 import { push } from 'connected-react-router'
 import { buffers, eventChannel, EventChannel } from 'redux-saga'
 import {
@@ -31,7 +27,6 @@ import {
   updateUserShellScene,
   updateUserShellSeat,
   updateUserShellSurface,
-  UserShellConfiguration,
 } from '../../store/compositor'
 import type {
   UserShellSurface,
@@ -39,6 +34,7 @@ import type {
   UserShellClient,
   UserShellScene,
   UserShellSeat,
+  UserShellConfiguration,
 } from '../../store/compositor'
 import { showNotification } from '../../store/notification'
 import {
@@ -54,8 +50,11 @@ import {
   requestSurfaceActive,
   updateSceneName,
 } from './actions'
-import compositorApi, {
+import type {
   CompositorApiEventCallbacks,
+  UserShellSurfaceKey,
+} from './CompositorApi'
+import compositorApi, {
   compositorKeyboardDefaultNrmlvo,
   compositorKeyboardNrmlvoEntries,
   createCompositor,
@@ -70,7 +69,6 @@ import compositorApi, {
   refreshCompositorScene,
   requestCompositorSurfaceActive,
   updateCompositorConfiguration,
-  UserShellSurfaceKey,
 } from './CompositorApi'
 import {
   userShellSceneByLastActive,
@@ -209,28 +207,28 @@ function* watchUserSurfaceUpdate() {
   yield takeLatest(onUpdateUserShellSurface, handleUserSurfaceUpdate)
 }
 
-// @ts-ignore
 function* watchActiveUserSurface() {
-  /**
-   * @type {UserShellSurface|null}
-   */
-  let currentActiveSurfaceKey = null
+  let currentActiveSurfaceKey: UserShellSurfaceKey | undefined = undefined
   let currentActiveSurfaceLastActive = 0
 
   while (true) {
     const [
-      updatedSurfaceAction,
-      destroyedSurfaceAction,
-      updateSeatAction,
+      updateUserShellSurfaceAction,
+      deleteUserShellSurfaceAction,
+      updateUserShellSeatAction,
+    ]: [
+      PayloadAction<Pick<UserShellSurface, 'key'> & Partial<UserShellSurface>>,
+      PayloadAction<Pick<UserShellSurface, 'key'>>,
+      PayloadAction<Partial<UserShellSeat>>
     ] = yield race([
       take(updateUserShellSurface),
       take(deleteUserShellSurface),
       take(updateUserShellSeat),
     ])
 
-    if (updateSeatAction) {
+    if (updateUserShellSeatAction) {
       const pointerGrabUserSurfaceKey =
-        updateSeatAction.payload.seat.pointerGrab
+        updateUserShellSeatAction.payload.pointerGrab
 
       if (
         (pointerGrabUserSurfaceKey &&
@@ -249,43 +247,49 @@ function* watchActiveUserSurface() {
       continue
     }
 
-    if (destroyedSurfaceAction) {
-      const destroyedUserSurfaceKey = destroyedSurfaceAction.payload.key
+    if (deleteUserShellSurfaceAction) {
+      const destroyedUserSurfaceKey = deleteUserShellSurfaceAction.payload.key
 
       if (
         currentActiveSurfaceKey &&
         destroyedUserSurfaceKey === currentActiveSurfaceKey
       ) {
-        currentActiveSurfaceKey = null
+        currentActiveSurfaceKey = undefined
         currentActiveSurfaceLastActive = 0
       }
 
       continue
     }
 
-    if (updatedSurfaceAction) {
-      const updatedSurface = updatedSurfaceAction.payload.surface
+    if (updateUserShellSurfaceAction) {
+      const updatedSurface = updateUserShellSurfaceAction.payload
 
       if (
         currentActiveSurfaceKey &&
         updatedSurface.key === currentActiveSurfaceKey &&
         !updatedSurface.active
       ) {
-        yield call(notifyCompositorSurfaceInactive, currentActiveSurfaceKey)
-        currentActiveSurfaceKey = null
+        yield call(notifyCompositorSurfaceInactive, {
+          key: currentActiveSurfaceKey,
+        })
+        currentActiveSurfaceKey = undefined
         currentActiveSurfaceLastActive = 0
       } else if (!currentActiveSurfaceKey && updatedSurface.active) {
         currentActiveSurfaceKey = updatedSurface.key
-        currentActiveSurfaceLastActive = updatedSurface.lastActive
+        currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
       } else if (
         currentActiveSurfaceKey &&
         updatedSurface.key !== currentActiveSurfaceKey &&
-        updatedSurface.lastActive > currentActiveSurfaceLastActive
+        (updatedSurface?.lastActive ?? 0) > currentActiveSurfaceLastActive
       ) {
-        const oldActiveUserSurfaceKey = currentActiveSurfaceKey
+        const oldActiveUserSurfaceKey:
+          | UserShellSurfaceKey
+          | undefined = currentActiveSurfaceKey
         currentActiveSurfaceKey = updatedSurface.key
-        currentActiveSurfaceLastActive = updatedSurface.lastActive
-        yield call(notifyCompositorSurfaceInactive, oldActiveUserSurfaceKey)
+        currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
+        yield call(notifyCompositorSurfaceInactive, {
+          key: oldActiveUserSurfaceKey,
+        })
       }
     }
   }

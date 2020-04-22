@@ -17,7 +17,6 @@ import createSagaMiddleware from 'redux-saga'
 import { createBrowserHistory } from 'history'
 import { routerMiddleware } from 'connected-react-router'
 import compositorSaga from '../middleware/compositor/compositorSaga'
-import sharedSceneSaga from '../middleware/compositor/sharedSceneSaga'
 
 const persistConfig = {
   key: 'root',
@@ -59,7 +58,6 @@ export default () => {
   const persistor = persistStore(store)
 
   sagaMiddleware.run(compositorSaga)
-  sagaMiddleware.run(sharedSceneSaga)
 
   return { store, persistor, history }
 }

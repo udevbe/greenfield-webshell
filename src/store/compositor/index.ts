@@ -18,24 +18,17 @@ export interface UserShellSurfaceView {
 }
 
 export interface LocalUserShellSceneState {
-  sharing: 'public' | 'private'
+  sharing: 'private'
   sharedWith: string[]
-}
-
-export interface RemoteUserShellSceneState {
-  sharedWith: string[]
-  sharedBy: string
-  access: 'pending' | 'granted' | 'denied'
-  scaling: { x: number; y: number }
 }
 
 export interface UserShellScene {
   views: UserShellSurfaceView[]
   name: string
   id: string
-  type: 'local' | 'remote'
+  type: 'local'
   lastActive: number
-  state: LocalUserShellSceneState | RemoteUserShellSceneState
+  state: LocalUserShellSceneState
 }
 
 export type UserShellClient = CompositorClient
@@ -197,20 +190,6 @@ const reducers = {
     state.peer.id = peer.id
   },
 
-  setRemoteSceneScaling: (
-    state: UserShellCompositorState,
-    {
-      payload: { scene, state: sceneState },
-    }: PayloadAction<{
-      scene: Pick<UserShellScene, 'id'>
-      state: Pick<RemoteUserShellSceneState, 'scaling'>
-    }>
-  ): void => {
-    const remoteUserShellSceneState = state.scenes[scene.id]
-      .state as RemoteUserShellSceneState
-    remoteUserShellSceneState.scaling = sceneState.scaling
-  },
-
   updateUserShellScene: (
     state: UserShellCompositorState,
     {
@@ -248,10 +227,6 @@ export const {
   createUserShellScene,
   updateUserShellScene,
   deleteUserShellScene,
-
-  createPeer,
-
-  setRemoteSceneScaling,
 } = slice.actions
 
 export default slice.reducer
