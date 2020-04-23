@@ -1,26 +1,57 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component, useState } from 'react'
+import type { CSSProperties, FunctionComponent } from 'react'
 import common from '@material-ui/core/colors/common'
 import grey from '@material-ui/core/colors/grey'
 import BrokenImage from '@material-ui/icons/BrokenImage'
 import Skeleton from '@material-ui/lab/Skeleton'
 
-/**
- * Images are ugly until they're loaded. Materialize it with material image! It will fade in like the material image loading pattern suggests.
- * @see [Image loading patterns](https://material.io/guidelines/patterns/loading-images.html)
- */
-const Image = ({
-  animationDuration,
-  aspectRatio,
-  color,
+const Image: FunctionComponent<{
+  /** Duration of the fading animation, in milliseconds. */
+  animationDuration?: number
+  /** Override aspect ratio. */
+  aspectRatio?: number
+  /** Set image alt. */
+  alt?: string
+  /** Override the background color. */
+  color?: string
+  /** Disables the error icon if set to true. */
+  disableError?: boolean
+  /** Disables the loading spinner if set to true. */
+  disableSpinner?: boolean
+  /** Disables the transition after load if set to true. */
+  disableTransition?: boolean
+  /** Override the error icon. */
+  errorIcon?: Component
+  /** Override the inline-styles of the container that contains the loading spinner and the error icon. */
+  iconContainerStyle?: object
+  /** Override the inline-styles of the image. */
+  imageStyle?: object
+  /** Override the loading component. */
+  loading?: Component
+  /** Fired when the user clicks on the image happened. */
+  onClick?: (...args: any[]) => any
+  /** Fired when the image failed to load. */
+  onError?: (...args: any[]) => any
+  /** Fired when the image finished loading. */
+  onLoad?: (...args: any[]) => any
+  /** Specifies the URL of an image. */
+  src: string
+  /** Override the inline-styles of the root element. */
+  style?: CSSProperties
+}> = ({
+  animationDuration = 1500,
+  aspectRatio = 1,
+  color = common.white,
   imageStyle,
-  disableTransition,
+  disableTransition = false,
   iconContainerStyle,
   style,
-  disableError,
-  disableSpinner,
-  errorIcon,
-  loading,
+  disableError = false,
+  disableSpinner = false,
+  errorIcon = (
+    <BrokenImage style={{ width: 48, height: 48, color: grey[300] }} />
+  ),
+  loading = <Skeleton variant="rect" width={320} height={200} />,
   onLoad,
   onClick,
   onError,
@@ -30,7 +61,11 @@ const Image = ({
   const [imageError, setImageError] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  const getStyles = () => {
+  const getStyles = (): {
+    root: CSSProperties
+    image: CSSProperties
+    iconContainer: CSSProperties
+  } => {
     const imageTransition = !disableTransition && {
       opacity: imageLoaded ? 1 : 0,
       filterBrightness: imageLoaded ? 100 : 0,
@@ -108,54 +143,6 @@ const Image = ({
       </div>
     </div>
   )
-}
-
-Image.defaultProps = {
-  animationDuration: 1500,
-  aspectRatio: 1,
-  color: common.white,
-  disableError: false,
-  disableSpinner: false,
-  disableTransition: false,
-  errorIcon: (
-    <BrokenImage style={{ width: 48, height: 48, color: grey[300] }} />
-  ),
-  loading: <Skeleton variant="rect" width={320} height={200} />,
-}
-
-Image.propTypes = {
-  /** Duration of the fading animation, in milliseconds. */
-  animationDuration: PropTypes.number,
-  /** Override aspect ratio. */
-  aspectRatio: PropTypes.number,
-  /** Set image alt. */
-  alt: PropTypes.string,
-  /** Override the background color. */
-  color: PropTypes.string,
-  /** Disables the error icon if set to true. */
-  disableError: PropTypes.bool,
-  /** Disables the loading spinner if set to true. */
-  disableSpinner: PropTypes.bool,
-  /** Disables the transition after load if set to true. */
-  disableTransition: PropTypes.bool,
-  /** Override the error icon. */
-  errorIcon: PropTypes.node,
-  /** Override the inline-styles of the container that contains the loading spinner and the error icon. */
-  iconContainerStyle: PropTypes.object,
-  /** Override the inline-styles of the image. */
-  imageStyle: PropTypes.object,
-  /** Override the loading component. */
-  loading: PropTypes.node,
-  /** Fired when the user clicks on the image happened. */
-  onClick: PropTypes.func,
-  /** Fired when the image failed to load. */
-  onError: PropTypes.func,
-  /** Fired when the image finished loading. */
-  onLoad: PropTypes.func,
-  /** Specifies the URL of an image. */
-  src: PropTypes.string.isRequired,
-  /** Override the inline-styles of the root element. */
-  style: PropTypes.object,
 }
 
 export default Image

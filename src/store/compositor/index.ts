@@ -49,6 +49,10 @@ export interface UserShellConfiguration {
   keyboardLayoutName?: string
 }
 
+export interface UserShellScenesById {
+  [key: string]: UserShellScene
+}
+
 export interface UserShellCompositorState {
   clients: { [key: string]: UserShellClient }
   peer: { id?: string }
@@ -57,7 +61,7 @@ export interface UserShellCompositorState {
   seat: UserShellSeat
   surfaces: { [key: string]: UserShellSurface }
   configuration: UserShellConfiguration
-  scenes: { [key: string]: UserShellScene }
+  scenes: UserShellScenesById
 }
 
 // TODO add app launch error state

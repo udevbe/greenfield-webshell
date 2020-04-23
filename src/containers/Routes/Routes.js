@@ -13,7 +13,6 @@ const Workspace = lazy(() => import('../../pages/Workspace'))
 const WorkspaceScene = lazy(() =>
   import('../../pages/Workspace/WorkspaceScene')
 )
-const RemoteScene = lazy(() => import('../../pages/Workspace/RemoteScene'))
 
 const WebStore = lazy(() => import('../../pages/WebStore/WebStore'))
 const AboutApp = lazy(() => import('../../pages/WebStore/AppDetails'))
@@ -73,13 +72,6 @@ export const Routes = React.memo(() => {
           ,
           <RestrictedRoute type="private" path="/workspace/:id" exact>
             <WorkspaceScene />
-          </RestrictedRoute>
-          <RestrictedRoute
-            type="private"
-            path="/workspace/remote/:id/:peerId"
-            exact
-          >
-            <RemoteScene />
           </RestrictedRoute>
           ,
           <RestrictedRoute type="private" path="/webstore" exact>

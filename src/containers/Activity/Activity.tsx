@@ -3,6 +3,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft'
 import IconButton from '@material-ui/core/IconButton'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import MenuIcon from '@material-ui/icons/Menu'
+import type { FunctionComponent, ReactNode, RefObject } from 'react'
 import React, { useState } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
@@ -13,7 +14,7 @@ import { Helmet } from 'react-helmet'
 import { useIntl } from 'react-intl'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useTheme } from '@material-ui/core/styles'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { useWidth } from '../../utils/theme'
 
 const drawerWidth = 240
@@ -54,12 +55,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Activity = ({
+const Activity: FunctionComponent<{
+  children?: ReactNode
+  appBarTitle?: string
+  pageTitle?: string
+  appBarContent?: ReactNode
+  isLoading?: boolean
+  onBackClick?: () => void
+  mainRef?: RefObject<HTMLElement>
+}> = ({
   children,
   appBarTitle,
   pageTitle,
   appBarContent,
-  isLoading,
+  isLoading = false,
   onBackClick,
   mainRef,
 }) => {
@@ -180,4 +189,4 @@ const Activity = ({
   )
 }
 
-export default Activity
+export default React.memo(Activity)

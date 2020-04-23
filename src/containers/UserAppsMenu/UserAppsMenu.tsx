@@ -8,6 +8,7 @@ import {
   Menu,
   Typography,
 } from '@material-ui/core'
+import type { ComponentProps, FunctionComponent, RefObject } from 'react'
 import React, { useState } from 'react'
 import AppsIcon from '@material-ui/icons/Apps'
 import Link from '@material-ui/core/Link'
@@ -17,7 +18,7 @@ import { useUserAppIds, useUserAppsLoading } from '../../database/hooks'
 import { useFirebase } from 'react-redux-firebase'
 import { ApplicationLauncherTile } from '../../components/UserAppsMenu'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     minHeight: 100,
   },
@@ -30,18 +31,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const WebstoreLink = React.forwardRef((props, ref) => (
-  <RouterLink innerRef={ref} {...props} />
-))
+const WebstoreLink = React.forwardRef<HTMLElement, ComponentProps<any>>(
+  (props, ref) => <RouterLink {...props} to="/webstore" innerRef={ref} />
+)
 
-const UserAppsMenu = React.memo(({ anchorElRef }) => {
+const UserAppsMenu: FunctionComponent<{
+  anchorElRef: RefObject<HTMLElement>
+}> = ({ anchorElRef }) => {
   const firebase = useFirebase()
-  const uid = useUserId()
-  const userAppIds = useUserAppIds(firebase, uid)
-  const isLoading = useUserAppsLoading(firebase, uid)
+  const uid: string = useUserId()
+  const userAppIds: string[] = useUserAppIds(firebase, uid)
+  const isLoading: boolean = useUserAppsLoading(uid)
 
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const handleClick = () => setAnchorEl(anchorElRef.current)
   const handleClose = () => setAnchorEl(null)
@@ -88,7 +91,6 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
                 No applications here. Visit the{' '}
                 <Link
                   component={WebstoreLink}
-                  to="/webstore"
                   underline="always"
                   color="inherit"
                 >
@@ -108,6 +110,6 @@ const UserAppsMenu = React.memo(({ anchorElRef }) => {
       </Menu>
     </>
   )
-})
+}
 
-export default UserAppsMenu
+export default React.memo(UserAppsMenu)

@@ -1,19 +1,21 @@
-import * as React from 'react'
-import Tabs from '@material-ui/core/Tabs'
+import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
 import Tab from '@material-ui/core/Tab'
-import { makeStyles } from '@material-ui/styles'
-import { useDispatch, useSelector } from 'react-redux'
+import Tabs from '@material-ui/core/Tabs'
 import { Add, Delete, Edit } from '@material-ui/icons'
+import SpeedDial from '@material-ui/lab/SpeedDial'
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon'
-import SpeedDial from '@material-ui/lab/SpeedDial'
-import { Box, ClickAwayListener, Toolbar } from '@material-ui/core'
-import EditScene from './EditScene'
+import { makeStyles } from '@material-ui/core/styles'
+import type { FunctionComponent } from 'react'
+import * as React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   activateScene,
   createScene,
   deleteScene,
 } from '../../middleware/compositor/actions'
+import type { UserShellScene } from '../../store/compositor'
+import EditScene from './EditScene'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,23 +39,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const SceneTabs = React.memo(({ id }) => {
+const SceneTabs: FunctionComponent<{
+  scene: Pick<UserShellScene, 'id'>
+}> = ({ scene }) => {
   const dispatch = useDispatch()
 
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
   const [editSceneOpen, setEditSceneOpen] = React.useState(false)
 
-  const scenes = useSelector(({ compositor }) => compositor.scenes)
+  const scenes = useSelector(
+    ({ compositor }): UserShellScene[] => compositor.scenes
+  )
 
   const handleEditSceneClose = () => setEditSceneOpen(false)
   const handleSpeedDialClose = () => setSpeedDialOpen(false)
   const handleSpeedDialOpen = () => setSpeedDialOpen(true)
 
   const addScene = () =>
-    dispatch(createScene({ scene: { name: 'new scene', type: 'local' } }))
-  const removeScene = () => dispatch(deleteScene({ scene: { id } }))
+    dispatch(createScene({ name: 'new scene', type: 'local' }))
+  const removeScene = () => dispatch(deleteScene(scene))
   const editScene = () => setEditSceneOpen(true)
-  const makeSceneActive = (id) => dispatch(activateScene({ scene: { id } }))
+  const makeSceneActive = (scene: Pick<UserShellScene, 'id'>) =>
+    dispatch(activateScene(scene))
 
   const sceneActionOptions = [
     Object.keys(scenes).length > 1
@@ -78,23 +85,23 @@ const SceneTabs = React.memo(({ id }) => {
       <EditScene
         open={editSceneOpen}
         handleClose={handleEditSceneClose}
-        id={id}
+        scene={scene}
       />
       <Toolbar className={classes.sceneTabsContainer}>
         <Tabs
           className={classes.sceneTabs}
           variant="fullWidth"
-          value={id}
+          value={scene.id}
           classes={{
             indicator: classes.tabIndicator,
           }}
         >
-          {Object.entries(scenes).map(([sceneId, scene]) => (
+          {Object.values(scenes).map((scene) => (
             <Tab
-              key={sceneId}
+              key={scene.id}
               label={scene.name}
-              value={sceneId}
-              onClick={() => makeSceneActive(sceneId)}
+              value={scene.id}
+              onClick={() => makeSceneActive(scene)}
             />
           ))}
         </Tabs>
@@ -109,9 +116,6 @@ const SceneTabs = React.memo(({ id }) => {
             onOpen={handleSpeedDialOpen}
             open={speedDialOpen}
             direction="up"
-            fab={{
-              size: 'large',
-            }}
           >
             {sceneActionOptions.map((sceneActionOption) =>
               sceneActionOption ? (
@@ -135,6 +139,6 @@ const SceneTabs = React.memo(({ id }) => {
       </Toolbar>
     </Box>
   )
-})
+}
 
-export default SceneTabs
+export default React.memo(SceneTabs)

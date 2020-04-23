@@ -1,17 +1,24 @@
-import React, { useRef } from 'react'
-import AppsIcon from '@material-ui/icons/Apps'
-import Activity from '../../containers/Activity'
-import UserAppsMenu from '../../containers/UserAppsMenu'
-import { useDispatch, useSelector } from 'react-redux'
-import UserSurfaceTab from '../../components/Workspace/UserSurfaceTab'
-import Tabs from '@material-ui/core/Tabs'
-import { makeStyles } from '@material-ui/styles'
 import Backdrop from '@material-ui/core/Backdrop'
+import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
-import Scene from '../../components/Workspace/Scene'
+import AppsIcon from '@material-ui/icons/Apps'
+import { makeStyles } from '@material-ui/core/styles'
+import type { FunctionComponent } from 'react'
+import React, { useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
+import Scene from '../../components/Workspace/Scene'
+import UserSurfaceTab from '../../components/Workspace/UserSurfaceTab'
+import Activity from '../../containers/Activity'
+import UserAppsMenu from '../../containers/UserAppsMenu'
 import { markSceneLastActive } from '../../middleware/compositor/actions'
+import type { UserShellSurfaceKey } from '../../middleware/compositor/CompositorApi'
+import type {
+  UserShellScene,
+  UserShellSurface,
+  UserShellSurfaceView,
+} from '../../store/compositor'
 
 const useStyles = makeStyles((theme) => ({
   tabsTop: {
@@ -41,27 +48,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const WorkspaceScene = React.memo(() => {
+const WorkspaceScene: FunctionComponent = () => {
   const { id } = useParams()
+  if (id == null) {
+    throw new Error('Scene id must be set.')
+  }
+
+  const scene: Pick<UserShellScene, 'id'> = { id }
   const dispatch = useDispatch()
 
   const compositorInitialized = useSelector(
     ({ compositor }) => compositor.initialized
   )
-  const sceneSurfaceKeys = useSelector(({ compositor }) =>
-    compositor.scenes[id]
-      ? compositor.scenes[id].views.map(
-          (userSurfaceView) => userSurfaceView.surfaceKey
-        )
-      : []
+  const sceneSurfaceKeys: UserShellSurfaceKey[] = useSelector(
+    ({ compositor }) =>
+      compositor.scenes[scene.id]?.views.map(
+        (view: UserShellSurfaceView) => view.surfaceKey
+      ) ?? []
   )
-  const sceneUserSurfaces = useSelector(({ compositor }) =>
-    Object.values(compositor.surfaces).filter((userSurface) =>
-      sceneSurfaceKeys.includes(userSurface.key)
+  const sceneSurfaces: UserShellSurface[] = useSelector(({ compositor }) =>
+    Object.values<UserShellSurface>(
+      compositor.surfaces
+    ).filter((surface: UserShellSurface) =>
+      sceneSurfaceKeys.includes(surface.key)
     )
   )
 
-  const activeSceneUserSurface = sceneUserSurfaces.find(
+  const activeSceneUserSurface = sceneSurfaces.find(
     (userSurface) => userSurface.active
   )
   const sceneExists = useSelector(
@@ -69,7 +82,7 @@ const WorkspaceScene = React.memo(() => {
   )
   const lastActiveSceneId = useSelector(({ compositor }) => {
     if (sceneExists) {
-      return Object.values(
+      return Object.values<UserShellScene>(
         compositor.scenes
       ).reduce((previousValue, currentValue) =>
         previousValue.lastActive > currentValue.lastActive
@@ -82,11 +95,11 @@ const WorkspaceScene = React.memo(() => {
   })
 
   if (sceneExists && lastActiveSceneId !== id) {
-    dispatch(markSceneLastActive({ id, lastActive: Date.now() }))
+    dispatch(markSceneLastActive({ id }))
   }
 
   // TODO i18n
-  const mainRef = useRef(null)
+  const mainRef = useRef<HTMLElement>(null)
   const classes = useStyles()
   return (
     <Activity
@@ -99,14 +112,8 @@ const WorkspaceScene = React.memo(() => {
             variant="fullWidth"
             value={activeSceneUserSurface ? activeSceneUserSurface.key : false}
           >
-            {sceneUserSurfaces.map(({ key, title }) => {
-              return (
-                <UserSurfaceTab
-                  key={key}
-                  value={key}
-                  userSurfaceTitle={title}
-                />
-              )
+            {sceneSurfaces.map((surface) => {
+              return <UserSurfaceTab key={surface.key} surface={surface} />
             })}
           </Tabs>
           <UserAppsMenu anchorElRef={mainRef} />
@@ -114,7 +121,7 @@ const WorkspaceScene = React.memo(() => {
       }
       mainRef={mainRef}
     >
-      {sceneExists && sceneUserSurfaces.length === 0 && (
+      {sceneExists && sceneSurfaces.length === 0 && (
         <Backdrop
           open
           className={classes.backdrop}
@@ -140,9 +147,9 @@ const WorkspaceScene = React.memo(() => {
         </Backdrop>
       )}
       {/* TODO render all scenes stacked and update order using the scene tabs. This fixes the flash when creating a new scene. */}
-      {sceneExists && <Scene id={id} />}
+      {sceneExists && <Scene scene={scene} />}
     </Activity>
   )
-})
+}
 
-export default WorkspaceScene
+export default React.memo(WorkspaceScene)

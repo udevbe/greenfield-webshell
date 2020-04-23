@@ -1,3 +1,4 @@
+import type { FunctionComponent } from 'react'
 import React from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -6,10 +7,17 @@ import TextField from '@material-ui/core/TextField'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateSceneName } from '../../middleware/compositor/actions'
+import type { UserShellScene } from '../../store/compositor'
 
-const EditScene = React.memo(({ open, handleClose, id }) => {
+const EditScene: FunctionComponent<{
+  open: boolean
+  handleClose: () => void
+  scene: Pick<UserShellScene, 'id'>
+}> = ({ open, handleClose, scene }) => {
   const dispatch = useDispatch()
-  const sceneName = useSelector(({ compositor }) => compositor.scenes[id].name)
+  const sceneName = useSelector(
+    ({ compositor }): string => compositor.scenes[scene.id].name
+  )
 
   // TODO i18n
   return (
@@ -32,16 +40,12 @@ const EditScene = React.memo(({ open, handleClose, id }) => {
           fullWidth
           value={sceneName}
           onChange={(e) =>
-            dispatch(
-              updateSceneName({
-                scene: { id, name: e.target.value },
-              })
-            )
+            dispatch(updateSceneName({ ...scene, name: e.target.value }))
           }
         />
       </DialogContent>
     </Dialog>
   )
-})
+}
 
-export default EditScene
+export default React.memo(EditScene)

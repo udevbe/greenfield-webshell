@@ -26,18 +26,21 @@ const useStyles = makeStyles({
   },
 })
 
-export const ApplicationLauncher = React.memo(({ application, id }) => {
+export const ApplicationLauncher = React.memo<{
+  application: { icon: string; title: string; type: string; url: string }
+  id: string
+}>(({ application, id }) => {
   const { icon, title, type, url } = application
-  const [appIcon, setAppIcon] = useState(null)
+  const [appIcon, setAppIcon] = useState<string>()
   const dispatch = useDispatch()
   const firebase = useFirebase()
 
-  if (appIcon === null) {
+  if (appIcon == null) {
     firebase
       .storage()
       .refFromURL(icon)
       .getDownloadURL()
-      .then((iconURL) => setAppIcon(iconURL))
+      .then((iconURL: string) => setAppIcon(iconURL))
   }
 
   const onLaunchApplication = () => {

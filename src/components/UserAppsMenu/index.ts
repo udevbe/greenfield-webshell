@@ -1,2 +1,2 @@
-export { ApplicationLauncher } from './ApplicationLauncher.js'
+export { ApplicationLauncher } from './ApplicationLauncher'
 export { ApplicationLauncherTile } from './ApplicationLauncherTile'

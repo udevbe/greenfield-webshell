@@ -1,14 +1,17 @@
 import { useSelector } from 'react-redux'
 import { Redirect, useParams } from 'react-router'
 import React from 'react'
+import type { FunctionComponent } from 'react'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
+import type { UserShellScene } from '../../store/compositor'
 
-const Workspace = () => {
+const Workspace: FunctionComponent = () => {
   const { sceneId } = useParams()
   // TODO use reselect
-  const lastActiveSceneId = useSelector(({ compositor }) => {
+  const lastActiveSceneId = useSelector((state) => {
+    const compositor = state.compositor
     if (compositor.initialized) {
-      return Object.values(
+      return Object.values<UserShellScene>(
         compositor.scenes
       ).reduce((previousValue, currentValue) =>
         previousValue.lastActive > currentValue.lastActive
@@ -28,4 +31,4 @@ const Workspace = () => {
   }
 }
 
-export default Workspace
+export default React.memo(Workspace)
