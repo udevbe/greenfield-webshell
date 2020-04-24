@@ -1,3 +1,4 @@
+import type { FunctionComponent } from 'react'
 import React, { useState } from 'react'
 import { useFirebase } from 'react-redux-firebase'
 import { useUserId } from '../../utils/auth'
@@ -18,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { push } from 'connected-react-router'
 import { useDispatch } from 'react-redux'
 
-const useWebAppTileStyles = makeStyles((theme) => ({
+const useWebAppTileStyles = makeStyles(() => ({
   card: {
     height: '100%',
     display: 'flex',
@@ -42,9 +43,13 @@ const useWebAppTileStyles = makeStyles((theme) => ({
   },
 }))
 
-const WebAppTile = React.memo(({ appId, app, index }) => {
+const WebAppTile: FunctionComponent<{
+  appId: string
+  app: { about: string; icon: string; title: string; type: string; url: string }
+  index: number
+}> = ({ appId, app, index }) => {
   const dispatch = useDispatch()
-  const [icon, setIcon] = useState(null)
+  const [icon, setIcon] = useState<string | undefined>(undefined)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appId)
@@ -56,7 +61,7 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
       .storage()
       .refFromURL(app.icon)
       .getDownloadURL()
-      .then((iconURL) => setIcon(iconURL))
+      .then((iconURL: string) => setIcon(iconURL))
   }
 
   const removeApp = async () => {
@@ -88,7 +93,7 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
             <Typography gutterBottom variant="h6" align="center">
               {app.title}
             </Typography>
-            <Typography gutterBottom vaiant="caption" align="center" />
+            <Typography gutterBottom variant="caption" align="center" />
           </CardContent>
           <CardActions>
             {userAppLinkIdLoading ? (
@@ -120,6 +125,6 @@ const WebAppTile = React.memo(({ appId, app, index }) => {
       </Grid>
     </Grow>
   )
-})
+}
 
-export default WebAppTile
+export default React.memo(WebAppTile)

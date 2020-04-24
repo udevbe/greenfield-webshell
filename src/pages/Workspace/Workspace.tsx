@@ -1,33 +1,23 @@
-import { useSelector } from 'react-redux'
-import { Redirect, useParams } from 'react-router'
+import type { DefaultRootState } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import React from 'react'
 import type { FunctionComponent } from 'react'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
-import type { UserShellScene } from '../../store/compositor'
+import { activateLastActiveScene } from '../../middleware/compositor/actions'
+
+// TODO use reselect
+const compositorInitializing = (state: DefaultRootState) =>
+  !state.compositor.initialized
 
 const Workspace: FunctionComponent = () => {
-  const { sceneId } = useParams()
-  // TODO use reselect
-  const lastActiveSceneId = useSelector((state) => {
-    const compositor = state.compositor
-    if (compositor.initialized) {
-      return Object.values<UserShellScene>(
-        compositor.scenes
-      ).reduce((previousValue, currentValue) =>
-        previousValue.lastActive > currentValue.lastActive
-          ? previousValue
-          : currentValue
-      ).id
-    } else {
-      return null
-    }
-  })
-  if (lastActiveSceneId && sceneId == null) {
-    return <Redirect to={`/workspace/${lastActiveSceneId}`} push />
-  } else if (lastActiveSceneId) {
-    return <Redirect to={`/workspace/${sceneId}`} push />
-  } else {
+  const dispatch = useDispatch()
+  const isCompositorInitializing = useSelector(compositorInitializing)
+
+  if (isCompositorInitializing) {
     return <LoadingComponent />
+  } else {
+    dispatch(activateLastActiveScene())
+    return null
   }
 }
 

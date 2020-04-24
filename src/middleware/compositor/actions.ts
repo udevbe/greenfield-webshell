@@ -25,6 +25,10 @@ export const markSceneLastActive = createAction<
   'greenfield/compositor/markSceneLastActive'
 >('greenfield/compositor/markSceneLastActive')
 
+export const activateLastActiveScene = createAction(
+  'greenfield/compositor/activateLastActiveScene'
+)
+
 export const activateScene = createAction<
   Pick<UserShellScene, 'id'>,
   'greenfield/compositor/activateScene'

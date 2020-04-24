@@ -38,6 +38,7 @@ import type {
 } from '../../store/compositor'
 import { showNotification } from '../../store/notification'
 import {
+  activateLastActiveScene,
   activateScene,
   createScene,
   createUserShellCompositor,
@@ -71,6 +72,7 @@ import compositorApi, {
   updateCompositorConfiguration,
 } from './CompositorApi'
 import {
+  userShellSceneById,
   userShellSceneByLastActive,
   userShellSceneByLastActiveExcludingId,
   userShellSurfaceKeyByKeyboardFocus,
@@ -587,6 +589,15 @@ function* watchUpdateUserShellConfiguration() {
   )
 }
 
+function* handleActivateLastActiveScene() {
+  const lastActiveScene = yield select(userShellSceneByLastActive)
+  yield put(activateScene(lastActiveScene))
+}
+
+function* watchActivateLastActiveScene() {
+  yield takeLatest(activateLastActiveScene, handleActivateLastActiveScene)
+}
+
 export default function* rootSaga() {
   yield fork(watchLaunchWebApp)
   yield fork(watchLaunchRemoteApp)
@@ -615,4 +626,5 @@ export default function* rootSaga() {
 
   yield fork(watchUpdateUserShellConfiguration)
   yield fork(watchCreateUserShellCompositor)
+  yield fork(watchActivateLastActiveScene)
 }

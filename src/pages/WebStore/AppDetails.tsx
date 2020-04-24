@@ -1,3 +1,4 @@
+import type { FunctionComponent, ComponentProps } from 'react'
 import React, { useState } from 'react'
 import Activity from '../../containers/Activity'
 import IconButton from '@material-ui/core/IconButton'
@@ -23,7 +24,7 @@ import {
   useNotifySuccess,
 } from '../../utils/notify'
 import CardMedia from '@material-ui/core/CardMedia'
-import makeStyles from '@material-ui/core/styles/makeStyles'
+import { makeStyles } from '@material-ui/core'
 import Image from '../../components/Image'
 import { useDispatch, useSelector } from 'react-redux'
 import Skeleton from '@material-ui/lab/Skeleton'
@@ -39,12 +40,16 @@ const useStyles = makeStyles({
   },
 })
 
-const AppDetails = React.memo(() => {
+const WebstoreLink = React.forwardRef<HTMLElement, ComponentProps<any>>(
+  (props, ref) => <RouterLink {...props} to="/webstore" innerRef={ref} />
+)
+
+const AppDetails: FunctionComponent = () => {
   const dispatch = useDispatch()
   const { appid } = useParams()
   const [addAppBusy, setAddAppBusy] = useState(false)
-  const [aboutTxt, setAboutTxt] = useState(null)
-  const [icon, setIcon] = useState(null)
+  const [aboutTxt, setAboutTxt] = useState<string | undefined>(undefined)
+  const [icon, setIcon] = useState<string | undefined>(undefined)
   const firebase = useFirebase()
   const uid = useUserId()
   const userAppLinkId = useUserAppLinkId(firebase, uid, appid)
@@ -132,9 +137,7 @@ const AppDetails = React.memo(() => {
   }
 
   const goToWebStore = () => dispatch(push('/webstore'))
-  const link = React.forwardRef((props, ref) => (
-    <RouterLink innerRef={ref} {...props} />
-  ))
+
   const classes = useStyles()
   // TODO i18n
   return (
@@ -146,19 +149,13 @@ const AppDetails = React.memo(() => {
             <ArrowBackIcon fontSize="large" />
           </IconButton>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link
-              underline="hover"
-              color="inherit"
-              component={link}
-              to="/webstore"
-            >
+            <Link component={WebstoreLink} underline="hover" color="inherit">
               Web Store
             </Link>
             <Typography color="textPrimary">{appid}</Typography>
           </Breadcrumbs>
         </>
       }
-      style={{ maxHeight: '100%' }}
       isLoading={appTitle === null}
     >
       {appTitle && (
@@ -178,7 +175,7 @@ const AppDetails = React.memo(() => {
               >
                 <Image color="rgba(0,0,0,0)" src={icon} alt={appTitle} />
               </CardMedia>
-              <CardContent className={classes.cardContent}>
+              <CardContent>
                 <Typography gutterBottom variant="h5" align="center">
                   {appTitle}
                 </Typography>
@@ -213,6 +210,6 @@ const AppDetails = React.memo(() => {
       )}
     </Activity>
   )
-})
+}
 
-export default AppDetails
+export default React.memo(AppDetails)

@@ -47,8 +47,8 @@ const SceneTabs: FunctionComponent<{
   const [speedDialOpen, setSpeedDialOpen] = React.useState(false)
   const [editSceneOpen, setEditSceneOpen] = React.useState(false)
 
-  const scenes = useSelector(
-    ({ compositor }): UserShellScene[] => compositor.scenes
+  const scenes: { [key: string]: UserShellScene } = useSelector(
+    ({ compositor }) => compositor.scenes
   )
 
   const handleEditSceneClose = () => setEditSceneOpen(false)

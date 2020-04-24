@@ -35,7 +35,7 @@ const Image: FunctionComponent<{
   /** Fired when the image finished loading. */
   onLoad?: (...args: any[]) => any
   /** Specifies the URL of an image. */
-  src: string
+  src?: string
   /** Override the inline-styles of the root element. */
   style?: CSSProperties
 }> = ({

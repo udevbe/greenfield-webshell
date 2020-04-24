@@ -1,3 +1,4 @@
+import type { ComponentElement, FunctionComponent } from 'react'
 import React, { useRef, useState } from 'react'
 import Activity from '../../containers/Activity'
 import Container from '@material-ui/core/Container'
@@ -22,12 +23,23 @@ const useStyles = makeStyles((theme) => ({
 
 const appsListBatchSize = 10
 
-const WebStore = React.memo(() => {
+const WebStore: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const [webAppTiles, setWebAppTiles] = useState([])
+  const [webAppTiles, setWebAppTiles] = useState<ComponentElement<any, any>[]>(
+    []
+  )
 
   useFirebaseConnect([{ path: '/apps', storeAs: 'allApps' }])
-  const allApps = useSelector(({ firebase }) => firebase.ordered.allApps || [])
+  const allApps: {
+    key: string
+    value: {
+      about: string
+      icon: string
+      title: string
+      type: string
+      url: string
+    }
+  }[] = useSelector(({ firebase }) => firebase.ordered?.allApps ?? [])
 
   const loadMoreApps = () => {
     const additionalApps = allApps
@@ -59,7 +71,6 @@ const WebStore = React.memo(() => {
           </Breadcrumbs>
         </>
       }
-      style={{ maxHeight: '100%' }}
       mainRef={mainRef}
     >
       <Container className={classes.cardGrid} maxWidth={false}>
@@ -82,8 +93,6 @@ const WebStore = React.memo(() => {
       </Container>
     </Activity>
   )
-})
+}
 
-WebStore.propTypes = {}
-
-export default WebStore
+export default React.memo(WebStore)
