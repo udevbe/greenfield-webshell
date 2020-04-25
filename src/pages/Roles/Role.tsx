@@ -14,16 +14,16 @@ import IconButton from '@material-ui/core/IconButton'
 import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import Lock from '@material-ui/icons/Lock'
+import type { FunctionComponent } from 'react'
 import React, { useEffect, useState } from 'react'
 import RoleGrants from '../../containers/Roles/RoleGrants'
 import Save from '@material-ui/icons/Save'
 import Scrollbar from '../../components/Scrollbar/Scrollbar'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
-import classNames from 'classnames'
 import { useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { setDialogIsOpen } from '../../store/dialogs/actions'
+import { updateDialog } from '../../store/dialogs'
 import { useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
@@ -49,17 +49,17 @@ const useStyles = makeStyles((theme) => ({
 const emptyValues = { name: '', description: '' }
 
 // TODO use redux-form?
-export const Role = React.memo(() => {
+export const Role: FunctionComponent = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
-  const params = useParams()
-  const editType = params.editType ? params.editType : 'data'
-  const uid = params.uid ? params.uid : ''
+  const params = useParams<{ editType: string; uid: string }>()
+  const editType = params?.editType ?? 'data'
+  const uid = params?.uid ?? ''
   const dialogDeleteRole = useSelector(({ dialogs }) => dialogs.delete_role)
   const firebase = useFirebase()
 
   const [values, setValues] = useState(emptyValues)
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
     if (!values.name || values.name === '') {
@@ -78,32 +78,32 @@ export const Role = React.memo(() => {
   )
   useEffect(() => setValues(role), [role])
 
-  const clean = (obj) => {
+  const clean = (obj: { [key: string]: string }) => {
     Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key])
     return obj
   }
 
   const submit = () =>
     firebase
-      .database()
       .ref(`roles/${uid}`)
       .update(clean(values))
       .then(() => dispatch(push('/roles')))
-  const handleTabActive = (e, value) =>
+  const handleTabActive = (_: any, value: string) =>
     dispatch(push(`/roles/edit/${uid}/${value}`))
-  const handleValueChange = (name, value) =>
+  const handleValueChange = (name: string, value: string) =>
     setValues({ ...values, [name]: value })
 
   useFirebaseConnect([{ path: 'role_grants' }])
   const roleGrants = useSelector((state) => state.firebase.ordered.role_grants)
 
-  const handleClose = () => dispatch(setDialogIsOpen('delete_role', false))
+  const handleClose = () =>
+    dispatch(updateDialog({ id: 'delete_role', open: false }))
 
   const handleDelete = () => {
     if (uid) {
       Promise.all([
-        firebase.database().ref().child(`/role_grants/${uid}`).remove(),
-        firebase.database().ref().child(`/roles/${uid}`).remove(),
+        firebase.ref().child(`/role_grants/${uid}`).remove(),
+        firebase.ref().child(`/roles/${uid}`).remove(),
       ]).then(() => {
         handleClose()
         dispatch(goBack())
@@ -135,7 +135,9 @@ export const Role = React.memo(() => {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={() => dispatch(setDialogIsOpen('delete_role', true))}
+              onClick={() =>
+                dispatch(updateDialog({ id: 'delete_role', open: true }))
+              }
             >
               <Delete className="material-icons" />
             </IconButton>
@@ -143,7 +145,8 @@ export const Role = React.memo(() => {
         </div>
       }
       onBackClick={() => dispatch(push('/roles'))}
-      title={intl.formatMessage({ id: 'edit_role' })}
+      appBarTitle={intl.formatMessage({ id: 'edit_role' })}
+      pageTitle={intl.formatMessage({ id: 'edit_role' })}
     >
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
@@ -151,8 +154,8 @@ export const Role = React.memo(() => {
             <Tabs
               value={editType}
               onChange={handleTabActive}
-              fullWidth
               centered
+              variant={'fullWidth'}
             >
               <Tab
                 value="main"
@@ -171,10 +174,7 @@ export const Role = React.memo(() => {
                   flexDirection: 'column',
                 }}
               >
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                  error={!!errors.name}
-                >
+                <FormControl error={!!errors.name}>
                   <InputLabel htmlFor="name">
                     {intl.formatMessage({
                       id: 'name_label',
@@ -196,9 +196,7 @@ export const Role = React.memo(() => {
                   )}
                 </FormControl>
                 <br />
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                >
+                <FormControl>
                   <InputLabel htmlFor="description">
                     {intl.formatMessage({
                       id: 'description_label',
@@ -253,6 +251,6 @@ export const Role = React.memo(() => {
       </Dialog>
     </Activity>
   )
-})
+}
 
-export default Role
+export default React.memo(Role)

@@ -51,8 +51,8 @@ export const requestSurfaceActive = createAction<
 
 export const deleteClient = createAction<
   Pick<UserShellClient, 'id'>,
-  'greenfield/compositor/terminateClient'
->('greenfield/compositor/terminateClient')
+  'greenfield/compositor/deleteClient'
+>('greenfield/compositor/deleteClient')
 
 export const launchWebAppAction = createAction<
   { application: { title: string }; downloadURL: string },

@@ -72,7 +72,6 @@ import compositorApi, {
   updateCompositorConfiguration,
 } from './CompositorApi'
 import {
-  userShellSceneById,
   userShellSceneByLastActive,
   userShellSceneByLastActiveExcludingId,
   userShellSurfaceKeyByKeyboardFocus,

@@ -1,4 +1,5 @@
 import Activity from '../../containers/Activity'
+import type { ComponentProps, FunctionComponent } from 'react'
 import React, { useRef, useState } from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
@@ -14,12 +15,14 @@ import { makeStyles } from '@material-ui/core/styles'
 import Mouse from '@material-ui/icons/Mouse'
 import { ListItemIcon, ListItemText } from '@material-ui/core'
 import { Keyboard } from '@material-ui/icons'
+import type { DefaultRootState } from 'react-redux'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserShellConfiguration } from '../../store/compositor'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import IconButton from '@material-ui/core/IconButton'
 import { push } from 'connected-react-router'
+import type { nrmlvo } from 'compositor-module'
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -27,50 +30,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const InputSettings = React.memo(() => {
+const SettingsLink = React.forwardRef<HTMLElement, ComponentProps<any>>(
+  (props, ref) => <RouterLink to="/settings" innerRef={ref} {...props} />
+)
+
+const InputSettings: FunctionComponent = () => {
   const dispatch = useDispatch()
 
-  const nrmlvoEntries = useSelector(
-    ({ compositor }) => compositor.seat.keyboard.nrmlvoEntries
+  const nrmlvoEntries: nrmlvo[] = useSelector(
+    (state) => state.compositor.seat.keyboard.nrmlvoEntries
   )
   const defaultNrmlvo = useSelector(
-    ({ compositor }) => compositor.seat.keyboard.defaultNrmlvo
+    (state) => state.compositor.seat.keyboard.defaultNrmlvo
   )
   const isInitialized = useSelector(({ compositor }) => compositor.initialized)
 
-  const keyboardLayoutNames = useRef(null)
+  const keyboardLayoutNames = useRef<string[]>([])
   keyboardLayoutNames.current = isInitialized
     ? nrmlvoEntries.map((nrmlvo) => nrmlvo.name)
     : []
-  const keyboardLayoutName = useSelector(({ compositor }) => {
+  const keyboardLayoutName = useSelector((state: DefaultRootState) => {
     if (isInitialized) {
       return (
-        compositor.userConfiguration.keyboardLayoutName || defaultNrmlvo.name
+        state.compositor.configuration?.keyboardLayoutName ?? defaultNrmlvo.name
       )
     } else {
       return ''
     }
   })
-  const handleKeyboardLayoutChange = (event, value) => {
-    dispatch(updateUserShellConfiguration({ keyboardLayoutName: value }))
+  const handleKeyboardLayoutChange = (_: any, value: string | null) => {
+    if (value) {
+      dispatch(updateUserShellConfiguration({ keyboardLayoutName: value }))
+    }
   }
 
   const scrollFactor = useSelector(
-    ({ compositor }) => compositor.userConfiguration.scrollFactor
+    (state: DefaultRootState) =>
+      state.compositor.configuration?.scrollFactor ?? 1
   )
   const [scrollSpeed, setScrollSpeed] = useState(scrollFactor * 100)
-  const handleScrollSpeedUpdate = (value) => {
+  const handleScrollSpeedUpdate = (value: number) => {
     setScrollSpeed(value)
   }
-  const handleScrollSpeedCommit = (value) => {
+  const handleScrollSpeedCommit = () => {
     dispatch(updateUserShellConfiguration({ scrollFactor: scrollSpeed / 100 }))
   }
-  const handleScrollSpeedLabelUpdate = (value) => `${value}%`
+  const handleScrollSpeedLabelUpdate = (value: number) => `${value}%`
 
   const goToSettings = () => dispatch(push('/settings'))
-  const link = React.forwardRef((props, ref) => (
-    <RouterLink innerRef={ref} {...props} />
-  ))
+
   const classes = useStyles()
   // TODO i18n
   return (
@@ -83,19 +91,13 @@ const InputSettings = React.memo(() => {
             <ArrowBackIcon fontSize="large" />
           </IconButton>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link
-              underline="hover"
-              color="inherit"
-              component={link}
-              to="/settings"
-            >
+            <Link underline="hover" color="inherit" component={SettingsLink}>
               Settings
             </Link>
             <Typography color="textPrimary">Input</Typography>
           </Breadcrumbs>
         </>
       }
-      style={{ maxHeight: '100%' }}
     >
       <Container>
         <List>
@@ -161,10 +163,11 @@ const InputSettings = React.memo(() => {
               valueLabelDisplay="on"
               value={scrollSpeed}
               valueLabelFormat={(value) => handleScrollSpeedLabelUpdate(value)}
-              onChange={(event, value) => handleScrollSpeedUpdate(value)}
-              onChangeCommitted={(event, value) =>
-                handleScrollSpeedCommit(value)
-              }
+              onChange={(_, value) => {
+                // @ts-ignore
+                handleScrollSpeedUpdate(value)
+              }}
+              onChangeCommitted={() => handleScrollSpeedCommit()}
             />
           </ListItem>
 
@@ -173,6 +176,6 @@ const InputSettings = React.memo(() => {
       </Container>
     </Activity>
   )
-})
+}
 
-export default InputSettings
+export default React.memo(InputSettings)

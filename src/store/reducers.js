@@ -1,4 +1,4 @@
-import dialogs from './dialogs/reducer'
+import dialogs from './dialogs'
 import { firebaseReducer as firebase } from 'react-redux-firebase'
 import locale from './locale/reducer'
 import persistentValues from './persistentValues/reducer'

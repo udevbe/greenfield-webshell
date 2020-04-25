@@ -83,7 +83,7 @@ export function useUserIsAnonymous() {
 
 /**
  * @param {string}uid
- * @param {boolean}grant
+ * @param {string}grant
  * @return {boolean}
  */
 export function useGrant(uid, grant) {
