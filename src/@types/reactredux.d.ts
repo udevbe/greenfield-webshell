@@ -1,6 +1,7 @@
 import type { DefaultRootState } from 'react-redux'
 
 declare module 'react-redux' {
+  import type { RouterState } from 'connected-react-router'
   import { FirebaseReducer } from 'react-redux-firebase'
   import type { AddToHomeScreenState } from '../store/addToHomeScreen'
   import type { UserShellCompositorState } from '../store/compositor'
@@ -14,5 +15,9 @@ declare module 'react-redux' {
     drawer: DrawerState
     dialogs: DialogsState
     addToHomeScreen: AddToHomeScreenState
+    router: RouterState<{
+      fromRedirect: boolean
+      fromLocation: string
+    }>
   }
 }
