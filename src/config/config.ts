@@ -1,11 +1,44 @@
+import type { ReactNode } from 'react'
 import configureStore from '../store'
+import type { DrawerListItem } from './menuItems'
 import { useMenuItems } from './menuItems'
 import grants from './grants'
 import locales from './locales'
 import { GreenfieldIcon } from '../components/Icons'
+import type { Theme } from './themes'
 import { themes } from './themes'
 
-const config = {
+export interface AppConfig {
+  grants: string[]
+  themes: Theme[]
+  appIcon: ReactNode
+  locales: any
+  firebase_config_dev: {
+    storageBucket: string
+    apiKey: string
+    messagingSenderId: string
+    appId: string
+    projectId: string
+    measurementId: string
+    databaseURL: string
+    authDomain: string
+  }
+  useMenuItems: (handleSignOut: () => void) => DrawerListItem
+  configureStore: any
+  firebase_config: {
+    storageBucket: string
+    apiKey: string
+    messagingSenderId: string
+    appId: string
+    projectId: string
+    measurementId: string
+    databaseURL: string
+    authDomain: string
+  }
+  firebase_providers: string[]
+  drawer_width: number
+}
+const config: AppConfig = {
   // firebase_config: {
   //   apiKey: 'AIzaSyBrPVY5tkBYcVUrxZywVDD4gAlHPTdhklw',
   //   authDomain: 'greenfield-app-0.firebaseapp.com',

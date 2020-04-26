@@ -546,6 +546,7 @@ function* handleOnNotify({
   variant: string
   message: string
 }) {
+  // @ts-ignore
   yield put(showNotification({ variant, message }))
 }
 

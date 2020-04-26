@@ -2,7 +2,7 @@ import AccountBox from '@material-ui/icons/AccountBox'
 import Activity from '../../containers/Activity'
 import AppBar from '@material-ui/core/AppBar'
 import Person from '@material-ui/icons/Person'
-import React, { useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import Scrollbar from '../../components/Scrollbar'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
@@ -33,8 +33,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const User = React.memo(() => {
+export const User: FunctionComponent = () => {
   const { uid, editType } = useParams()
+  if (uid == null) {
+    throw new Error('uid param must be defined.')
+  }
+
   const dispatch = useDispatch()
   const intl = useIntl()
   const firebase = useFirebase()
@@ -42,10 +46,10 @@ export const User = React.memo(() => {
   const loading = useIsAdminLoading(uid)
   const [isLoading, setIsLoading] = useState(loading)
 
-  const handleTabActive = (e, value) =>
+  const handleTabActive = (_: any, value: string) =>
     dispatch(push(`/users/edit/${uid}/${value}`))
 
-  const handleAdminChange = (e, isInputChecked) => {
+  const handleAdminChange = (_: any, isInputChecked: boolean) => {
     if (isInputChecked) {
       firebase.ref(`/admins/${uid}`).set(true)
     } else {
@@ -58,7 +62,8 @@ export const User = React.memo(() => {
     <Activity
       isLoading={isLoading}
       onBackClick={() => dispatch(push('/users'))}
-      title={intl.formatMessage({ id: 'edit_user' })}
+      appBarTitle={intl.formatMessage({ id: 'edit_user' })}
+      pageTitle={intl.formatMessage({ id: 'edit_user' })}
     >
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
@@ -66,7 +71,7 @@ export const User = React.memo(() => {
             <Tabs
               value={editType || 'data'}
               onChange={handleTabActive}
-              fullWidth
+              variant="fullWidth"
               centered
             >
               <Tab
@@ -94,8 +99,6 @@ export const User = React.memo(() => {
       </Scrollbar>
     </Activity>
   )
-})
+}
 
-User.propTypes = {}
-
-export default User
+export default React.memo(User)

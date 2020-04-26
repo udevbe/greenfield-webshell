@@ -1,5 +1,6 @@
 import Activity from '../../containers/Activity'
-import React from 'react'
+import type { FunctionComponent } from 'react'
+import React, { ComponentProps } from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
@@ -19,7 +20,7 @@ import FormControl from '@material-ui/core/FormControl'
 import FormLabel from '@material-ui/core/FormLabel'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
-import { updateTheme } from '../../store/themeSource/actions'
+import { updateTheme } from '../../store/themeSource'
 import { useDispatch, useSelector } from 'react-redux'
 import { push } from 'connected-react-router'
 
@@ -28,7 +29,7 @@ import allLocales from '../../config/locales'
 import { useIntl } from 'react-intl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import LanguageIcon from '@material-ui/icons/Language'
-import { updateLocale } from '../../store/locale/actions'
+import { updateLocale } from '../../store/locale'
 import IconButton from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
@@ -41,20 +42,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const InputSettings = React.memo(() => {
+const SettingsLink = React.forwardRef<HTMLElement, ComponentProps<any>>(
+  (props, ref) => <RouterLink to="/settings" innerRef={ref} {...props} />
+)
+
+const InputSettings: FunctionComponent = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
 
-  const currentThemeId = useSelector(({ themeSource }) => themeSource.themeId)
-  const onThemeChange = (event) => dispatch(updateTheme(event.target.value))
+  const currentThemeId = useSelector((state) => state.themeSource.themeId)
+  const onThemeChange = (event: { target: { value: string } }) =>
+    dispatch(updateTheme({ themeId: event.target.value, nightMode: false }))
 
-  const currentLocale = useSelector(({ locale }) => locale)
-  const onLocaleChange = (event) => dispatch(updateLocale(event.target.value))
+  const currentLocale = useSelector((state) => state.locale.locale)
+  const onLocaleChange = (event: { target: { value: string } }) =>
+    dispatch(updateLocale(event.target.value))
 
   const goToSettings = () => dispatch(push('/settings'))
-  const link = React.forwardRef((props, ref) => (
-    <RouterLink innerRef={ref} {...props} />
-  ))
+
   const classes = useStyles()
   // TODO i18n
   return (
@@ -69,19 +74,13 @@ const InputSettings = React.memo(() => {
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
           >
-            <Link
-              underline="hover"
-              color="inherit"
-              component={link}
-              to="/settings"
-            >
+            <Link underline="hover" color="inherit" component={SettingsLink}>
               Settings
             </Link>
             <Typography color="textPrimary">Site</Typography>
           </Breadcrumbs>
         </>
       }
-      style={{ maxHeight: '100%' }}
     >
       <Container>
         <List>
@@ -123,7 +122,6 @@ const InputSettings = React.memo(() => {
             </FormControl>
           </ListItem>
 
-          <div className={classes.spacer} />
           <ListItem>
             <ListItemIcon>
               <LanguageIcon />
@@ -163,6 +161,6 @@ const InputSettings = React.memo(() => {
       </Container>
     </Activity>
   )
-})
+}
 
-export default InputSettings
+export default React.memo(InputSettings)

@@ -2,6 +2,7 @@ import { AccountBox, Add } from '@material-ui/icons'
 import Activity from '../../containers/Activity'
 import AltIconAvatar from '../../components/AltIconAvatar'
 import { Divider, Fab, List, ListItem, ListItemText } from '@material-ui/core'
+import type { FunctionComponent } from 'react'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar/Scrollbar'
@@ -10,7 +11,7 @@ import { useIntl } from 'react-intl'
 import { isLoaded, useFirebase, useFirebaseConnect } from 'react-redux-firebase'
 import { push } from 'connected-react-router'
 
-export const Roles = React.memo(() => {
+export const Roles: FunctionComponent = () => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const firebase = useFirebase()
@@ -25,7 +26,7 @@ export const Roles = React.memo(() => {
       .then(() => dispatch(push(`/roles/edit/${newRole.key}/main`)))
   }
 
-  const renderItem = (i) => {
+  const renderItem = (i: number) => {
     const key = roles[i].key
     const val = roles[i].value
 
@@ -34,7 +35,7 @@ export const Roles = React.memo(() => {
         <ListItem
           key={i}
           onClick={() => dispatch(push(`/roles/edit/${key}/main`))}
-          id={i}
+          id={`${i}`}
         >
           <AltIconAvatar icon={<AccountBox />} />
           <ListItemText primary={val.name} secondary={val.description} />
@@ -47,7 +48,8 @@ export const Roles = React.memo(() => {
   return (
     <Activity
       isLoading={!isLoaded(roles)}
-      title={intl.formatMessage({ id: 'roles' })}
+      pageTitle={intl.formatMessage({ id: 'roles' })}
+      appBarTitle={intl.formatMessage({ id: 'roles' })}
     >
       <div style={{ height: '100%' }}>
         <Scrollbar>
@@ -76,8 +78,6 @@ export const Roles = React.memo(() => {
       </div>
     </Activity>
   )
-})
+}
 
-Roles.propTypes = {}
-
-export default Roles
+export default React.memo(Roles)

@@ -9,6 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Email from '@material-ui/icons/Email'
 import OfflinePin from '@material-ui/icons/OfflinePin'
 import Person from '@material-ui/icons/Person'
+import type { FunctionComponent } from 'react'
 import React from 'react'
 import ReactList from 'react-list'
 import Scrollbar from '../../components/Scrollbar'
@@ -19,15 +20,33 @@ import { useParams } from 'react-router-dom'
 import { isLoaded, useFirebaseConnect } from 'react-redux-firebase'
 import { push } from 'connected-react-router'
 
-const Users = React.memo(() => {
+export interface ProviderData {
+  providerId: 'password' | 'google.com'
+}
+
+export interface User {
+  displayName: string
+  uid: string
+  photoURL?: string
+  lastOnline?: number
+  connections?: {
+    [key: string]: boolean
+  }
+  providerData?: ProviderData[]
+}
+
+const Users: FunctionComponent = () => {
   const { select } = useParams()
   const isSelecting = select || false
   const dispatch = useDispatch()
   const intl = useIntl()
   useFirebaseConnect([{ path: '/users' }])
-  const users = useSelector((state) => state.firebase.ordered.users)
+  const users: {
+    key: string
+    value: User
+  }[] = useSelector((state) => state.firebase.ordered.users)
 
-  const getProviderIcon = (provider) => {
+  const getProviderIcon = (provider: ProviderData) => {
     const color = 'primary'
 
     switch (provider.providerId) {
@@ -40,7 +59,7 @@ const Users = React.memo(() => {
     }
   }
 
-  const renderItem = (index, key) => {
+  const renderItem = (index: number, key: number | string): JSX.Element => {
     const userEntry = users[index]
     const user = userEntry.value
     const userKey = userEntry.key
@@ -55,7 +74,7 @@ const Users = React.memo(() => {
 
     return (
       <div key={key}>
-        <ListItem key={key} onClick={handleRowClick} id={key}>
+        <ListItem key={key} onClick={handleRowClick} id={`${key}`}>
           <AltIconAvatar src={user.photoURL} icon={<Person />} />
           <ListItemText
             primary={user.displayName}
@@ -80,7 +99,8 @@ const Users = React.memo(() => {
 
   return (
     <Activity
-      title={intl.formatMessage({ id: 'users' })}
+      pageTitle={intl.formatMessage({ id: 'users' })}
+      appBarTitle={intl.formatMessage({ id: 'users' })}
       isLoading={!isLoaded(users)}
     >
       <div style={{ height: '100%', overflow: 'none' }}>
@@ -96,8 +116,6 @@ const Users = React.memo(() => {
       </div>
     </Activity>
   )
-})
+}
 
-Users.propTypes = {}
-
-export default Users
+export default React.memo(Users)

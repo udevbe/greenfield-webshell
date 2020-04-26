@@ -63,18 +63,3 @@ export const launchRemoteAppAction = createAction<
   { application: { url: string; title: string }; id: string },
   'greenfield/compositor/launchRemoteApp'
 >('greenfield/compositor/launchRemoteApp')
-
-export const makeScenePublic = createAction<
-  Pick<UserShellScene, 'id'>,
-  'greenfield/compositor/makeScenePublic'
->('greenfield/compositor/makeScenePublic')
-
-export const makeScenePrivate = createAction<
-  Pick<UserShellScene, 'id'>,
-  'greenfield/compositor/makeScenePrivate'
->('greenfield/compositor/makeScenePrivate')
-
-export const requestSceneAccess = createAction<
-  { scene: Pick<UserShellScene, 'id'>; peer: Pick<Peer, 'id'> },
-  'greenfield/compositor/requestSceneAccess'
->('greenfield/compositor/requestSceneAccess')

@@ -2,11 +2,13 @@ import type { DefaultRootState } from 'react-redux'
 
 declare module 'react-redux' {
   import type { RouterState } from 'connected-react-router'
-  import { FirebaseReducer } from 'react-redux-firebase'
+  import type { FirebaseReducer } from 'react-redux-firebase'
   import type { AddToHomeScreenState } from '../store/addToHomeScreen'
   import type { UserShellCompositorState } from '../store/compositor'
   import type { DialogsState } from '../store/dialogs'
   import type { DrawerState } from '../store/drawer'
+  import type { LocaleState } from '../store/locale'
+  import type { ThemeSourceState } from '../store/themeSource'
 
   export interface DefaultRootState {
     compositor: UserShellCompositorState
@@ -19,5 +21,7 @@ declare module 'react-redux' {
       fromRedirect: boolean
       fromLocation: string
     }>
+    themeSource: ThemeSourceState
+    locale: LocaleState
   }
 }

@@ -1,11 +1,12 @@
+import { GreenfieldIcon } from '../../components/Icons'
 import Activity from '../../containers/Activity'
 import Fab from '@material-ui/core/Fab'
 import Home from '@material-ui/icons/Home'
 import Paper from '@material-ui/core/Paper'
+import type { FunctionComponent } from 'react'
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import { useIntl } from 'react-intl'
-import { useAppConfig } from '../../contexts/AppConfigProvider'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -31,8 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const PageNotFound = () => {
-  const { appIcon: AppIcon } = useAppConfig()
+const PageNotFound: FunctionComponent = () => {
   const intl = useIntl()
   const classes = useStyles()
 
@@ -40,7 +40,7 @@ const PageNotFound = () => {
     <Activity>
       <Paper className={classes.paper}>
         <div className={classes.container}>
-          <AppIcon className={classes.icon} />
+          <GreenfieldIcon className={classes.icon} />
           <Typography variant="h4">
             {intl.formatMessage({ id: 'warning_404_message' })}
           </Typography>
@@ -61,4 +61,4 @@ const PageNotFound = () => {
   )
 }
 
-export default PageNotFound
+export default React.memo(PageNotFound)

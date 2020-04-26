@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Settings = React.memo(() => {
+const Settings = () => {
   const dispatch = useDispatch()
   const goToMain = () => dispatch(push('/'))
 
@@ -38,7 +38,6 @@ const Settings = React.memo(() => {
           </Breadcrumbs>
         </>
       }
-      style={{ maxHeight: '100%' }}
     >
       <Container className={classes.cardGrid} maxWidth={false}>
         <Grid container spacing={2}>
@@ -60,6 +59,6 @@ const Settings = React.memo(() => {
       </Container>
     </Activity>
   )
-})
+}
 
-export default Settings
+export default React.memo(Settings)

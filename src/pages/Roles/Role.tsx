@@ -55,7 +55,7 @@ export const Role: FunctionComponent = () => {
   const params = useParams<{ editType: string; uid: string }>()
   const editType = params?.editType ?? 'data'
   const uid = params?.uid ?? ''
-  const dialogDeleteRole = useSelector(({ dialogs }) => dialogs.delete_role)
+  const dialogDeleteRole = useSelector((state) => state.dialogs.delete_role)
   const firebase = useFirebase()
 
   const [values, setValues] = useState(emptyValues)
