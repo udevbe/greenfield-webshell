@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit'
-import type Peer from 'peerjs'
 import type {
   UserShellClient,
   UserShellScene,

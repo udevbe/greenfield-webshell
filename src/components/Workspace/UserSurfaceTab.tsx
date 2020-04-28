@@ -4,11 +4,13 @@ import Tab from '@material-ui/core/Tab'
 import { useDispatch } from 'react-redux'
 import { requestSurfaceActive } from '../../middleware/compositor/actions'
 import Typography from '@material-ui/core/Typography'
+import { UserShellSurfaceKey } from '../../middleware/compositor/CompositorApi'
 import type { UserShellSurface } from '../../store/compositor'
 
 const UserSurfaceTab: FunctionComponent<{
   surface: Pick<UserShellSurface, 'title' | 'key'>
-}> = ({ surface }) => {
+  value: UserShellSurfaceKey
+}> = ({ surface, value }) => {
   const dispatch = useDispatch()
   const requestActive = () => {
     dispatch(requestSurfaceActive(surface))
@@ -21,7 +23,7 @@ const UserSurfaceTab: FunctionComponent<{
         </>
       }
       onClick={requestActive}
-      value={surface.key}
+      value={value}
     />
   )
 }

@@ -6,7 +6,6 @@ import type {
   CompositorSurfaceState,
   nrmlvo,
 } from 'compositor-module'
-import Peer from 'peerjs'
 import type { UserShellSurfaceKey } from '../../middleware/compositor/CompositorApi'
 
 export type UserShellSurface = CompositorSurfaceState &
@@ -55,7 +54,6 @@ export interface UserShellScenesById {
 
 export interface UserShellCompositorState {
   clients: { [key: string]: UserShellClient }
-  peer: { id?: string }
   initializing: boolean
   initialized: boolean
   seat: UserShellSeat
@@ -68,9 +66,6 @@ export interface UserShellCompositorState {
 // TODO add last active scene id state
 const initialState: UserShellCompositorState = {
   clients: {},
-  peer: {
-    id: undefined,
-  },
   initializing: false,
   initialized: false,
   // TODO wayland supports multi seat and so should we...
@@ -169,7 +164,8 @@ const reducers = {
   ): void => {
     const { sceneId, surfaceKey } = view
     state.scenes[sceneId].views = state.scenes[sceneId].views.filter(
-      (view) => view.surfaceKey !== surfaceKey && view.sceneId !== sceneId
+      (otherView) =>
+        !(otherView.surfaceKey === surfaceKey && otherView.sceneId === sceneId)
     )
   },
 
@@ -185,13 +181,6 @@ const reducers = {
     { payload: scene }: PayloadAction<Pick<UserShellScene, 'id'>>
   ): void => {
     delete state.scenes[scene.id]
-  },
-
-  createPeer(
-    state: UserShellCompositorState,
-    { payload: peer }: PayloadAction<Pick<Peer, 'id'>>
-  ): void {
-    state.peer.id = peer.id
   },
 
   updateUserShellScene: (

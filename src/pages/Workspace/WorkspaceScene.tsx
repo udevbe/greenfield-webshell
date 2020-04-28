@@ -93,7 +93,13 @@ const WorkspaceScene: FunctionComponent = () => {
               }
             >
               {sceneSurfaces.map((surface) => {
-                return <UserSurfaceTab key={surface.key} surface={surface} />
+                return (
+                  <UserSurfaceTab
+                    key={surface.key}
+                    value={surface.key}
+                    surface={surface}
+                  />
+                )
               })}
             </Tabs>
             <UserAppsMenu anchorElRef={mainRef} />

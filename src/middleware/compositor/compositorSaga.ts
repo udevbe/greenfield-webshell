@@ -296,22 +296,44 @@ function* watchActiveUserSurface() {
   }
 }
 
+function filterDeleteUserShellSurfaceView(
+  action: AnyAction,
+  view: UserShellSurfaceView
+): boolean {
+  if (action.type === deleteUserShellSurfaceView.type) {
+    const userShellSurfaceView: UserShellSurfaceView = action.payload
+    return (
+      userShellSurfaceView.sceneId === view.sceneId &&
+      userShellSurfaceView.surfaceKey === view.surfaceKey
+    )
+  } else {
+    return false
+  }
+}
+
+function filterDeleteUserShellScene(
+  action: AnyAction,
+  scene: Pick<UserShellScene, 'id'>
+) {
+  if (action.type === deleteUserShellScene.type) {
+    const userShellScene: UserShellScene = action.payload
+    return userShellScene.id === scene.id
+  } else {
+    return false
+  }
+}
+
 function* handleUserSurfaceViewLifecycle({
   payload: view,
 }: PayloadAction<UserShellSurfaceView>) {
   yield call(createCompositorSurfaceView, view)
 
   const { sceneDestroyed } = yield race({
-    surfaceViewDestroyed: take(
-      (action: AnyAction): boolean =>
-        action.type === deleteUserShellSurfaceView.type &&
-        action.payload.view.sceneId === view.sceneId &&
-        action.payload.view.userSurfaceKey === view.surfaceKey
+    surfaceViewDestroyed: take((action: AnyAction) =>
+      filterDeleteUserShellSurfaceView(action, view)
     ),
-    sceneDestroyed: take(
-      (action: AnyAction): boolean =>
-        action.type === deleteUserShellScene &&
-        action.payload.sceneId === view.sceneId
+    sceneDestroyed: take((action: AnyAction) =>
+      filterDeleteUserShellScene(action, { id: view.sceneId })
     ),
   })
 
@@ -356,6 +378,18 @@ function* removeUserSeatGrabsIfSurfaceMatches(surfaceKey: UserShellSurfaceKey) {
   yield put(updateUserShellSeat(seat))
 }
 
+function filterDeleteUserShellSurface(
+  action: AnyAction,
+  surface: UserShellSurface
+): boolean {
+  if (action.type === deleteUserShellSurface.type) {
+    const userShellSurface: Pick<UserShellSurface, 'key'> = action.payload
+    return userShellSurface.key === surface.key
+  } else {
+    return false
+  }
+}
+
 function* handleUserSurfaceLifecycle(surface: UserShellSurface) {
   const surfaceKey = surface.key
   yield put(createUserShellSurface(surface))
@@ -367,7 +401,9 @@ function* handleUserSurfaceLifecycle(surface: UserShellSurface) {
   yield call(raiseCompositorSurfaceView, view)
   yield put(requestSurfaceActive({ key: surfaceKey }))
 
-  yield take(deleteUserShellSurface)
+  yield take((action: AnyAction) =>
+    filterDeleteUserShellSurface(action, surface)
+  )
 
   yield all([
     call(destroyViewsFromSurface, surfaceKey),
