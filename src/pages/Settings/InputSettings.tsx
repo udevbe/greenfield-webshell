@@ -22,7 +22,7 @@ import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import IconButton from '@material-ui/core/IconButton'
 import { push } from 'connected-react-router'
-import type { nrmlvo } from 'compositor-module'
+import type { nrmlvo } from 'greenfield-compositor'
 
 const useStyles = makeStyles((theme) => ({
   spacer: {

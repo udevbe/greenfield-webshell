@@ -13,7 +13,7 @@ import type {
   Session,
   UserShellApi,
   WebAppLauncher,
-} from 'compositor-module'
+} from 'greenfield-compositor'
 
 import type {
   UserShellClient,

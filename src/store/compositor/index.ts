@@ -5,7 +5,7 @@ import type {
   CompositorSurface,
   CompositorSurfaceState,
   nrmlvo,
-} from 'compositor-module'
+} from 'greenfield-compositor'
 import type { UserShellSurfaceKey } from '../../middleware/compositor/CompositorApi'
 
 export type UserShellSurface = CompositorSurfaceState &

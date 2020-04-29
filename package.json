@@ -20,7 +20,7 @@
     "@material-ui/styles": "^4.9.10",
     "@reduxjs/toolkit": "^1.3.5",
     "classnames": "^2.2.6",
-    "compositor-module": "file:../greenfield/compositor-module",
+    "greenfield-compositor": "0.0.1",
     "connected-react-router": "^6.8.0",
     "firebase": "^7.14.2",
     "history": "^4.10.1",
