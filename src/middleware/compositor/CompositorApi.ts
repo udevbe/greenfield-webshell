@@ -1,19 +1,20 @@
 import type {
-  ApplicationClient,
   AxisEvent,
   ButtonEvent,
+  CompositorClient,
+  CompositorRemoteAppLauncher,
+  CompositorSession,
   CompositorSurface,
   CompositorSurfaceState,
-  CreateAxisEventFromWheelEventFunc,
-  CreateButtonEventFromMouseEventFunc,
-  CreateKeyEventFromKeyboardEventFunc,
+  CompositorWebAppLauncher,
+  CreateAxisEventFromWheelEvent,
+  CreateButtonEventFromMouseEvent,
+  CreateKeyEventFromKeyboardEvent,
   KeyEvent,
-  nrmlvo,
-  RemoteAppLauncher,
-  Session,
-  UserShellApi,
-  WebAppLauncher,
 } from 'greenfield-compositor'
+
+import type { UserShellApi } from 'greenfield-compositor/types/UserShellApi'
+import type { nrmlvo } from 'greenfield-compositor/types/Xkb'
 
 import type {
   UserShellClient,
@@ -27,16 +28,10 @@ import type { CompositorModule } from './CompositorModule'
 import CompositorModuleCreator from './CompositorModule'
 
 export function uuidv4(): string {
-  return '10000000-1000-4000-8000-100000000000'.replace(
-    /[018]/g,
-    (char: string) => {
-      const c = parseInt(char)
-      return (
-        c ^
-        (window.crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-      ).toString(16)
-    }
-  )
+  return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (char: string) => {
+    const c = parseInt(char)
+    return (c ^ (window.crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+  })
 }
 
 export type UserShellSurfaceKey = string
@@ -44,18 +39,12 @@ export type UserShellSurfaceKey = string
 export interface CompositorApiEventCallbacks {
   onNotify?: CompositorApiEventCallback<{ variant: string; message: string }>
   onCreateUserShellClient?: CompositorApiEventCallback<UserShellClient>
-  onDeleteUserShellClient?: CompositorApiEventCallback<
-    Pick<UserShellClient, 'id'>
-  >
+  onDeleteUserShellClient?: CompositorApiEventCallback<Pick<UserShellClient, 'id'>>
   onCreateUserShellSurface?: CompositorApiEventCallback<UserShellSurface>
   onUpdateUserShellSurface?: CompositorApiEventCallback<UserShellSurface>
   onDeleteUserShellSurface?: CompositorApiEventCallback<UserShellSurfaceKey>
-  onUpdateUserShellSeat?: CompositorApiEventCallback<
-    Pick<UserShellSeat, 'keyboardFocus' | 'pointerGrab'>
-  >
-  onUserShellSceneRefresh?: CompositorApiEventCallback<
-    Pick<UserShellScene, 'id'>
-  >
+  onUpdateUserShellSeat?: CompositorApiEventCallback<Pick<UserShellSeat, 'keyboardFocus' | 'pointerGrab'>>
+  onUserShellSceneRefresh?: CompositorApiEventCallback<Pick<UserShellScene, 'id'>>
 }
 
 export interface CompositorApiEventCallback<E> {
@@ -63,14 +52,26 @@ export interface CompositorApiEventCallback<E> {
 }
 
 export class CompositorApi {
+  session?: CompositorSession
+  readonly #compositorModule: Promise<CompositorModule>
+  // @ts-ignore set when this.session is set
+  #remoteAppLauncher: CompositorRemoteAppLauncher
+  // @ts-ignore set when this.session is set
+  #createAxisEventFromWheelEvent: CreateAxisEventFromWheelEvent
+  // @ts-ignore set when this.session is set
+  #createButtonEventFromMouseEvent: CreateButtonEventFromMouseEvent
+  // @ts-ignore set when this.session is set
+  #createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEvent
+  // @ts-ignore set when this.session is set
+  #webAppLauncher: CompositorWebAppLauncher
+  events: CompositorApiEventCallbacks = {}
+
   static create(): CompositorApi {
     const compositorModule = CompositorModuleCreator()
     return new CompositorApi(compositorModule)
   }
 
-  static userShellSurfaceKey(
-    compositorSurface: CompositorSurface
-  ): UserShellSurfaceKey {
+  static userShellSurfaceKey(compositorSurface: CompositorSurface): UserShellSurfaceKey {
     return `${compositorSurface.id}@${compositorSurface.clientId}`
   }
 
@@ -79,31 +80,22 @@ export class CompositorApi {
     return { id, clientId }
   }
 
-  public session?: Session
-  readonly #compositorModule: Promise<CompositorModule>
-  #remoteAppLauncher: RemoteAppLauncher | null = null
-  #webAppLauncher: WebAppLauncher | null = null
-  createButtonEventFromMouseEvent: CreateButtonEventFromMouseEventFunc | null = null
-  createAxisEventFromWheelEvent: CreateAxisEventFromWheelEventFunc | null = null
-  createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEventFunc | null = null
-
-  events: CompositorApiEventCallbacks = {}
-
   constructor(compositorModule: Promise<CompositorModule>) {
     this.#compositorModule = compositorModule
   }
 
   private linkUserShellEvents(userShell: UserShellApi): void {
     userShell.events.notify = (variant: string, message: string): void =>
-      this.events.onNotify?.({ variant, message })
+      this.events.onNotify?.({
+        variant,
+        message,
+      })
 
-    userShell.events.createApplicationClient = (
-      client: ApplicationClient
-    ): void => this.events.onCreateUserShellClient?.(client)
+    userShell.events.createApplicationClient = (client: CompositorClient): void =>
+      this.events.onCreateUserShellClient?.(client)
 
-    userShell.events.destroyApplicationClient = (
-      client: ApplicationClient
-    ): void => this.events.onDeleteUserShellClient?.({ id: client.id })
+    userShell.events.destroyApplicationClient = (client: CompositorClient): void =>
+      this.events.onDeleteUserShellClient?.({ id: client.id })
 
     userShell.events.createUserSurface = (
       compositorSurface: CompositorSurface,
@@ -129,34 +121,20 @@ export class CompositorApi {
       this.events.onUpdateUserShellSurface?.(surface)
     }
 
-    userShell.events.destroyUserSurface = (
-      compositorSurface: CompositorSurface
-    ): void =>
-      this.events.onDeleteUserShellSurface?.(
-        CompositorApi.userShellSurfaceKey(compositorSurface)
-      )
+    userShell.events.destroyUserSurface = (compositorSurface: CompositorSurface): void =>
+      this.events.onDeleteUserShellSurface?.(CompositorApi.userShellSurfaceKey(compositorSurface))
 
-    userShell.events.updateUserSeat = ({
-      keyboardFocus,
-      pointerGrab,
-    }): void => {
+    userShell.events.updateUserSeat = ({ keyboardFocus, pointerGrab }): void => {
       const seat = {
-        keyboardFocus: keyboardFocus
-          ? CompositorApi.userShellSurfaceKey(keyboardFocus)
-          : undefined,
-        pointerGrab: pointerGrab
-          ? CompositorApi.userShellSurfaceKey(pointerGrab)
-          : undefined,
+        keyboardFocus: keyboardFocus ? CompositorApi.userShellSurfaceKey(keyboardFocus) : undefined,
+        pointerGrab: pointerGrab ? CompositorApi.userShellSurfaceKey(pointerGrab) : undefined,
       }
       this.events.onUpdateUserShellSeat?.(seat)
     }
-    userShell.events.sceneRefresh = (sceneId: string): void =>
-      this.events.onUserShellSceneRefresh?.({ id: sceneId })
+    userShell.events.sceneRefresh = (sceneId: string): void => this.events.onUserShellSceneRefresh?.({ id: sceneId })
   }
 
-  updateCompositorConfiguration(
-    userShellConfiguration: Partial<UserShellConfiguration>
-  ): void {
+  updateCompositorConfiguration(userShellConfiguration: Partial<UserShellConfiguration>): void {
     if (!this.session) {
       throw new Error('Compositor not initialized.')
     }
@@ -182,18 +160,20 @@ export class CompositorApi {
       remoteAppLauncher,
       webAppLauncher,
       session,
-      createButtonEventFromMouseEvent,
       createAxisEventFromWheelEvent,
+      createButtonEventFromMouseEvent,
       createKeyEventFromKeyboardEvent,
     } = await this.#compositorModule
 
     this.#remoteAppLauncher = remoteAppLauncher
     this.#webAppLauncher = webAppLauncher
     this.session = session
-
-    this.createButtonEventFromMouseEvent = createButtonEventFromMouseEvent
-    this.createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
-    this.createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
+    // @ts-ignore
+    this.#createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
+    // @ts-ignore
+    this.#createButtonEventFromMouseEvent = createButtonEventFromMouseEvent
+    // @ts-ignore
+    this.#createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
 
     this.linkUserShellEvents(session.userShell)
 
@@ -204,9 +184,7 @@ export class CompositorApi {
     if (!this.session) {
       throw new Error('Compositor not initialized.')
     }
-    const compositorSurface: CompositorSurface = CompositorApi.compositorSurface(
-      surfaceKey
-    )
+    const compositorSurface: CompositorSurface = CompositorApi.compositorSurface(surfaceKey)
     this.session.userShell.actions.requestActive(compositorSurface)
   }
 
@@ -215,9 +193,7 @@ export class CompositorApi {
       throw new Error('Compositor not initialized.')
     }
     const userShellSurfaceKey = view.surfaceKey
-    const compositorSurface = CompositorApi.compositorSurface(
-      userShellSurfaceKey
-    )
+    const compositorSurface = CompositorApi.compositorSurface(userShellSurfaceKey)
     this.session.userShell.actions.raise(compositorSurface, view.sceneId)
   }
 
@@ -289,54 +265,37 @@ export class CompositorApi {
     this.session.userShell.actions.initScene(id, sceneElement)
 
     sceneElement.onpointermove = (event: PointerEvent): void => {
-      if (!this.createButtonEventFromMouseEvent) {
-        throw new Error('Compositor not initialized.')
-      }
-
       event.preventDefault()
-      this.pointerMove(this.createButtonEventFromMouseEvent(event, null, id))
+      const buttonEventFromMouseEvent = this.#createButtonEventFromMouseEvent(event, false, id)
+      this.pointerMove(buttonEventFromMouseEvent)
     }
     sceneElement.onpointerdown = (event: PointerEvent): void => {
-      if (!this.createButtonEventFromMouseEvent) {
-        throw new Error('Compositor not initialized.')
-      }
-
       event.preventDefault()
       sceneElement.setPointerCapture(event.pointerId)
-      this.buttonDown(this.createButtonEventFromMouseEvent(event, false, id))
+      this.buttonDown(this.#createButtonEventFromMouseEvent(event, false, id))
     }
     sceneElement.onpointerup = (event: PointerEvent): void => {
-      if (!this.createButtonEventFromMouseEvent) {
-        throw new Error('Compositor not initialized.')
-      }
-
       event.preventDefault()
-      this.buttonUp(this.createButtonEventFromMouseEvent(event, true, id))
+      this.buttonUp(this.#createButtonEventFromMouseEvent(event, true, id))
       sceneElement.releasePointerCapture(event.pointerId)
     }
     sceneElement.onwheel = (event: WheelEvent): void => {
-      if (!this.createAxisEventFromWheelEvent) {
-        throw new Error('Compositor not initialized.')
-      }
-
       event.preventDefault()
-      this.axis(this.createAxisEventFromWheelEvent(event, id))
+      this.axis(this.#createAxisEventFromWheelEvent(event, id))
     }
     sceneElement.onkeydown = (event: KeyboardEvent): void => {
-      if (!this.createKeyEventFromKeyboardEvent) {
-        throw new Error('Compositor not initialized.')
+      const keyEventFromKeyboardEvent = this.#createKeyEventFromKeyboardEvent(event, true)
+      if (keyEventFromKeyboardEvent) {
+        event.preventDefault()
+        this.key(keyEventFromKeyboardEvent)
       }
-
-      event.preventDefault()
-      this.key(this.createKeyEventFromKeyboardEvent(event, true))
     }
     sceneElement.onkeyup = (event: KeyboardEvent): void => {
-      if (!this.createKeyEventFromKeyboardEvent) {
-        throw new Error('Compositor not initialized.')
+      const keyEventFromKeyboardEvent = this.#createKeyEventFromKeyboardEvent(event, false)
+      if (keyEventFromKeyboardEvent) {
+        event.preventDefault()
+        this.key(keyEventFromKeyboardEvent)
       }
-
-      event.preventDefault()
-      this.key(this.createKeyEventFromKeyboardEvent(event, false))
     }
 
     sceneElement.onmouseover = (): void => sceneElement.focus()
@@ -366,9 +325,7 @@ export class CompositorApi {
     }
 
     const userShellSurfaceKey = view.surfaceKey
-    const compositorSurface = CompositorApi.compositorSurface(
-      userShellSurfaceKey
-    )
+    const compositorSurface = CompositorApi.compositorSurface(userShellSurfaceKey)
     this.session.userShell.actions.createView(compositorSurface, view.sceneId)
   }
 
@@ -408,9 +365,7 @@ export function launchRemoteApp(appId: string, url: string): Promise<void> {
   return compositorApi.launchRemoteApp(appId, url)
 }
 
-export function deleteCompositorClient(
-  client: Pick<UserShellClient, 'id'>
-): void {
+export function deleteCompositorClient(client: Pick<UserShellClient, 'id'>): void {
   compositorApi.deleteCompositorClient(client.id)
 }
 
@@ -430,27 +385,19 @@ export function deleteCompositorScene(scene: Pick<UserShellScene, 'id'>): void {
   compositorApi.deleteCompositorScene(scene.id)
 }
 
-export function refreshCompositorScene(
-  scene: Pick<UserShellScene, 'id'>
-): Promise<void> {
+export function refreshCompositorScene(scene: Pick<UserShellScene, 'id'>): Promise<void> {
   return compositorApi.refreshCompositorScene(scene.id)
 }
 
-export function updateCompositorKeyboardFocus(
-  surface: Pick<UserShellSurface, 'key'>
-): void {
+export function updateCompositorKeyboardFocus(surface: Pick<UserShellSurface, 'key'>): void {
   compositorApi.updateCompositorKeyboardFocus(surface.key)
 }
 
-export function requestCompositorSurfaceActive(
-  surface: Pick<UserShellSurface, 'key'>
-): void {
+export function requestCompositorSurfaceActive(surface: Pick<UserShellSurface, 'key'>): void {
   compositorApi.requestCompositorSurfaceActive(surface.key)
 }
 
-export function notifyCompositorSurfaceInactive(
-  surface: Pick<UserShellSurface, 'key'>
-): void {
+export function notifyCompositorSurfaceInactive(surface: Pick<UserShellSurface, 'key'>): void {
   compositorApi.notifyCompositorSurfaceInactive(surface.key)
 }
 
@@ -466,48 +413,8 @@ export function compositorKeyboardNrmlvoEntries(): nrmlvo[] {
   return compositorApi.compositorKeyboardNrmlvoEntries()
 }
 
-export function updateCompositorConfiguration(
-  configuration: Partial<UserShellConfiguration>
-): void {
+export function updateCompositorConfiguration(configuration: Partial<UserShellConfiguration>): void {
   compositorApi.updateCompositorConfiguration(configuration)
-}
-
-export function createButtonEventFromMouseEvent(
-  mouseEvent: MouseEvent,
-  released: boolean | null,
-  sceneId: string
-): ButtonEvent {
-  if (!compositorApi.createButtonEventFromMouseEvent) {
-    throw new Error('Compositor not initialized.')
-  }
-
-  return compositorApi.createButtonEventFromMouseEvent(
-    mouseEvent,
-    released,
-    sceneId
-  )
-}
-
-export function createAxisEventFromWheelEvent(
-  wheelEvent: WheelEvent,
-  sceneId: string
-): AxisEvent {
-  if (!compositorApi.createAxisEventFromWheelEvent) {
-    throw new Error('Compositor not initialized.')
-  }
-
-  return compositorApi.createAxisEventFromWheelEvent(wheelEvent, sceneId)
-}
-
-export function createKeyEventFromKeyboardEvent(
-  keyboardEvent: KeyboardEvent,
-  down: boolean
-): KeyEvent {
-  if (!compositorApi.createKeyEventFromKeyboardEvent) {
-    throw new Error('Compositor not initialized.')
-  }
-
-  return compositorApi.createKeyEventFromKeyboardEvent(keyboardEvent, down)
 }
 
 export function pointerMove(event: ButtonEvent): void {
