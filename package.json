@@ -23,7 +23,7 @@
     "connected-react-router": "^6.8.0",
     "firebase": "^7.14.2",
     "greenfield-compositor": "0.0.3",
-    "history": "^5.0.0",
+    "history": "^4.10.1",
     "husky": "^4.2.5",
     "immutable": "^4.0.0-rc.12",
     "intl": "^1.2.5",
@@ -70,8 +70,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.5",
-    "prettier": "^2.0.5",
-    "worker-loader": "^2.0.0"
+    "prettier": "^2.0.5"
   },
   "eslintConfig": {
     "extends": "react-app"
