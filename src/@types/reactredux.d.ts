@@ -9,6 +9,8 @@ declare module 'react-redux' {
   import type { DrawerState } from '../store/drawer'
   import type { LocaleState } from '../store/locale'
   import type { ThemeSourceState } from '../store/themeSource'
+  import type { NotificationState } from '../store/notification'
+  import type { ServiceWorkerState } from '../store/serviceworker'
 
   export interface DefaultRootState {
     compositor: UserShellCompositorState
@@ -23,5 +25,7 @@ declare module 'react-redux' {
     }>
     themeSource: ThemeSourceState
     locale: LocaleState
+    notification: NotificationState
+    serviceWorker: ServiceWorkerState
   }
 }

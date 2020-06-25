@@ -4,21 +4,15 @@ import PublicIcon from '@material-ui/icons/Public'
 import GroupIcon from '@material-ui/icons/Group'
 import CloseIcon from '@material-ui/icons/Close'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import React from 'react'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import DrawerListItem from '../components/Drawer/DrawerListItem'
 import type { UserShellSurface } from '../store/compositor'
-import {
-  useGrant,
-  useIsAdmin,
-  useIsAuthenticated,
-  useUserId,
-} from '../utils/auth'
+import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
 import Flag from '@material-ui/icons/Flag'
 import Keyboard from '@material-ui/icons/Keyboard'
 import { ListItemText } from '@material-ui/core'
@@ -26,21 +20,20 @@ import { deleteClient } from '../middleware/compositor/actions'
 
 export interface DrawerDivider {
   variant: 'divider'
-  inset?: string
-  style?: string
+  style?: CSSProperties
   visible?: boolean
 }
 
 export interface DrawerSubheader {
   variant: 'subheader'
-  style?: string
+  style?: CSSProperties
   text: string
   visible?: boolean
 }
 
 export interface DrawerInfoItem {
   variant: 'infoItem'
-  component: ReactNode
+  component: ReactElement
   visible: boolean
 }
 
@@ -55,12 +48,7 @@ export interface DrawerActionItem {
   visible?: boolean
 }
 
-export type DrawerEntry =
-  | DrawerDivider
-  | DrawerSubheader
-  | DrawerInfoItem
-  | DrawerActionItem
-  | DrawerListItem
+export type DrawerEntry = DrawerDivider | DrawerSubheader | DrawerInfoItem | DrawerActionItem | DrawerListItem
 
 export interface DrawerListItem {
   variant: 'listItem'
@@ -72,9 +60,7 @@ export interface DrawerListItem {
   visible?: boolean
 }
 
-export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
-  handleSignOut
-) => {
+export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
@@ -83,27 +69,21 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
   const webStoreAccess = useGrant(uid, 'read web store applications')
   const isAuthMenu = useSelector((state) => !!state.dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
-  const addToHomeScreenProposalEvent = useSelector(
-    (state) => state.addToHomeScreen.proposalEvent
-  )
+  const addToHomeScreenProposalEvent = useSelector((state) => state.addToHomeScreen.proposalEvent)
   const userSurfacesByAppId: { [key: string]: UserShellSurface[] } = {}
   useSelector(
     ({ compositor }) =>
-      Object.values<UserShellSurface>(compositor.surfaces).map(
-        ({ id, clientId, title, appId, key }) => ({
-          id,
-          clientId,
-          title,
-          appId,
-          key,
-        })
-      ),
+      Object.values<UserShellSurface>(compositor.surfaces).map(({ id, clientId, title, appId, key }) => ({
+        id,
+        clientId,
+        title,
+        appId,
+        key,
+      })),
     shallowEqual
   ).forEach((userSurface) => {
     const appId =
-      !userSurface.appId || userSurface.appId.length === 0
-        ? `app-${userSurface.clientId}`
-        : userSurface.appId
+      !userSurface.appId || userSurface.appId.length === 0 ? `app-${userSurface.clientId}` : userSurface.appId
     const groupedUserSurfaces = userSurfacesByAppId[appId]
     if (groupedUserSurfaces) {
       groupedUserSurfaces.push(userSurface)
@@ -166,13 +146,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
         ? {
             noRunningApps: {
               variant: 'infoItem',
-              component: (
-                <ListItemText
-                  unselectable="on"
-                  secondary="Running applications will appear here."
-                  inset
-                />
-              ),
+              component: <ListItemText unselectable="on" secondary="Running applications will appear here." inset />,
               visible: true,
             },
           }

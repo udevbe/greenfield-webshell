@@ -21,7 +21,7 @@ import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { setSimpleValue } from '../../store/simpleValues/actions'
+import { setSimpleValue } from '../../store/simpleValues'
 import { makeStyles } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
 import getSimpleValue from '../../store/simpleValues/selectors'
@@ -61,24 +61,18 @@ const MyAccount = React.memo(() => {
   const displayName = useUserProp(uid, 'displayName')
   const photoURL = useUserProp(uid, 'photoURL')
   const providerData = useUserProp(uid, 'providerData', shallowEqual)
-  const isLinkedWithPasswordProvider =
-    providerData && !!providerData.find((p) => p.providerId === 'password')
+  const isLinkedWithPasswordProvider = providerData && !!providerData.find((p) => p.providerId === 'password')
 
   const displayNameLoading = useUserPropLoading(uid, 'displayName')
   const photoURLLoading = useUserPropLoading(uid, 'photoURL')
   const providerDataLoading = useUserPropLoading(uid, 'providerData')
 
-  const userPropsLoading =
-    displayNameLoading || photoURLLoading || providerDataLoading
+  const userPropsLoading = displayNameLoading || photoURLLoading || providerDataLoading
 
   const email = useSelector(({ firebase: { auth } }) => auth.email)
-  const emailVerified = useSelector(
-    ({ firebase: { auth } }) => auth.emailVerified
-  )
+  const emailVerified = useSelector(({ firebase: { auth } }) => auth.emailVerified)
 
-  const newUserPhoto = useSelector((state) =>
-    getSimpleValue(state, 'new_user_photo', false)
-  )
+  const newUserPhoto = useSelector((state) => getSimpleValue(state, 'new_user_photo', false))
 
   const [values, setValues] = useState({
     displayName,
@@ -86,9 +80,7 @@ const MyAccount = React.memo(() => {
     photoURL,
     emailVerified,
   })
-  const [showConfirmPasswordValue, setShowConfirmPasswordValue] = useState(
-    false
-  )
+  const [showConfirmPasswordValue, setShowConfirmPasswordValue] = useState(false)
   const [showNewPasswordValue, setShowNewPasswordValue] = useState(false)
   const [showPasswordValue, setShowPasswordValue] = useState(false)
   const [errors, setErrors] = useState({})
@@ -151,19 +143,10 @@ const MyAccount = React.memo(() => {
   const reauthenticateUser = async (values, onSuccess) => {
     try {
       if (isLinkedWithPasswordProvider) {
-        const credential = firebase.firebase_.auth.EmailAuthProvider.credential(
-          email,
-          values.password
-        )
-        await firebase
-          .auth()
-          .currentUser.reauthenticateWithCredential(credential)
+        const credential = firebase.firebase_.auth.EmailAuthProvider.credential(email, values.password)
+        await firebase.auth().currentUser.reauthenticateWithCredential(credential)
       } else if (!isAnonymous) {
-        await firebase
-          .auth()
-          .currentUser.reauthenticateWithPopup(
-            getOAuthProviderByName(providerData[0].providerId)
-          )
+        await firebase.auth().currentUser.reauthenticateWithPopup(getOAuthProviderByName(providerData[0].providerId))
       }
       if (onSuccess && onSuccess instanceof Function) {
         await onSuccess()
@@ -176,8 +159,7 @@ const MyAccount = React.memo(() => {
 
   const submit = async () => {
     const simpleChange =
-      (values.displayName &&
-        values.displayName.localeCompare(displayName) !== 0) ||
+      (values.displayName && values.displayName.localeCompare(displayName) !== 0) ||
       (values.photoURL && values.photoURL.localeCompare(photoURL) !== 0)
 
     const simpleValues = {
@@ -199,9 +181,7 @@ const MyAccount = React.memo(() => {
         } catch (e) {
           if (e.code === 'auth/requires-recent-login') {
             // TODO intl
-            notifyError(
-              'Authentication error. Log out and in again to change your email.'
-            )
+            notifyError('Authentication error. Log out and in again to change your email.')
           }
         }
       })
@@ -212,17 +192,13 @@ const MyAccount = React.memo(() => {
       if (values.newPassword && values.newPassword === values.confirmPassword) {
         await reauthenticateUser(values, async () => {
           try {
-            await firebase.firebase_
-              .auth()
-              .currentUser.updatePassword(values.newPassword)
+            await firebase.firebase_.auth().currentUser.updatePassword(values.newPassword)
             await firebase.logout()
             window.location.reload()
           } catch (e) {
             if (e.code === 'auth/requires-recent-login') {
               // TODO intl
-              notifyError(
-                'Authentication error. Log out and in again to change your email.'
-              )
+              notifyError('Authentication error. Log out and in again to change your email.')
             }
           }
         })
@@ -263,9 +239,7 @@ const MyAccount = React.memo(() => {
           /* TODO notify user of error */
           if (e.code === 'auth/requires-recent-login') {
             // TODO intl
-            notifyError(
-              'Authentication error. Log out and in again to change your email.'
-            )
+            notifyError('Authentication error. Log out and in again to change your email.')
           }
         }
       })
@@ -290,9 +264,7 @@ const MyAccount = React.memo(() => {
     if (!isAnonymous) {
       if (!values.email) {
         errors.email = 'Required'
-      } else if (
-        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-      ) {
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
         // TODO intl
         errors.email = 'Invalid email address'
       } else if (!values.password && email.localeCompare(values.email) !== 0) {
@@ -313,9 +285,7 @@ const MyAccount = React.memo(() => {
         if (values.newPassword.length < 6) {
           // TODO intl
           errors.newPassword = 'Password should be at least 6 characters'
-        } else if (
-          values.newPassword.localeCompare(values.confirmPassword) !== 0
-        ) {
+        } else if (values.newPassword.localeCompare(values.confirmPassword) !== 0) {
           // TODO intl
           errors.newPassword = 'Must be equal'
           // TODO intl
@@ -356,12 +326,7 @@ const MyAccount = React.memo(() => {
       appBarContent={
         <div style={{ display: 'flex' }}>
           {uid && (
-            <IconButton
-              color="inherit"
-              disabled={!canSave()}
-              aria-label="open drawer"
-              onClick={submit}
-            >
+            <IconButton color="inherit" disabled={!canSave()} aria-label="open drawer" onClick={submit}>
               <Save className="material-icons" />
             </IconButton>
           )}
@@ -406,17 +371,12 @@ const MyAccount = React.memo(() => {
                   />
                 )}
                 {!values.photoURL && (
-                  <Avatar
-                    className={classNames(classes.avatar, classes.bigAvatar)}
-                  >
+                  <Avatar className={classNames(classes.avatar, classes.bigAvatar)}>
                     <Person style={{ fontSize: 60 }} />{' '}
                   </Avatar>
                 )}
 
-                <IconButton
-                  color="primary"
-                  onClick={() => setIsPhotoDialogOpen(true)}
-                >
+                <IconButton color="primary" onClick={() => setIsPhotoDialogOpen(true)}>
                   <PhotoCamera />
                 </IconButton>
               </div>
@@ -428,10 +388,7 @@ const MyAccount = React.memo(() => {
                   flexDirection: 'column',
                 }}
               >
-                <FormControl
-                  className={classNames(classes.margin, classes.textField)}
-                  error={!!errors.displayName}
-                >
+                <FormControl className={classNames(classes.margin, classes.textField)} error={!!errors.displayName}>
                   <InputLabel htmlFor="displayName">
                     {intl.formatMessage({
                       id: 'name_label',
@@ -448,17 +405,10 @@ const MyAccount = React.memo(() => {
                       handleValueChange('displayName', e.target.value)
                     }}
                   />
-                  {errors.displayName && (
-                    <FormHelperText id="name-helper-text">
-                      {errors.displayName}
-                    </FormHelperText>
-                  )}
+                  {errors.displayName && <FormHelperText id="name-helper-text">{errors.displayName}</FormHelperText>}
                 </FormControl>
                 {!isAnonymous && (
-                  <FormControl
-                    className={classNames(classes.margin, classes.textField)}
-                    error={!!errors.email}
-                  >
+                  <FormControl className={classNames(classes.margin, classes.textField)} error={!!errors.email}>
                     <InputLabel htmlFor="email">
                       {intl.formatMessage({
                         id: 'email',
@@ -472,19 +422,13 @@ const MyAccount = React.memo(() => {
                         id: 'email',
                       })}
                       fullWidth
-                      onChange={(e) =>
-                        handleValueChange('email', e.target.value)
-                      }
+                      onChange={(e) => handleValueChange('email', e.target.value)}
                       value={values.email}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="Show email verified"
-                            onClick={
-                              emailVerified === true
-                                ? undefined
-                                : handleEmailVerificationsSend
-                            }
+                            onClick={emailVerified === true ? undefined : handleEmailVerificationsSend}
                           >
                             {emailVerified && <VerifiedUser color="primary" />}
                             {!emailVerified && <Error color="secondary" />}
@@ -492,11 +436,7 @@ const MyAccount = React.memo(() => {
                         </InputAdornment>
                       }
                     />
-                    {errors.email && (
-                      <FormHelperText id="name-helper-text">
-                        {errors.email}
-                      </FormHelperText>
-                    )}
+                    {errors.email && <FormHelperText id="name-helper-text">{errors.email}</FormHelperText>}
                   </FormControl>
                 )}
 
@@ -507,47 +447,29 @@ const MyAccount = React.memo(() => {
                       flexDirection: 'column',
                     }}
                   >
-                    <FormControl
-                      className={classNames(classes.margin, classes.textField)}
-                      error={!!errors.password}
-                    >
+                    <FormControl className={classNames(classes.margin, classes.textField)} error={!!errors.password}>
                       <InputLabel htmlFor="password">Password</InputLabel>
                       <Input
                         id="password"
                         autoComplete="new-password"
                         type={showPasswordValue ? 'text' : 'password'}
                         // value={values.password}
-                        onChange={(e) =>
-                          handleValueChange('password', e.target.value)
-                        }
+                        onChange={(e) => handleValueChange('password', e.target.value)}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
                               color="primary"
                               aria-label="Toggle password visibility"
-                              onClick={() =>
-                                setShowPasswordValue(!showPasswordValue)
-                              }
+                              onClick={() => setShowPasswordValue(!showPasswordValue)}
                             >
-                              {showPasswordValue ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
+                              {showPasswordValue ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
                         }
                       />
-                      {errors.password && (
-                        <FormHelperText id="name-helper-text">
-                          {errors.password}
-                        </FormHelperText>
-                      )}
+                      {errors.password && <FormHelperText id="name-helper-text">{errors.password}</FormHelperText>}
                     </FormControl>
-                    <FormControl
-                      className={classNames(classes.margin, classes.textField)}
-                      error={!!errors.newPassword}
-                    >
+                    <FormControl className={classNames(classes.margin, classes.textField)} error={!!errors.newPassword}>
                       <InputLabel htmlFor="new-password">
                         {intl.formatMessage({
                           id: 'new_password',
@@ -557,31 +479,21 @@ const MyAccount = React.memo(() => {
                         id="new-password"
                         autoComplete="off"
                         type={showNewPasswordValue ? 'text' : 'password'}
-                        onChange={(e) =>
-                          handleValueChange('newPassword', e.target.value)
-                        }
+                        onChange={(e) => handleValueChange('newPassword', e.target.value)}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
                               color="primary"
                               aria-label="Toggle password visibility"
-                              onClick={() =>
-                                setShowNewPasswordValue(!showNewPasswordValue)
-                              }
+                              onClick={() => setShowNewPasswordValue(!showNewPasswordValue)}
                             >
-                              {showNewPasswordValue ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
+                              {showNewPasswordValue ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
                         }
                       />
                       {errors.newPassword && (
-                        <FormHelperText id="name-helper-text">
-                          {errors.newPassword}
-                        </FormHelperText>
+                        <FormHelperText id="name-helper-text">{errors.newPassword}</FormHelperText>
                       )}
                     </FormControl>
                     <FormControl
@@ -597,33 +509,21 @@ const MyAccount = React.memo(() => {
                         id="confirm-password"
                         autoComplete="off"
                         type={showConfirmPasswordValue ? 'text' : 'password'}
-                        onChange={(e) =>
-                          handleValueChange('confirmPassword', e.target.value)
-                        }
+                        onChange={(e) => handleValueChange('confirmPassword', e.target.value)}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
                               color="primary"
                               aria-label="Toggle password visibility"
-                              onClick={() =>
-                                setShowConfirmPasswordValue(
-                                  !showConfirmPasswordValue
-                                )
-                              }
+                              onClick={() => setShowConfirmPasswordValue(!showConfirmPasswordValue)}
                             >
-                              {showConfirmPasswordValue ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
+                              {showConfirmPasswordValue ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
                         }
                       />
                       {errors.confirmPassword && (
-                        <FormHelperText id="name-helper-text">
-                          {errors.confirmPassword}
-                        </FormHelperText>
+                        <FormHelperText id="name-helper-text">{errors.confirmPassword}</FormHelperText>
                       )}
                     </FormControl>
                   </div>

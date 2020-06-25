@@ -10,20 +10,14 @@ import withMobileDialog from '@material-ui/core/withMobileDialog'
 import { compose } from 'redux'
 import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { setSimpleValue } from '../../store/simpleValues/actions'
+import { setSimpleValue } from '../../store/simpleValues'
 
-const Transition = React.forwardRef((props, ref) => (
-  <Slide direction="up" {...props} ref={ref} />
-))
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" {...props} ref={ref} />)
 
 const DeleteDialog = ({ name, fullScreen, handleDelete }) => {
   const intl = useIntl()
-  const isDialogOpen = useSelector(
-    ({ simpleValues }) => !!(simpleValues && simpleValues[deleteKey])
-  )
-  const deleteUid = useSelector(({ simpleValues }) =>
-    simpleValues ? simpleValues[deleteKey] : false
-  )
+  const isDialogOpen = useSelector(({ simpleValues }) => !!(simpleValues && simpleValues[deleteKey]))
+  const deleteUid = useSelector(({ simpleValues }) => (simpleValues ? simpleValues[deleteKey] : false))
   const deleteKey = `delete_${name}`
 
   const handleClose = () => setSimpleValue(deleteKey, undefined)
@@ -41,9 +35,7 @@ const DeleteDialog = ({ name, fullScreen, handleDelete }) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">
-        {intl.formatMessage({ id: `delete_${name}_title` })}
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">{intl.formatMessage({ id: `delete_${name}_title` })}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {intl.formatMessage({ id: `delete_${name}_message` })}

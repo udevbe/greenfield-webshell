@@ -10,12 +10,10 @@ import withMobileDialog from '@material-ui/core/withMobileDialog'
 import { compose } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
-import { setSimpleValue } from '../../store/simpleValues/actions'
-import getSimpleValue from '../../store/simpleValues/selectors'
+import { setSimpleValue } from '../../store/simpleValues'
+import getSimpleValue from '../../store/simpleValues'
 
-const Transition = React.forwardRef((props, ref) => (
-  <Slide direction="up" {...props} ref={ref} />
-))
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" {...props} ref={ref} />)
 
 const QuestionDialog = React.memo(
   ({
@@ -30,9 +28,7 @@ const QuestionDialog = React.memo(
   }) => {
     const intl = useIntl()
     const dispatch = useDispatch()
-    const isDialogOpen = useSelector((state) =>
-      getSimpleValue(state, name, false)
-    )
+    const isDialogOpen = useSelector((state) => getSimpleValue(state, name, false))
     const handleClose = () => dispatch(setSimpleValue(name, undefined))
 
     if (!isDialogOpen) {
@@ -50,9 +46,7 @@ const QuestionDialog = React.memo(
       >
         <DialogTitle id="question-dialog-title">{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="question-dialog-description">
-            {message}
-          </DialogContentText>
+          <DialogContentText id="question-dialog-description">{message}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color={cancelColor}>

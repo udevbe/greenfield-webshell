@@ -1,8 +1,7 @@
 import dialogs from './dialogs'
 import { firebaseReducer as firebase } from 'react-redux-firebase'
 import locale from './locale'
-import persistentValues from './persistentValues/reducer'
-import simpleValues from './simpleValues/reducer'
+import simpleValues from './simpleValues'
 import themeSource from './themeSource'
 import drawer from './drawer'
 import { combineReducers } from 'redux'
@@ -17,7 +16,6 @@ const createRootReducer = (history) =>
     firebase,
     dialogs,
     locale,
-    persistentValues,
     simpleValues,
     drawer,
     themeSource,
