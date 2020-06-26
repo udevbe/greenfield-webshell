@@ -1,9 +1,10 @@
 import { Provider } from 'react-redux'
 import { ConnectedRouter } from 'connected-react-router'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
+import { AppConfig } from '../../config/config'
 
-export default ({ appConfig, children }) => {
+const StoreProvider: FunctionComponent<{ appConfig: AppConfig }> = ({ appConfig, children }) => {
   const { store, persistor, history } = appConfig.configureStore()
 
   return (
@@ -16,3 +17,4 @@ export default ({ appConfig, children }) => {
     </Provider>
   )
 }
+export default StoreProvider

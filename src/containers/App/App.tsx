@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react'
+import React, { FunctionComponent, lazy, Suspense, useEffect } from 'react'
 import config from '../../config'
 import AppProviders from './AppProviders'
 import StoreProvider from './StoreProvider'
@@ -17,18 +17,15 @@ const AppBody = React.memo(() => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const beforeInstallPromptEventHandler = (event) => {
+    const beforeInstallPromptEventHandler: EventListener = (event) => {
       event.preventDefault()
       dispatch(saveInstallProposalEvent(event))
     }
-    window.addEventListener(
-      'beforeinstallprompt',
-      beforeInstallPromptEventHandler
-    )
+    window.addEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
 
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      const iOS =
-        process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
+      // @ts-ignore
+      const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
       if (iOS) {
         serviceWorker.register()
       } else {
@@ -42,11 +39,7 @@ const AppBody = React.memo(() => {
       }
     }
 
-    return () =>
-      window.removeEventListener(
-        'beforeinstallprompt',
-        beforeInstallPromptEventHandler
-      )
+    return () => window.removeEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
   }, [dispatch])
 
   return (
@@ -58,7 +51,7 @@ const AppBody = React.memo(() => {
   )
 })
 
-const App = () => {
+const App: FunctionComponent = () => {
   return (
     <React.StrictMode>
       <StoreProvider appConfig={config}>
@@ -75,16 +68,8 @@ const App = () => {
             <link rel="manifest" href="manifest.json" />
             <link rel="subresource" href="logo.png" />
             <link rel="subresource" href="index.css" />
-            <link
-              rel="preload"
-              href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"
-              as="font"
-            />
-            <link
-              rel="preload"
-              href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500"
-              as="font"
-            />
+            <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" as="font" />
+            <link rel="preload" href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500" as="font" />
             <link rel="stylesheet" type="text/css" href="index.css" />
             <link
               rel="stylesheet"

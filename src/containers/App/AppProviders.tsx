@@ -1,13 +1,14 @@
+import { AppConfig } from '../../config/config'
 import AppConfigProvider from '../../contexts/AppConfigProvider/AppConfigProvider'
 import { ThemeProvider } from '@material-ui/styles'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { shallowEqual, useSelector } from 'react-redux'
 import getThemeSource from '../../config/themes'
 import { createMuiTheme } from '@material-ui/core'
 import { IntlProvider } from 'react-intl'
 import locales, { getLocaleMessages } from '../../config/locales'
 
-const AppProviders = ({ appConfig, children }) => {
+const AppProviders: FunctionComponent<{ appConfig: AppConfig }> = ({ appConfig, children }) => {
   const locale = useSelector(({ locale }) => locale, shallowEqual)
   const themeSource = useSelector(({ themeSource }) => themeSource)
   const source = getThemeSource(themeSource, appConfig.themes)

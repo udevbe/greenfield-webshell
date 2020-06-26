@@ -53,17 +53,17 @@ export interface CompositorApiEventCallback<E> {
 
 export class CompositorApi {
   session?: CompositorSession
-  readonly #compositorModule: Promise<CompositorModule>
+  private readonly compositorModule: Promise<CompositorModule>
   // @ts-ignore set when this.session is set
-  #remoteAppLauncher: CompositorRemoteAppLauncher
+  private remoteAppLauncher: CompositorRemoteAppLauncher
   // @ts-ignore set when this.session is set
-  #createAxisEventFromWheelEvent: CreateAxisEventFromWheelEvent
+  private createAxisEventFromWheelEvent: CreateAxisEventFromWheelEvent
   // @ts-ignore set when this.session is set
-  #createButtonEventFromMouseEvent: CreateButtonEventFromMouseEvent
+  private createButtonEventFromMouseEvent: CreateButtonEventFromMouseEvent
   // @ts-ignore set when this.session is set
-  #createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEvent
+  private createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEvent
   // @ts-ignore set when this.session is set
-  #webAppLauncher: CompositorWebAppLauncher
+  private webAppLauncher: CompositorWebAppLauncher
   events: CompositorApiEventCallbacks = {}
 
   static create(): CompositorApi {
@@ -81,7 +81,7 @@ export class CompositorApi {
   }
 
   constructor(compositorModule: Promise<CompositorModule>) {
-    this.#compositorModule = compositorModule
+    this.compositorModule = compositorModule
   }
 
   private linkUserShellEvents(userShell: UserShellApi): void {
@@ -163,17 +163,17 @@ export class CompositorApi {
       createAxisEventFromWheelEvent,
       createButtonEventFromMouseEvent,
       createKeyEventFromKeyboardEvent,
-    } = await this.#compositorModule
+    } = await this.compositorModule
 
-    this.#remoteAppLauncher = remoteAppLauncher
-    this.#webAppLauncher = webAppLauncher
+    this.remoteAppLauncher = remoteAppLauncher
+    this.webAppLauncher = webAppLauncher
     this.session = session
     // @ts-ignore
-    this.#createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
+    this.createAxisEventFromWheelEvent = createAxisEventFromWheelEvent
     // @ts-ignore
-    this.#createButtonEventFromMouseEvent = createButtonEventFromMouseEvent
+    this.createButtonEventFromMouseEvent = createButtonEventFromMouseEvent
     // @ts-ignore
-    this.#createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
+    this.createKeyEventFromKeyboardEvent = createKeyEventFromKeyboardEvent
 
     this.linkUserShellEvents(session.userShell)
 
@@ -266,32 +266,32 @@ export class CompositorApi {
 
     sceneElement.onpointermove = (event: PointerEvent): void => {
       event.preventDefault()
-      const buttonEventFromMouseEvent = this.#createButtonEventFromMouseEvent(event, false, id)
+      const buttonEventFromMouseEvent = this.createButtonEventFromMouseEvent(event, false, id)
       this.pointerMove(buttonEventFromMouseEvent)
     }
     sceneElement.onpointerdown = (event: PointerEvent): void => {
       event.preventDefault()
       sceneElement.setPointerCapture(event.pointerId)
-      this.buttonDown(this.#createButtonEventFromMouseEvent(event, false, id))
+      this.buttonDown(this.createButtonEventFromMouseEvent(event, false, id))
     }
     sceneElement.onpointerup = (event: PointerEvent): void => {
       event.preventDefault()
-      this.buttonUp(this.#createButtonEventFromMouseEvent(event, true, id))
+      this.buttonUp(this.createButtonEventFromMouseEvent(event, true, id))
       sceneElement.releasePointerCapture(event.pointerId)
     }
     sceneElement.onwheel = (event: WheelEvent): void => {
       event.preventDefault()
-      this.axis(this.#createAxisEventFromWheelEvent(event, id))
+      this.axis(this.createAxisEventFromWheelEvent(event, id))
     }
     sceneElement.onkeydown = (event: KeyboardEvent): void => {
-      const keyEventFromKeyboardEvent = this.#createKeyEventFromKeyboardEvent(event, true)
+      const keyEventFromKeyboardEvent = this.createKeyEventFromKeyboardEvent(event, true)
       if (keyEventFromKeyboardEvent) {
         event.preventDefault()
         this.key(keyEventFromKeyboardEvent)
       }
     }
     sceneElement.onkeyup = (event: KeyboardEvent): void => {
-      const keyEventFromKeyboardEvent = this.#createKeyEventFromKeyboardEvent(event, false)
+      const keyEventFromKeyboardEvent = this.createKeyEventFromKeyboardEvent(event, false)
       if (keyEventFromKeyboardEvent) {
         event.preventDefault()
         this.key(keyEventFromKeyboardEvent)
@@ -338,19 +338,19 @@ export class CompositorApi {
   }
 
   async launchRemoteApp(appId: string, url: string): Promise<void> {
-    if (!this.#remoteAppLauncher) {
+    if (!this.remoteAppLauncher) {
       throw new Error('Compositor not initialized.')
     }
 
-    await this.#remoteAppLauncher.launch(new URL(url), appId)
+    await this.remoteAppLauncher.launch(new URL(url), appId)
   }
 
   async launchWebApp(downloadURL: string): Promise<void> {
-    if (!this.#webAppLauncher) {
+    if (!this.webAppLauncher) {
       throw new Error('Compositor not initialized.')
     }
 
-    await this.#webAppLauncher.launch(new URL(downloadURL))
+    await this.webAppLauncher.launch(new URL(downloadURL))
   }
 }
 
