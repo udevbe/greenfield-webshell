@@ -1,18 +1,18 @@
-import type { ComponentElement, FunctionComponent } from 'react'
-import React, { useRef, useState } from 'react'
-import Activity from '../../containers/Activity'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
-import { makeStyles } from '@material-ui/core/styles'
-import InfiniteScroll from 'react-infinite-scroller'
-import { useFirebaseConnect } from 'react-redux-firebase'
-import { useDispatch, useSelector } from 'react-redux'
-import WebAppTile from '../../components/WebStore/WebAppTile'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
+import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import { push } from 'connected-react-router'
+import type { ComponentElement, FunctionComponent } from 'react'
+import React, { useRef, useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroller'
+import { useDispatch, useSelector } from 'react-redux'
+import { useFirebaseConnect } from 'react-redux-firebase'
+import WebAppTile from '../../components/WebStore/WebAppTile'
+import Activity from '../../containers/Activity'
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
@@ -25,31 +25,15 @@ const appsListBatchSize = 10
 
 const WebStore: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const [webAppTiles, setWebAppTiles] = useState<ComponentElement<any, any>[]>(
-    []
-  )
+  const [webAppTiles, setWebAppTiles] = useState<ComponentElement<any, any>[]>([])
 
-  useFirebaseConnect([{ path: '/apps', storeAs: 'allApps' }])
-  const allApps: {
-    key: string
-    value: {
-      about: string
-      icon: string
-      title: string
-      type: string
-      url: string
-    }
-  }[] = useSelector(({ firebase }) => firebase.ordered?.allApps ?? [])
+  useFirebaseConnect('/apps')
+  const allApps = useSelector((store) => store.firebase.ordered?.apps ?? [])
 
   const loadMoreApps = () => {
     const additionalApps = allApps
-      .slice(
-        webAppTiles.length,
-        Math.min(allApps.length, webAppTiles.length + appsListBatchSize)
-      )
-      .map(({ key, value }, index) => (
-        <WebAppTile key={key} index={index} appId={key} app={value} />
-      ))
+      .slice(webAppTiles.length, Math.min(allApps.length, webAppTiles.length + appsListBatchSize))
+      .map(({ key, value }, index) => <WebAppTile key={key} index={index} appId={key} app={value} />)
     setWebAppTiles([...webAppTiles, ...additionalApps])
   }
 

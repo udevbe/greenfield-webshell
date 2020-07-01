@@ -1,15 +1,15 @@
-import DrawerContent from './DrawerContent'
+import React, { FunctionComponent } from 'react'
 import { DrawerHeader } from '../../components/Drawer'
-import React from 'react'
 import ResponsiveDrawer from '../../containers/ResponsiveDrawer'
+import DrawerContent from './DrawerContent'
 
-const Drawer = React.memo(() => {
+const Drawer: FunctionComponent = () => {
   return (
     <ResponsiveDrawer>
       <DrawerHeader />
       <DrawerContent />
     </ResponsiveDrawer>
   )
-})
+}
 
-export default Drawer
+export default React.memo(Drawer)

@@ -7,12 +7,12 @@ import { useSelector } from 'react-redux'
 
 const UpdateNotification = () => {
   const canUpdate: boolean = useSelector(({ serviceWorker }) => serviceWorker.canUpdate)
-  const registration: ServiceWorkerRegistration = useSelector(({ serviceWorker }) => serviceWorker.registrationUpdate)
+  const registration = useSelector((store) => store.serviceWorker.registrationUpdate)
 
   const [closed, setClosed] = useState(false)
 
   const doUpdate = () => {
-    const registrationWaiting = registration.waiting
+    const registrationWaiting = registration?.waiting
 
     registrationWaiting?.addEventListener('statechange', (e) => {
       // @ts-ignore

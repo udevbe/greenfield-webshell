@@ -4,23 +4,31 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import React from 'react'
-import Slide from '@material-ui/core/Slide'
 import withMobileDialog from '@material-ui/core/withMobileDialog'
-import { compose } from 'redux'
-import { useSelector } from 'react-redux'
+import React, { FunctionComponent } from 'react'
 import { useIntl } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { compose } from 'redux'
 import { setSimpleValue } from '../../store/simpleValues'
 
-const Transition = React.forwardRef((props, ref) => <Slide direction="up" {...props} ref={ref} />)
-
-const DeleteDialog = ({ name, fullScreen, handleDelete }) => {
+const DeleteDialog: FunctionComponent<{
+  name: string
+  fullScreen: boolean
+  handleDelete: (handleClose: () => void, deleteUid: string) => void
+}> = ({ name, fullScreen, handleDelete }) => {
   const intl = useIntl()
-  const isDialogOpen = useSelector(({ simpleValues }) => !!(simpleValues && simpleValues[deleteKey]))
-  const deleteUid = useSelector(({ simpleValues }) => (simpleValues ? simpleValues[deleteKey] : false))
+  const dispatch = useDispatch()
+  const isDialogOpen = useSelector((store) => !!(store.simpleValues && store.simpleValues[deleteKey]))
+  const deleteUid = useSelector((store) => (store.simpleValues ? store.simpleValues[deleteKey] : false))
   const deleteKey = `delete_${name}`
 
-  const handleClose = () => setSimpleValue(deleteKey, undefined)
+  const handleClose = () =>
+    dispatch(
+      setSimpleValue({
+        id: deleteKey,
+        value: undefined,
+      })
+    )
 
   if (!isDialogOpen) {
     return null
@@ -31,7 +39,6 @@ const DeleteDialog = ({ name, fullScreen, handleDelete }) => {
       fullScreen={fullScreen}
       open={isDialogOpen}
       onClose={handleClose}
-      TransitionComponent={Transition}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >

@@ -1,27 +1,26 @@
-import React from 'react'
-import Scrollbar from '../../components/Scrollbar'
-import { useAppConfig } from '../../contexts/AppConfigProvider'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { useFirebase } from 'react-redux-firebase'
-import { useUserId } from '../../utils/auth'
-import ListItem from '@material-ui/core/ListItem'
-import { popDrawerPath } from '../../store/drawer'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ArrowBack from '@material-ui/icons/ArrowBack'
-import ListItemText from '@material-ui/core/ListItemText'
 import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import ArrowBack from '@material-ui/icons/ArrowBack'
+import React, { FunctionComponent } from 'react'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import { useFirebase } from 'react-redux-firebase'
 import { DrawerListEntry } from '../../components/Drawer'
+import Scrollbar from '../../components/Scrollbar'
+import type { DrawerEntry, DrawerListItem } from '../../config/menuItems'
+import { isDrawerListItem } from '../../config/menuItems'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
+import { popDrawerPath } from '../../store/drawer'
+import { useUserId } from '../../utils/auth'
 
-export const DrawerContent = React.memo(() => {
+export const DrawerContent: FunctionComponent = () => {
   const appConfig = useAppConfig()
   const firebase = useFirebase()
   const uid = useUserId()
   const dispatch = useDispatch()
-  const drawerPath = useSelector(
-    ({ drawer: { drawerPath } }) => drawerPath,
-    shallowEqual
-  )
+  const drawerPath = useSelector((store): string[] => store.drawer.drawerPath, shallowEqual)
 
   const handleSignOut = async () => {
     await firebase.ref(`/users/${uid}/connections`).remove()
@@ -31,13 +30,13 @@ export const DrawerContent = React.memo(() => {
   }
   const rootMenuItem = appConfig.useMenuItems(handleSignOut)
 
-  const { selectedMenuItem, listItem } = drawerPath.reduce(
-    ({ selectedMenuItem }, drawerPathSegment) => {
-      const selectedItem = selectedMenuItem.entries[drawerPathSegment]
+  // find the last entry & the list it came from when traversing the drawer path segment
+  const { selectedMenuItem, listItem } = drawerPath.reduce<{ selectedMenuItem: DrawerEntry; listItem: DrawerListItem }>(
+    (previous, drawerPathSegment) => {
+      const selectedItem = previous.listItem.entries[drawerPathSegment]
       return {
         selectedMenuItem: selectedItem,
-        listItem:
-          selectedItem.variant === 'listItem' ? selectedItem : selectedMenuItem,
+        listItem: isDrawerListItem(selectedItem) ? selectedItem : previous.listItem,
       }
     },
     { selectedMenuItem: rootMenuItem, listItem: rootMenuItem }
@@ -78,6 +77,6 @@ export const DrawerContent = React.memo(() => {
       </Scrollbar>
     </div>
   )
-})
+}
 
-export default DrawerContent
+export default React.memo(DrawerContent)

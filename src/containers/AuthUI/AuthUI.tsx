@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { useFirebase } from 'react-redux-firebase'
 import { useAppConfig } from '../../contexts/AppConfigProvider'
 import FirebaseAuth from 'react-firebaseui/FirebaseAuth'
 
-const AuthUI = () => {
+const AuthUI: FunctionComponent = () => {
   const firebase = useFirebase()
   const appConfig = useAppConfig()
 
@@ -24,4 +24,4 @@ const AuthUI = () => {
   )
 }
 
-export default AuthUI
+export default React.memo(AuthUI)

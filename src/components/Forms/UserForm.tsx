@@ -45,15 +45,9 @@ const UserForm: FunctionComponent<{
   const intl = useIntl()
 
   useFirebaseConnect([{ path: `/users/${uid}` }])
-  const user: User = useSelector(({ firebase }) => firebase.data.users && firebase.data.users[uid], shallowEqual)
+  const user = useSelector((store) => store.firebase.data.users?.[uid], shallowEqual)
 
-  const isLinkedWithProvider = (provider: string) => {
-    try {
-      return user.providerData.find((p: UserInfo | null) => p?.providerId === provider) !== undefined
-    } catch (e) {
-      return false
-    }
-  }
+  const isLinkedWithProvider = (provider: string) => user.providerData?.find((p) => p?.providerId === provider) ?? false
 
   const getProviderIcon = (p: string) => {
     switch (p) {

@@ -17,7 +17,7 @@ import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import InputLabel from '@material-ui/core/InputLabel'
 
-import React, { useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 // TODO use react redux forms and cleanup this mess.
-const MyAccount = React.memo(() => {
+const MyAccount = () => {
   const intl = useIntl()
   const dispatch = useDispatch()
   const firebase = useFirebase()
@@ -557,8 +557,6 @@ const MyAccount = React.memo(() => {
       )}
     </Activity>
   )
-})
+}
 
-MyAccount.propTypes = {}
-
-export default MyAccount
+export default React.memo(MyAccount)

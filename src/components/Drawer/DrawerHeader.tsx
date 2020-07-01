@@ -40,18 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const DrawerHeader: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const { photoURL, displayName, email } = useSelector(
-    ({
-      firebase: {
-        auth: { photoURL, displayName, email },
-      },
-    }) => ({
-      photoURL,
-      displayName,
-      email,
-    }),
-    shallowEqual
-  )
+  const { photoURL, displayName, email } = useSelector((store) => store.firebase.auth, shallowEqual)
   const notMinified = useSelector(({ drawer }) => !drawer.useMinified)
   const isAuthMenu = useSelector(({ dialogs }) => !!dialogs.auth_menu)
   const theme = useTheme()
@@ -63,7 +52,7 @@ export const DrawerHeader: FunctionComponent = () => {
         <List>
           <ListItem>
             <ListItemAvatar>
-              <Avatar src={photoURL} alt="user" />
+              <Avatar src={photoURL ?? undefined} alt="user" />
             </ListItemAvatar>
             <Hidden smDown implementation="css">
               <ListItemSecondaryAction>

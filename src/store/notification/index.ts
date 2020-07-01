@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface Notification {
   message: string
-  variant: 'info' | 'warn' | 'error' | 'success'
+  variant: 'info' | 'warning' | 'error' | 'success'
 }
 
 export interface NotificationState {

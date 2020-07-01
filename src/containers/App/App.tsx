@@ -1,14 +1,14 @@
+import { CssBaseline } from '@material-ui/core'
 import React, { FunctionComponent, lazy, Suspense, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
+import { useDispatch } from 'react-redux'
+import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 import config from '../../config'
+import { BeforeInstallPromptEvent, saveInstallProposalEvent } from '../../store/addToHomeScreen'
+import { registrationSuccess, updateAvailable } from '../../store/serviceworker'
+import * as serviceWorker from '../../utils/serviceWorker'
 import AppProviders from './AppProviders'
 import StoreProvider from './StoreProvider'
-import { CssBaseline } from '@material-ui/core'
-import { Helmet } from 'react-helmet'
-import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
-import { useDispatch } from 'react-redux'
-import { saveInstallProposalEvent } from '../../store/addToHomeScreen'
-import * as serviceWorker from '../../utils/serviceWorker'
-import { registrationSuccess, updateAvailable } from '../../store/serviceworker'
 
 const Root = lazy(() => import('../Root'))
 const FirebaseProvider = lazy(() => import('./FirebaseProvider'))
@@ -19,7 +19,7 @@ const AppBody = React.memo(() => {
   useEffect(() => {
     const beforeInstallPromptEventHandler: EventListener = (event) => {
       event.preventDefault()
-      dispatch(saveInstallProposalEvent(event))
+      dispatch(saveInstallProposalEvent(event as BeforeInstallPromptEvent))
     }
     window.addEventListener('beforeinstallprompt', beforeInstallPromptEventHandler)
 

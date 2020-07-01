@@ -1,22 +1,22 @@
+import { ListItemText } from '@material-ui/core'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
-import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
-import PublicIcon from '@material-ui/icons/Public'
-import GroupIcon from '@material-ui/icons/Group'
 import CloseIcon from '@material-ui/icons/Close'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import type { CSSProperties, ReactElement, ReactNode } from 'react'
-import React from 'react'
+import Flag from '@material-ui/icons/Flag'
+import GroupIcon from '@material-ui/icons/Group'
+import Keyboard from '@material-ui/icons/Keyboard'
+import PublicIcon from '@material-ui/icons/Public'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
+import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import { deleteClient } from '../middleware/compositor/actions'
 import type { UserShellSurface } from '../store/compositor'
 import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
-import Flag from '@material-ui/icons/Flag'
-import Keyboard from '@material-ui/icons/Keyboard'
-import { ListItemText } from '@material-ui/core'
-import { deleteClient } from '../middleware/compositor/actions'
 
 export interface DrawerDivider {
   variant: 'divider'
@@ -56,8 +56,12 @@ export interface DrawerListItem {
   onClick?: () => void
   text?: string
   leftIcon?: ReactNode
-  entries: { [key: string]: DrawerEntry | undefined }
+  entries: { [key: string]: DrawerEntry }
   visible?: boolean
+}
+
+export function isDrawerListItem(drawerEntry: DrawerEntry): drawerEntry is DrawerListItem {
+  return (drawerEntry as DrawerEntry).variant === 'listItem'
 }
 
 export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (handleSignOut) => {
@@ -67,7 +71,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (hand
   const uid = useUserId()
   // FIXME use grants based on db id.
   const webStoreAccess = useGrant(uid, 'read web store applications')
-  const isAuthMenu = useSelector((state) => !!state.dialogs.auth_menu)
+  const isAuthMenu = useSelector((state) => state.dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
   const addToHomeScreenProposalEvent = useSelector((state) => state.addToHomeScreen.proposalEvent)
   const userSurfacesByAppId: { [key: string]: UserShellSurface[] } = {}
@@ -93,7 +97,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (hand
   })
 
   if (isAuthMenu) {
-    return {
+    const authMenu: DrawerListItem = {
       variant: 'listItem',
       visible: authorised,
       entries: {
@@ -112,6 +116,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (hand
         },
       },
     }
+    return authMenu
   }
 
   const user: DrawerListItem = {
@@ -233,7 +238,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (hand
   const install: DrawerActionItem = {
     variant: 'actionItem',
     visible: addToHomeScreenProposalEvent != null,
-    onClick: () => addToHomeScreenProposalEvent.prompt(),
+    onClick: () => addToHomeScreenProposalEvent?.prompt(),
     text: intl.formatMessage({ id: 'install' }),
     leftIcon: <VerticalAlignBottomIcon />,
   }

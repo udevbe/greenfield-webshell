@@ -11,7 +11,7 @@ export const useNotifyInfo = () => {
 }
 export const useNotifyWarn = () => {
   const dispatch = useDispatch()
-  return (message: string) => dispatch(showNotification({ variant: 'warn', message }))
+  return (message: string) => dispatch(showNotification({ variant: 'warning', message }))
 }
 export const useNotifyError = () => {
   const dispatch = useDispatch()

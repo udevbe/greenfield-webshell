@@ -1,9 +1,9 @@
-import Drawer from '../../containers/Drawer'
-import React from 'react'
-import Routes from '../../containers/Routes'
 import { makeStyles } from '@material-ui/styles'
+import React, { FunctionComponent } from 'react'
 import Notification from '../../components/Notification'
 import UpdateNotification from '../../components/Notification/UpdateNotification'
+import Drawer from '../../containers/Drawer'
+import Routes from '../../containers/Routes'
 
 const useStyles = makeStyles({
   body: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   },
 })
 
-export const AppLayout = React.memo(() => {
+export const AppLayout: FunctionComponent = () => {
   const classes = useStyles()
 
   return (
@@ -38,6 +38,6 @@ export const AppLayout = React.memo(() => {
       </div>
     </div>
   )
-})
+}
 
-export default AppLayout
+export default React.memo(AppLayout)

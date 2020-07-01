@@ -9,7 +9,7 @@ import { IntlProvider } from 'react-intl'
 import locales, { getLocaleMessages } from '../../config/locales'
 
 const AppProviders: FunctionComponent<{ appConfig: AppConfig }> = ({ appConfig, children }) => {
-  const locale = useSelector(({ locale }) => locale, shallowEqual)
+  const locale = useSelector((store) => store.locale.locale, shallowEqual)
   const themeSource = useSelector(({ themeSource }) => themeSource)
   const source = getThemeSource(themeSource, appConfig.themes)
   const theme = createMuiTheme(source)

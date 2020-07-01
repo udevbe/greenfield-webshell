@@ -1,21 +1,16 @@
 import { useSelector } from 'react-redux'
-import { useFirebaseConnect } from 'react-redux-firebase'
+import { FirebaseReducer, useFirebaseConnect } from 'react-redux-firebase'
+import AuthState = FirebaseReducer.AuthState
 
-export function useUserProp(
+export function useUserProp<T extends keyof AuthState>(
   uid: string,
-  propName: 'displayName' | 'photoURL' | 'providerData',
-  equalityFn: (left: string, right: string) => boolean
-): string {
-  useFirebaseConnect([{ path: `/users/${uid}/${propName}` }])
-  return useSelector(({ firebase }) => {
-    if (firebase.data.users && firebase.data.users[uid]) {
-      return firebase.data.users[uid][propName]
-    } else {
-      return ''
-    }
-  }, equalityFn)
+  propName: T,
+  equalityFn?: (left: AuthState[T], right: AuthState[T]) => boolean
+): AuthState[T] | undefined {
+  useFirebaseConnect(`/users/${uid}/${propName}`)
+  return useSelector((state) => state.firebase.data.users?.[uid]?.[propName], equalityFn)
 }
 
-export function useUserPropLoading(uid: string, propName: 'displayName' | 'photoURL' | 'providerData'): boolean {
+export function useUserPropLoading(uid: string, propName: keyof AuthState): boolean {
   return useSelector((state) => state.firebase.requesting[`users/${uid}/${propName}`])
 }
