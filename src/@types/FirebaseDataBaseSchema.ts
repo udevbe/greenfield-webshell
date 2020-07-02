@@ -1,5 +1,4 @@
-import { FirebaseReducer } from 'react-redux-firebase'
-import AuthState = FirebaseReducer.AuthState
+import type { FirebaseReducer } from 'react-redux-firebase'
 
 export interface AppSchema {
   about: string
@@ -46,7 +45,7 @@ export interface FirebaseDataBaseSchema {
     [key: string]: boolean
   }
   // user id
-  users: AuthState
+  users: FirebaseReducer.AuthState
 }
 
 export type FirebaseState = FirebaseReducer.Reducer<{}, FirebaseDataBaseSchema>

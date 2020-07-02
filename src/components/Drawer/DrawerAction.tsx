@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 import React, { FunctionComponent } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { DrawerActionItem } from '../../config/menuItems'
+import type { DrawerActionItem } from '../../config/menuItems'
 import { setDrawerMobileOpen } from '../../store/drawer'
 
 const DrawerAction: FunctionComponent<{ actionItem: DrawerActionItem; selected: boolean }> = ({

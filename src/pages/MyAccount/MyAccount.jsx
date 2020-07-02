@@ -24,7 +24,6 @@ import { useIntl } from 'react-intl'
 import { setSimpleValue } from '../../store/simpleValues'
 import { makeStyles } from '@material-ui/core/styles'
 import { useFirebase } from 'react-redux-firebase'
-import getSimpleValue from '../../store/simpleValues/selectors'
 import { useUserId, useUserIsAnonymous } from '../../utils/auth'
 import { useUserProp, useUserPropLoading } from '../../utils/userData'
 import ImageCropDialog from '../../containers/ImageCropDialog/ImageCropDialog'
@@ -71,8 +70,6 @@ const MyAccount = () => {
 
   const email = useSelector(({ firebase: { auth } }) => auth.email)
   const emailVerified = useSelector(({ firebase: { auth } }) => auth.emailVerified)
-
-  const newUserPhoto = useSelector((state) => getSimpleValue(state, 'new_user_photo', false))
 
   const [values, setValues] = useState({
     displayName,
@@ -545,13 +542,12 @@ const MyAccount = () => {
           />
 
           <ImageCropDialog
+            open={isPhotoDialogOpen}
+            title={intl.formatMessage({ id: 'change_photo' })}
             path={`users/${uid}`}
             fileName="photoURL"
             onUploadSuccess={(s) => handlePhotoUploadSuccess(s)}
-            open={isPhotoDialogOpen}
-            src={newUserPhoto}
             handleClose={() => setIsPhotoDialogOpen(false)}
-            title={intl.formatMessage({ id: 'change_photo' })}
           />
         </div>
       )}
