@@ -1,15 +1,15 @@
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
-import React from 'react'
-import classNames from 'classnames'
-import { isWidthDown } from '@material-ui/core/withWidth'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
+import { isWidthDown } from '@material-ui/core/withWidth'
+import classNames from 'classnames'
+import React, { FunctionComponent, ReactNode } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { useWidth } from '../../utils/theme'
 import { setDrawerMobileOpen } from '../../store/drawer'
+import { useWidth } from '../../utils/theme'
 
 const drawerWidth = 240
 
-const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
+const iOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const ResponsiveDrawer = ({ children }) => {
+const ResponsiveDrawer: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const classes = useStyles()
   const theme = useTheme()
   const width = useWidth(theme)
@@ -80,13 +80,9 @@ const ResponsiveDrawer = ({ children }) => {
       <SwipeableDrawer
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
-        variant={
-          smDown ? 'temporary' : useMinified ? 'permanent' : 'persistent'
-        }
+        variant={smDown ? 'temporary' : useMinified ? 'permanent' : 'persistent'}
         onClose={handleDrawerToggle}
-        anchor={
-          smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'
-        }
+        anchor={smDown ? undefined : theme.direction === 'rtl' ? 'right' : 'left'}
         classes={{
           paper: smDown
             ? classes.drawerPaper
@@ -108,6 +104,4 @@ const ResponsiveDrawer = ({ children }) => {
   )
 }
 
-ResponsiveDrawer.propTypes = {}
-
-export default ResponsiveDrawer
+export default React.memo(ResponsiveDrawer)

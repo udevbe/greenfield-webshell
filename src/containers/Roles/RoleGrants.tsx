@@ -1,26 +1,29 @@
-import AltIconAvatar from '../../components/AltIconAvatar'
-import Check from '@material-ui/icons/Check'
 import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import React from 'react'
-import ReactList from 'react-list'
 import Switch from '@material-ui/core/Switch'
+import Check from '@material-ui/icons/Check'
+import React, { FunctionComponent } from 'react'
 import { useIntl } from 'react-intl'
-import { useAppConfig } from '../../contexts/AppConfigProvider'
-import { useParams } from 'react-router-dom'
+import ReactList from 'react-list'
 import { useFirebase } from 'react-redux-firebase'
+import { useParams } from 'react-router-dom'
+import { RoleGrantSchema } from '../../@types/FirebaseDataBaseSchema'
+import AltIconAvatar from '../../components/AltIconAvatar'
+import { useAppConfig } from '../../contexts/AppConfigProvider'
 
-export const RoleGrants = ({ roleGrants }) => {
+const RoleGrants: FunctionComponent<{
+  roleGrants: { key: string; value: RoleGrantSchema }[]
+}> = ({ roleGrants }) => {
   const intl = useIntl()
   const appConfig = useAppConfig()
   const firebase = useFirebase()
 
-  const params = useParams()
+  const params = useParams<{ uid: string }>()
   const uid = params.uid ? params.uid : ''
 
-  const handleGrantToggleChange = (e, isInputChecked, key) => {
+  const handleGrantToggleChange = (e: React.ChangeEvent<HTMLInputElement>, isInputChecked: boolean, key: string) => {
     if (isInputChecked) {
       firebase.database().ref(`/role_grants/${uid}/${key}`).set(true)
     } else {
@@ -36,10 +39,10 @@ export const RoleGrants = ({ roleGrants }) => {
     },
   }))
 
-  const renderGrantItem = (i, k) => {
+  const renderGrantItem = (i: number) => {
     const key = grantList[i].key
     const val = appConfig.grants[grantList[i].key]
-    let roleGrantValues = []
+    let roleGrantValues: RoleGrantSchema = {}
 
     if (roleGrants) {
       roleGrants.map((role) => {
@@ -54,17 +57,12 @@ export const RoleGrants = ({ roleGrants }) => {
 
     return (
       <div key={key}>
-        <ListItem key={i} id={i}>
+        <ListItem key={i} id={`${i}`}>
           <AltIconAvatar icon={<Check />} />
-          <ListItemText
-            primary={intl.formatMessage({ id: `grant ${val}` })}
-            secondary={val}
-          />
+          <ListItemText primary={intl.formatMessage({ id: `grant ${val}` })} secondary={val} />
           <Switch
-            checked={roleGrantValues[val] === true}
-            onChange={(e, isInputChecked) =>
-              handleGrantToggleChange(e, isInputChecked, val)
-            }
+            checked={roleGrantValues[val]}
+            onChange={(e, isInputChecked) => handleGrantToggleChange(e, isInputChecked, val)}
           />
         </ListItem>
         <Divider variant="inset" />
@@ -75,16 +73,10 @@ export const RoleGrants = ({ roleGrants }) => {
   return (
     <div style={{ height: '100%' }}>
       <List style={{ height: '100%' }}>
-        <ReactList
-          itemRenderer={renderGrantItem}
-          length={grantList.length}
-          type="simple"
-        />
+        <ReactList itemRenderer={renderGrantItem} length={grantList.length} type="simple" />
       </List>
     </div>
   )
 }
 
-RoleGrants.propTypes = {}
-
-export default RoleGrants
+export default React.memo(RoleGrants)

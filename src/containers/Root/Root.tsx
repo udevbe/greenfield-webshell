@@ -1,15 +1,15 @@
-import AppLayout from '../../containers/AppLayout'
-import React from 'react'
+import Fade from '@material-ui/core/Fade'
+import React, { FunctionComponent } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { isLoaded } from 'react-redux-firebase'
 import LoadingComponent from '../../components/LoadingComponent'
-import Fade from '@material-ui/core/Fade'
+import AppLayout from '../../containers/AppLayout'
 import { createUserShellCompositor } from '../../middleware/compositor/actions'
 
-const Root = React.memo(() => {
+const Root: FunctionComponent = () => {
   const dispatch = useDispatch()
   dispatch(createUserShellCompositor())
-  const loaded = useSelector(({ firebase }) => isLoaded(firebase.auth))
+  const loaded = useSelector((store) => isLoaded(store.firebase.auth))
 
   if (loaded) {
     return (
@@ -22,6 +22,6 @@ const Root = React.memo(() => {
   } else {
     return <LoadingComponent />
   }
-})
+}
 
-export default Root
+export default React.memo(Root)

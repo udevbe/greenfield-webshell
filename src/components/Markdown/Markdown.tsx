@@ -2,7 +2,7 @@ import Link from '@material-ui/core/Link'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import ReactMarkdown from 'markdown-to-jsx'
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, { FunctionComponent } from 'react'
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -47,6 +47,8 @@ const options = {
   },
 }
 
-const MarkDown: FunctionComponent<{ children?: ReactNode }> = (props) => <ReactMarkdown options={options} {...props} />
+const MarkDown: FunctionComponent<{ children: string }> = ({ children }) => (
+  <ReactMarkdown options={options}>{children}</ReactMarkdown>
+)
 
 export default React.memo(MarkDown)

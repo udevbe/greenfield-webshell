@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl'
 
-const messages = defineMessages<string, Record<string, string>>({
+const messages = {
   current_locale: 'en-US',
   blue: 'Blue',
   workspace: 'Workspace',
@@ -166,6 +166,6 @@ const messages = defineMessages<string, Record<string, string>>({
   update_message: 'Click here to get the new version.',
   install: 'Install',
   disable: 'Disable',
-})
+}
 
 export default messages

@@ -1,6 +1,5 @@
-import '@formatjs/intl-relativetimeformat/dist/locale-data/de'
-import '@formatjs/intl-relativetimeformat/dist/locale-data/en'
-import '@formatjs/intl-relativetimeformat/polyfill'
+// import '@formatjs/intl-relativetimeformat/dist/locale-data/en'
+// import '@formatjs/intl-relativetimeformat/polyfill'
 import intl from 'intl'
 import areIntlLocalesSupported from 'intl-locales-supported'
 import en from './en'

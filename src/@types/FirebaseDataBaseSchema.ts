@@ -9,8 +9,8 @@ export interface AppSchema {
 }
 
 export interface RoleGrantSchema {
-  'read and write custom applications': boolean
-  'read web store applications': boolean
+  // role grant name/id
+  [key: string]: boolean
 }
 
 export interface RoleSchema {
@@ -19,8 +19,11 @@ export interface RoleSchema {
 }
 
 export interface UserAppByUserIdSchema {
-  appId: string
-  uid: string
+  // app id
+  [key: string]: {
+    appId: string
+    uid: string
+  }
 }
 
 export interface FirebaseDataBaseSchema {
@@ -29,17 +32,11 @@ export interface FirebaseDataBaseSchema {
   // app id
   apps: AppSchema
   // role id
-  role_grants: {
-    // grant
-    [key: string]: RoleGrantSchema
-  }
+  role_grants: RoleGrantSchema
   // role id
   roles: RoleSchema
   // user id
-  apps_by_user_id: {
-    // app id
-    [key: string]: UserAppByUserIdSchema
-  }
+  apps_by_user_id: UserAppByUserIdSchema
   // role id
   user_roles: {
     [key: string]: boolean

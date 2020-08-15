@@ -86,10 +86,12 @@ const AppDetails: FunctionComponent = () => {
   }
 
   const removeApp = async () => {
-    await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
-    // TODO intl
-    // TODO use application name in message
-    notifyInfo('Application removed')
+    if (userAppLinkId) {
+      await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
+      // TODO intl
+      // TODO use application name in message
+      notifyInfo('Application removed')
+    }
   }
 
   const addApp = async () => {

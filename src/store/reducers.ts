@@ -1,3 +1,4 @@
+import { History } from 'history'
 import dialogs from './dialogs'
 import { firebaseReducer as firebase } from 'react-redux-firebase'
 import locale from './locale'
@@ -11,7 +12,7 @@ import notification from './notification'
 import serviceWorker from './serviceworker'
 import { connectRouter } from 'connected-react-router'
 
-const createRootReducer = (history) =>
+const createRootReducer = (history: History) =>
   combineReducers({
     firebase,
     dialogs,

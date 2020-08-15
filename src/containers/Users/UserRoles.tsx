@@ -1,20 +1,18 @@
+import { Divider, List, ListItem, ListItemSecondaryAction, ListItemText, Switch } from '@material-ui/core'
 import AccountBox from '@material-ui/icons/AccountBox'
-import AltIconAvatar from '../../components/AltIconAvatar'
-import {
-  Divider,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  Switch,
-} from '@material-ui/core'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import ReactList from 'react-list'
-import { useParams } from 'react-router-dom'
 import { useFirebase } from 'react-redux-firebase'
+import { useParams } from 'react-router-dom'
+import type { RoleSchema } from '../../@types/FirebaseDataBaseSchema'
+import AltIconAvatar from '../../components/AltIconAvatar'
 import { useRoles, useRolesLoading, useUserRoleEnabled } from '../../utils/auth'
 
-const UserRoleItem = ({ uid, roleEntry, handleRoleToggleChange }) => {
+const UserRoleItem: FunctionComponent<{
+  uid: string
+  roleEntry: { key: string; value: RoleSchema }
+  handleRoleToggleChange: (e: React.ChangeEvent<HTMLInputElement>, checked: boolean, roleId: string) => void
+}> = ({ uid, roleEntry, handleRoleToggleChange }) => {
   const roleId = roleEntry.key
   const { description, name } = roleEntry.value
   const hasUserRole = useUserRoleEnabled(uid, roleId)
@@ -27,9 +25,7 @@ const UserRoleItem = ({ uid, roleEntry, handleRoleToggleChange }) => {
         <ListItemSecondaryAction>
           <Switch
             checked={hasUserRole}
-            onChange={(e, isInputChecked) =>
-              handleRoleToggleChange(e, isInputChecked, roleId)
-            }
+            onChange={(e, isInputChecked) => handleRoleToggleChange(e, isInputChecked, roleId)}
           />
         </ListItemSecondaryAction>
       </ListItem>
@@ -38,14 +34,14 @@ const UserRoleItem = ({ uid, roleEntry, handleRoleToggleChange }) => {
   )
 }
 
-const UserRoles = ({ setIsLoading }) => {
+const UserRoles: FunctionComponent<{ setIsLoading: (loading: boolean) => void }> = ({ setIsLoading }) => {
   const { uid } = useParams()
   const firebase = useFirebase()
   const roles = useRoles()
   const rolesIsLoading = useRolesLoading()
   setIsLoading(rolesIsLoading)
 
-  const handleRoleToggleChange = (e, isInputChecked, key) => {
+  const handleRoleToggleChange = (e: React.ChangeEvent<HTMLInputElement>, isInputChecked: boolean, key: string) => {
     if (isInputChecked) {
       firebase.ref(`/user_roles/${uid}/${key}`).set(true)
     } else {
@@ -58,11 +54,7 @@ const UserRoles = ({ setIsLoading }) => {
       <List style={{ height: '100%' }}>
         <ReactList
           itemRenderer={(idx) => (
-            <UserRoleItem
-              roleEntry={roles[idx]}
-              uid={uid}
-              handleRoleToggleChange={handleRoleToggleChange}
-            />
+            <UserRoleItem roleEntry={roles[idx]} uid={uid} handleRoleToggleChange={handleRoleToggleChange} />
           )}
           length={roles ? roles.length : 0}
           type="simple"
@@ -72,6 +64,4 @@ const UserRoles = ({ setIsLoading }) => {
   )
 }
 
-UserRoles.propTypes = {}
-
-export default UserRoles
+export default React.memo(UserRoles)

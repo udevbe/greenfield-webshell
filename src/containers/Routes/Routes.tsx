@@ -10,9 +10,7 @@ const Role = lazy(() => import('../../pages/Roles/Role'))
 const Roles = lazy(() => import('../../pages/Roles/Roles'))
 
 const Workspace = lazy(() => import('../../pages/Workspace'))
-const WorkspaceScene = lazy(() =>
-  import('../../pages/Workspace/WorkspaceScene')
-)
+const WorkspaceScene = lazy(() => import('../../pages/Workspace/WorkspaceScene'))
 
 const WebStore = lazy(() => import('../../pages/WebStore/WebStore'))
 const AboutApp = lazy(() => import('../../pages/WebStore/AppDetails'))
@@ -25,7 +23,7 @@ const SignIn = lazy(() => import('../../pages/SignIn'))
 
 const AsyncPageNotFound = lazy(() => import('../../pages/PageNotFound'))
 
-export const Routes = React.memo(() => {
+export const Routes = () => {
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <Suspense fallback={<LoadingComponent />}>
@@ -38,11 +36,7 @@ export const Routes = React.memo(() => {
             <Users />
           </RestrictedRoute>
           ,
-          <RestrictedRoute
-            type="private"
-            path="/users/edit/:uid/:editType"
-            exact
-          >
+          <RestrictedRoute type="private" path="/users/edit/:uid/:editType" exact>
             <User />
           </RestrictedRoute>
           ,
@@ -54,11 +48,7 @@ export const Routes = React.memo(() => {
             <Roles />
           </RestrictedRoute>
           ,
-          <RestrictedRoute
-            type="private"
-            path="/roles/edit/:uid/:editType"
-            exact
-          >
+          <RestrictedRoute type="private" path="/roles/edit/:uid/:editType" exact>
             <Role />
           </RestrictedRoute>
           ,
@@ -104,6 +94,6 @@ export const Routes = React.memo(() => {
       </Suspense>
     </div>
   )
-})
+}
 
-export default Routes
+export default React.memo(Routes)
