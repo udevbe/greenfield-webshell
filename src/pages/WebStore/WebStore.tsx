@@ -28,12 +28,12 @@ const WebStore: FunctionComponent = () => {
   const [webAppTiles, setWebAppTiles] = useState<ComponentElement<any, any>[]>([])
 
   useFirebaseConnect('/apps')
-  const allApps = useSelector((store) => store.firebase.ordered?.apps ?? [])
-
+  const allApps = useSelector((store) => store.firebase.data?.apps ?? {})
+  const allAppEntries = Object.entries(allApps)
   const loadMoreApps = () => {
-    const additionalApps = allApps
-      .slice(webAppTiles.length, Math.min(allApps.length, webAppTiles.length + appsListBatchSize))
-      .map(({ key, value }, index) => <WebAppTile key={key} index={index} appId={key} app={value} />)
+    const additionalApps = allAppEntries
+      .slice(webAppTiles.length, Math.min(allAppEntries.length, webAppTiles.length + appsListBatchSize))
+      .map(([key, value], index) => <WebAppTile key={key} index={index} appId={key} app={value} />)
     setWebAppTiles([...webAppTiles, ...additionalApps])
   }
 
@@ -63,7 +63,7 @@ const WebStore: FunctionComponent = () => {
           getScrollParent={() => mainRef.current}
           pageStart={0}
           loadMore={loadMoreApps}
-          hasMore={webAppTiles.length !== allApps.length}
+          hasMore={webAppTiles.length !== allAppEntries.length}
           loader={
             <div className="loader" key={0}>
               Loading ...
