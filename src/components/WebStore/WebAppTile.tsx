@@ -56,7 +56,7 @@ const WebAppTile: FunctionComponent<{
   const userAppLinkIdLoading = useUserAppLinkIdLoading(uid)
   const notifyInfo = useNotifyInfo()
 
-  if (app && icon === null) {
+  if (app && icon === undefined) {
     firebase
       .storage()
       .refFromURL(app.icon)
