@@ -1,31 +1,31 @@
 import type {
-  CreateAxisEventFromWheelEventFunc,
-  CreateButtonEventFromMouseEventFunc,
-  CreateKeyEventFromKeyboardEventFunc,
-  RemoteAppLauncher,
-  Session,
-  WebAppLauncher,
+  CompositorRemoteAppLauncher,
+  CompositorSession,
+  CompositorWebAppLauncher,
+  CreateAxisEventFromWheelEvent,
+  CreateButtonEventFromMouseEvent,
+  CreateKeyEventFromKeyboardEvent,
 } from 'greenfield-compositor'
 
 const importCompositorModule = import('greenfield-compositor')
 
 export interface CompositorModule {
-  remoteAppLauncher: RemoteAppLauncher
-  webAppLauncher: WebAppLauncher
-  session: Session
-  createButtonEventFromMouseEvent: CreateButtonEventFromMouseEventFunc
-  createAxisEventFromWheelEvent: CreateAxisEventFromWheelEventFunc
-  createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEventFunc
+  remoteAppLauncher: CompositorRemoteAppLauncher
+  webAppLauncher: CompositorWebAppLauncher
+  session: CompositorSession
+  createButtonEventFromMouseEvent: CreateButtonEventFromMouseEvent
+  createAxisEventFromWheelEvent: CreateAxisEventFromWheelEvent
+  createKeyEventFromKeyboardEvent: CreateKeyEventFromKeyboardEvent
 }
 
 export default async function (): Promise<CompositorModule> {
   const {
     initWasm,
-    RemoteAppLauncher,
-    RemoteSocket,
-    Session,
-    WebAppLauncher,
-    WebAppSocket,
+    createCompositorRemoteAppLauncher,
+    createCompositorRemoteSocket,
+    createCompositorSession,
+    createCompositorWebAppLauncher,
+    createCompositorWebAppSocket,
     createButtonEventFromMouseEvent,
     createAxisEventFromWheelEvent,
     createKeyEventFromKeyboardEvent,
@@ -33,13 +33,13 @@ export default async function (): Promise<CompositorModule> {
 
   await initWasm()
 
-  const session = Session.create()
+  const session = createCompositorSession()
 
-  const webAppSocket = WebAppSocket.create(session)
-  const webAppLauncher = WebAppLauncher.create(webAppSocket)
+  const webAppSocket = createCompositorWebAppSocket(session)
+  const webAppLauncher = createCompositorWebAppLauncher(webAppSocket)
 
-  const remoteSocket = RemoteSocket.create(session)
-  const remoteAppLauncher = RemoteAppLauncher.create(session, remoteSocket)
+  const remoteSocket = createCompositorRemoteSocket(session)
+  const remoteAppLauncher = createCompositorRemoteAppLauncher(session, remoteSocket)
 
   return {
     session,

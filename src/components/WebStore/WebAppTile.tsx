@@ -1,23 +1,23 @@
+import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import CardMedia from '@material-ui/core/CardMedia'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Grid from '@material-ui/core/Grid'
+import Grow from '@material-ui/core/Grow'
+import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import { push } from 'connected-react-router'
 import type { FunctionComponent } from 'react'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useFirebase } from 'react-redux-firebase'
-import { useUserId } from '../../utils/auth'
 import { useUserAppLinkId, useUserAppLinkIdLoading } from '../../database/hooks'
 import { queryRemoveAppFromUser } from '../../database/queries'
+import { useUserId } from '../../utils/auth'
 import { useNotifyInfo } from '../../utils/notify'
-import Typography from '@material-ui/core/Typography'
-import Grow from '@material-ui/core/Grow'
-import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import CardMedia from '@material-ui/core/CardMedia'
 import Image from '../Image'
-import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import Button from '@material-ui/core/Button'
-import { makeStyles } from '@material-ui/core/styles'
-import { push } from 'connected-react-router'
-import { useDispatch } from 'react-redux'
 
 const useWebAppTileStyles = makeStyles(() => ({
   card: {
@@ -56,7 +56,7 @@ const WebAppTile: FunctionComponent<{
   const userAppLinkIdLoading = useUserAppLinkIdLoading(uid)
   const notifyInfo = useNotifyInfo()
 
-  if (app && icon === null) {
+  if (app && icon === undefined) {
     firebase
       .storage()
       .refFromURL(app.icon)
@@ -65,10 +65,12 @@ const WebAppTile: FunctionComponent<{
   }
 
   const removeApp = async () => {
-    await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
-    // TODO intl
-    // TODO use application name in message
-    notifyInfo('Application removed')
+    if (userAppLinkId) {
+      await queryRemoveAppFromUser(firebase, uid, userAppLinkId)
+      // TODO intl
+      // TODO use application name in message
+      notifyInfo('Application removed')
+    }
   }
 
   const goToAboutApp = () => {
@@ -78,12 +80,7 @@ const WebAppTile: FunctionComponent<{
   const classes = useWebAppTileStyles()
   // TODO i18n
   return (
-    <Grow
-      in
-      appear
-      style={{ transformOrigin: '0 0 0' }}
-      timeout={{ enter: index * 100 }}
-    >
+    <Grow in appear style={{ transformOrigin: '0 0 0' }} timeout={{ enter: index * 100 }}>
       <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
         <Card className={classes.card} elevation={5}>
           <CardMedia title={app.title}>
@@ -100,21 +97,11 @@ const WebAppTile: FunctionComponent<{
               <CircularProgress />
             ) : (
               <>
-                <Button
-                  size="large"
-                  color="primary"
-                  onClick={() => goToAboutApp()}
-                  variant="contained"
-                >
+                <Button size="large" color="primary" onClick={() => goToAboutApp()} variant="contained">
                   Details
                 </Button>
                 {userAppLinkId && (
-                  <Button
-                    size="large"
-                    color="primary"
-                    onClick={removeApp}
-                    variant="contained"
-                  >
+                  <Button size="large" color="primary" onClick={removeApp} variant="contained">
                     Remove
                   </Button>
                 )}

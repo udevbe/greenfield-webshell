@@ -2,20 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface Notification {
   message: string
-  variant: 'info' | 'warn' | 'error' | 'success'
+  variant: 'info' | 'warning' | 'error' | 'success'
 }
 
 export interface NotificationState {
   notification?: Notification
 }
 
-const initialState = {}
+const initialState: NotificationState = {}
 
 const reducers = {
-  showNotification(
-    state: NotificationState,
-    action: PayloadAction<Notification>
-  ) {
+  showNotification(state: NotificationState, action: PayloadAction<Notification>) {
     state.notification = action.payload
   },
   hideNotification(state: NotificationState) {

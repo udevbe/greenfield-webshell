@@ -11,11 +11,8 @@ const initialState = {
 }
 
 const reducers = {
-  updateTheme(
-    state: ThemeSourceState,
-    action: PayloadAction<{ themeId: string; nightMode: boolean }>
-  ) {
-    state = action.payload
+  updateTheme(state: ThemeSourceState, action: PayloadAction<{ themeId: string; nightMode: boolean }>) {
+    ;({ nightMode: state.nightMode, themeId: state.themeId } = action.payload)
   },
 }
 

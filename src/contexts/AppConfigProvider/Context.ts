@@ -1,8 +1,7 @@
 import React from 'react'
 import { AppConfig } from '../../config/config'
 
-const AppConfigContext: React.Context<AppConfig | null> = React.createContext<AppConfig | null>(
-  null
-)
+// @ts-ignore
+const AppConfigContext: React.Context<AppConfig> = React.createContext<AppConfig>(null)
 AppConfigContext.displayName = 'AppConfig'
 export default AppConfigContext

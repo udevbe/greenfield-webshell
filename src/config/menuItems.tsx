@@ -1,46 +1,39 @@
+import { ListItemText } from '@material-ui/core'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
-import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
-import PublicIcon from '@material-ui/icons/Public'
-import GroupIcon from '@material-ui/icons/Group'
 import CloseIcon from '@material-ui/icons/Close'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import type { ReactNode } from 'react'
-import React from 'react'
+import Flag from '@material-ui/icons/Flag'
+import GroupIcon from '@material-ui/icons/Group'
+import Keyboard from '@material-ui/icons/Keyboard'
+import PublicIcon from '@material-ui/icons/Public'
 import Security from '@material-ui/icons/Security'
 import SettingsIcon from '@material-ui/icons/SettingsApplications'
+import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
-import DrawerListItem from '../components/Drawer/DrawerListItem'
-import type { UserShellSurface } from '../store/compositor'
-import {
-  useGrant,
-  useIsAdmin,
-  useIsAuthenticated,
-  useUserId,
-} from '../utils/auth'
-import Flag from '@material-ui/icons/Flag'
-import Keyboard from '@material-ui/icons/Keyboard'
-import { ListItemText } from '@material-ui/core'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { deleteClient } from '../middleware/compositor/actions'
+import type { UserShellSurface } from '../store/compositor'
+import { useGrant, useIsAdmin, useIsAuthenticated, useUserId } from '../utils/auth'
 
 export interface DrawerDivider {
   variant: 'divider'
-  inset?: string
-  style?: string
+  style?: CSSProperties
   visible?: boolean
 }
 
 export interface DrawerSubheader {
   variant: 'subheader'
-  style?: string
+  style?: CSSProperties
   text: string
   visible?: boolean
 }
 
 export interface DrawerInfoItem {
   variant: 'infoItem'
-  component: ReactNode
+  component: ReactElement
   visible: boolean
 }
 
@@ -55,12 +48,7 @@ export interface DrawerActionItem {
   visible?: boolean
 }
 
-export type DrawerEntry =
-  | DrawerDivider
-  | DrawerSubheader
-  | DrawerInfoItem
-  | DrawerActionItem
-  | DrawerListItem
+export type DrawerEntry = DrawerDivider | DrawerSubheader | DrawerInfoItem | DrawerActionItem | DrawerListItem
 
 export interface DrawerListItem {
   variant: 'listItem'
@@ -68,42 +56,38 @@ export interface DrawerListItem {
   onClick?: () => void
   text?: string
   leftIcon?: ReactNode
-  entries: { [key: string]: DrawerEntry | undefined }
+  entries: { [key: string]: DrawerEntry }
   visible?: boolean
 }
 
-export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
-  handleSignOut
-) => {
+export function isDrawerListItem(drawerEntry: DrawerEntry): drawerEntry is DrawerListItem {
+  return (drawerEntry as DrawerEntry).variant === 'listItem'
+}
+
+export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (handleSignOut) => {
   const dispatch = useDispatch()
   const intl = useIntl()
   const authorised = useIsAuthenticated()
   const uid = useUserId()
   // FIXME use grants based on db id.
   const webStoreAccess = useGrant(uid, 'read web store applications')
-  const isAuthMenu = useSelector((state) => !!state.dialogs.auth_menu)
+  const isAuthMenu = useSelector((state) => state.dialogs.auth_menu)
   const isAdmin = useIsAdmin(useUserId())
-  const addToHomeScreenProposalEvent = useSelector(
-    (state) => state.addToHomeScreen.proposalEvent
-  )
+  const addToHomeScreenProposalEvent = useSelector((state) => state.addToHomeScreen.proposalEvent)
   const userSurfacesByAppId: { [key: string]: UserShellSurface[] } = {}
   useSelector(
     ({ compositor }) =>
-      Object.values<UserShellSurface>(compositor.surfaces).map(
-        ({ id, clientId, title, appId, key }) => ({
-          id,
-          clientId,
-          title,
-          appId,
-          key,
-        })
-      ),
+      Object.values<UserShellSurface>(compositor.surfaces).map(({ id, clientId, title, appId, key }) => ({
+        id,
+        clientId,
+        title,
+        appId,
+        key,
+      })),
     shallowEqual
   ).forEach((userSurface) => {
     const appId =
-      !userSurface.appId || userSurface.appId.length === 0
-        ? `app-${userSurface.clientId}`
-        : userSurface.appId
+      !userSurface.appId || userSurface.appId.length === 0 ? `app-${userSurface.clientId}` : userSurface.appId
     const groupedUserSurfaces = userSurfacesByAppId[appId]
     if (groupedUserSurfaces) {
       groupedUserSurfaces.push(userSurface)
@@ -113,7 +97,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
   })
 
   if (isAuthMenu) {
-    return {
+    const authMenu: DrawerListItem = {
       variant: 'listItem',
       visible: authorised,
       entries: {
@@ -132,6 +116,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
         },
       },
     }
+    return authMenu
   }
 
   const user: DrawerListItem = {
@@ -166,13 +151,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
         ? {
             noRunningApps: {
               variant: 'infoItem',
-              component: (
-                <ListItemText
-                  unselectable="on"
-                  secondary="Running applications will appear here."
-                  inset
-                />
-              ),
+              component: <ListItemText unselectable="on" secondary="Running applications will appear here." inset />,
               visible: true,
             },
           }
@@ -259,7 +238,7 @@ export const useMenuItems: (handleSignOut: () => void) => DrawerListItem = (
   const install: DrawerActionItem = {
     variant: 'actionItem',
     visible: addToHomeScreenProposalEvent != null,
-    onClick: () => addToHomeScreenProposalEvent.prompt(),
+    onClick: () => addToHomeScreenProposalEvent?.prompt(),
     text: intl.formatMessage({ id: 'install' }),
     leftIcon: <VerticalAlignBottomIcon />,
   }
