@@ -1,17 +1,15 @@
 import type { AnyAction, PayloadAction } from '@reduxjs/toolkit'
 import { push } from 'connected-react-router'
 import { buffers, eventChannel, EventChannel } from 'redux-saga'
-import {
-  all,
-  call,
-  fork,
-  put,
-  race,
-  select,
-  take,
-  takeEvery,
-  takeLatest,
-} from 'redux-saga/effects'
+import { all, call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import type {
+  UserShellClient,
+  UserShellConfiguration,
+  UserShellScene,
+  UserShellSeat,
+  UserShellSurface,
+  UserShellSurfaceView,
+} from '../../store/compositor'
 import {
   createUserShellClient,
   createUserShellScene,
@@ -28,14 +26,6 @@ import {
   updateUserShellSeat,
   updateUserShellSurface,
 } from '../../store/compositor'
-import type {
-  UserShellSurface,
-  UserShellSurfaceView,
-  UserShellClient,
-  UserShellScene,
-  UserShellSeat,
-  UserShellConfiguration,
-} from '../../store/compositor'
 import { showNotification } from '../../store/notification'
 import {
   activateLastActiveScene,
@@ -51,10 +41,7 @@ import {
   requestSurfaceActive,
   updateSceneName,
 } from './actions'
-import type {
-  CompositorApiEventCallbacks,
-  UserShellSurfaceKey,
-} from './CompositorApi'
+import type { CompositorApiEventCallbacks, UserShellSurfaceKey } from './CompositorApi'
 import compositorApi, {
   compositorKeyboardDefaultNrmlvo,
   compositorKeyboardNrmlvoEntries,
@@ -70,6 +57,7 @@ import compositorApi, {
   refreshCompositorScene,
   requestCompositorSurfaceActive,
   updateCompositorConfiguration,
+  updateCompositorKeyboardFocus,
 } from './CompositorApi'
 import {
   userShellSceneByLastActive,
@@ -80,15 +68,12 @@ import {
   viewsByUserShellSurfaceKey,
 } from './selectors'
 
-function subscribeToCompositorApiEvent<
-  Key extends keyof CompositorApiEventCallbacks
->(
+function subscribeToCompositorApiEvent<Key extends keyof CompositorApiEventCallbacks>(
   eventName: Key
 ): EventChannel<Parameters<NonNullable<CompositorApiEventCallbacks[Key]>>[0]> {
   return eventChannel((emitter) => {
-    compositorApi.events[eventName] = (
-      event: Parameters<NonNullable<CompositorApiEventCallbacks[Key]>>[0]
-    ) => emitter(event)
+    compositorApi.events[eventName] = (event: Parameters<NonNullable<CompositorApiEventCallbacks[Key]>>[0]) =>
+      emitter(event)
     return () => {
       compositorApi.events[eventName] = undefined
     }
@@ -96,24 +81,12 @@ function subscribeToCompositorApiEvent<
 }
 
 const onNotify = subscribeToCompositorApiEvent('onNotify')
-const onCreateApplicationClient = subscribeToCompositorApiEvent(
-  'onCreateUserShellClient'
-)
-const onDeleteUserShellClient = subscribeToCompositorApiEvent(
-  'onDeleteUserShellClient'
-)
-const onCreateUserShellSurface = subscribeToCompositorApiEvent(
-  'onCreateUserShellSurface'
-)
-const onUpdateUserShellSurface = subscribeToCompositorApiEvent(
-  'onUpdateUserShellSurface'
-)
-const onDeleteUserShellSurface = subscribeToCompositorApiEvent(
-  'onDeleteUserShellSurface'
-)
-const onUpdateUserShellSeat = subscribeToCompositorApiEvent(
-  'onUpdateUserShellSeat'
-)
+const onCreateApplicationClient = subscribeToCompositorApiEvent('onCreateUserShellClient')
+const onDeleteUserShellClient = subscribeToCompositorApiEvent('onDeleteUserShellClient')
+const onCreateUserShellSurface = subscribeToCompositorApiEvent('onCreateUserShellSurface')
+const onUpdateUserShellSurface = subscribeToCompositorApiEvent('onUpdateUserShellSurface')
+const onDeleteUserShellSurface = subscribeToCompositorApiEvent('onDeleteUserShellSurface')
+const onUpdateUserShellSeat = subscribeToCompositorApiEvent('onUpdateUserShellSeat')
 
 /**
  * @param {string} url
@@ -213,23 +186,14 @@ function* watchActiveUserSurface() {
   let currentActiveSurfaceLastActive = 0
 
   while (true) {
-    const [
-      updateUserShellSurfaceAction,
-      deleteUserShellSurfaceAction,
-      updateUserShellSeatAction,
-    ]: [
+    const [updateUserShellSurfaceAction, deleteUserShellSurfaceAction, updateUserShellSeatAction]: [
       PayloadAction<Pick<UserShellSurface, 'key'> & Partial<UserShellSurface>>,
       PayloadAction<Pick<UserShellSurface, 'key'>>,
       PayloadAction<Partial<UserShellSeat>>
-    ] = yield race([
-      take(updateUserShellSurface),
-      take(deleteUserShellSurface),
-      take(updateUserShellSeat),
-    ])
+    ] = yield race([take(updateUserShellSurface), take(deleteUserShellSurface), take(updateUserShellSeat)])
 
     if (updateUserShellSeatAction) {
-      const pointerGrabUserSurfaceKey =
-        updateUserShellSeatAction.payload.pointerGrab
+      const pointerGrabUserSurfaceKey = updateUserShellSeatAction.payload.pointerGrab
 
       if (
         (pointerGrabUserSurfaceKey &&
@@ -251,10 +215,7 @@ function* watchActiveUserSurface() {
     if (deleteUserShellSurfaceAction) {
       const destroyedUserSurfaceKey = deleteUserShellSurfaceAction.payload.key
 
-      if (
-        currentActiveSurfaceKey &&
-        destroyedUserSurfaceKey === currentActiveSurfaceKey
-      ) {
+      if (currentActiveSurfaceKey && destroyedUserSurfaceKey === currentActiveSurfaceKey) {
         currentActiveSurfaceKey = undefined
         currentActiveSurfaceLastActive = 0
       }
@@ -265,11 +226,7 @@ function* watchActiveUserSurface() {
     if (updateUserShellSurfaceAction) {
       const updatedSurface = updateUserShellSurfaceAction.payload
 
-      if (
-        currentActiveSurfaceKey &&
-        updatedSurface.key === currentActiveSurfaceKey &&
-        !updatedSurface.active
-      ) {
+      if (currentActiveSurfaceKey && updatedSurface.key === currentActiveSurfaceKey && !updatedSurface.active) {
         yield call(notifyCompositorSurfaceInactive, {
           key: currentActiveSurfaceKey,
         })
@@ -277,16 +234,16 @@ function* watchActiveUserSurface() {
         currentActiveSurfaceLastActive = 0
       } else if (!currentActiveSurfaceKey && updatedSurface.active) {
         currentActiveSurfaceKey = updatedSurface.key
+        yield call(updateCompositorKeyboardFocus, { key: currentActiveSurfaceKey })
         currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
       } else if (
         currentActiveSurfaceKey &&
         updatedSurface.key !== currentActiveSurfaceKey &&
         (updatedSurface?.lastActive ?? 0) > currentActiveSurfaceLastActive
       ) {
-        const oldActiveUserSurfaceKey:
-          | UserShellSurfaceKey
-          | undefined = currentActiveSurfaceKey
+        const oldActiveUserSurfaceKey: UserShellSurfaceKey | undefined = currentActiveSurfaceKey
         currentActiveSurfaceKey = updatedSurface.key
+        yield call(updateCompositorKeyboardFocus, { key: currentActiveSurfaceKey })
         currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
         yield call(notifyCompositorSurfaceInactive, {
           key: oldActiveUserSurfaceKey,
@@ -296,25 +253,16 @@ function* watchActiveUserSurface() {
   }
 }
 
-function filterDeleteUserShellSurfaceView(
-  action: AnyAction,
-  view: UserShellSurfaceView
-): boolean {
+function filterDeleteUserShellSurfaceView(action: AnyAction, view: UserShellSurfaceView): boolean {
   if (action.type === deleteUserShellSurfaceView.type) {
     const userShellSurfaceView: UserShellSurfaceView = action.payload
-    return (
-      userShellSurfaceView.sceneId === view.sceneId &&
-      userShellSurfaceView.surfaceKey === view.surfaceKey
-    )
+    return userShellSurfaceView.sceneId === view.sceneId && userShellSurfaceView.surfaceKey === view.surfaceKey
   } else {
     return false
   }
 }
 
-function filterDeleteUserShellScene(
-  action: AnyAction,
-  scene: Pick<UserShellScene, 'id'>
-) {
+function filterDeleteUserShellScene(action: AnyAction, scene: Pick<UserShellScene, 'id'>) {
   if (action.type === deleteUserShellScene.type) {
     const userShellScene: UserShellScene = action.payload
     return userShellScene.id === scene.id
@@ -323,18 +271,12 @@ function filterDeleteUserShellScene(
   }
 }
 
-function* handleUserSurfaceViewLifecycle({
-  payload: view,
-}: PayloadAction<UserShellSurfaceView>) {
+function* handleUserSurfaceViewLifecycle({ payload: view }: PayloadAction<UserShellSurfaceView>) {
   yield call(createCompositorSurfaceView, view)
 
   const { sceneDestroyed } = yield race({
-    surfaceViewDestroyed: take((action: AnyAction) =>
-      filterDeleteUserShellSurfaceView(action, view)
-    ),
-    sceneDestroyed: take((action: AnyAction) =>
-      filterDeleteUserShellScene(action, { id: view.sceneId })
-    ),
+    surfaceViewDestroyed: take((action: AnyAction) => filterDeleteUserShellSurfaceView(action, view)),
+    sceneDestroyed: take((action: AnyAction) => filterDeleteUserShellScene(action, { id: view.sceneId })),
   })
 
   if (sceneDestroyed) {
@@ -347,20 +289,12 @@ function* watchUserSurfaceViewCreation() {
 }
 
 function* destroyViewsFromSurface(surfaceKey: UserShellSurfaceKey) {
-  const userSurfaceViews: UserShellSurfaceView[] = yield select(
-    viewsByUserShellSurfaceKey,
-    surfaceKey
-  )
-  yield all(
-    userSurfaceViews.map((view) => put(deleteUserShellSurfaceView(view)))
-  )
+  const userSurfaceViews: UserShellSurfaceView[] = yield select(viewsByUserShellSurfaceKey, surfaceKey)
+  yield all(userSurfaceViews.map((view) => put(deleteUserShellSurfaceView(view))))
 }
 
 function* removeUserSeatGrabsIfSurfaceMatches(surfaceKey: UserShellSurfaceKey) {
-  const {
-    pointerGrab: pointerGrabSurface,
-    keyboardFocus: keyboardFocusSurface,
-  } = yield all({
+  const { pointerGrab: pointerGrabSurface, keyboardFocus: keyboardFocusSurface } = yield all({
     pointerGrab: select(userShellSurfaceKeyByPointerGrab),
     keyboardFocus: select(userShellSurfaceKeyByKeyboardFocus),
   })
@@ -378,10 +312,7 @@ function* removeUserSeatGrabsIfSurfaceMatches(surfaceKey: UserShellSurfaceKey) {
   yield put(updateUserShellSeat(seat))
 }
 
-function filterDeleteUserShellSurface(
-  action: AnyAction,
-  surface: UserShellSurface
-): boolean {
+function filterDeleteUserShellSurface(action: AnyAction, surface: UserShellSurface): boolean {
   if (action.type === deleteUserShellSurface.type) {
     const userShellSurface: Pick<UserShellSurface, 'key'> = action.payload
     return userShellSurface.key === surface.key
@@ -401,14 +332,9 @@ function* handleUserSurfaceLifecycle(surface: UserShellSurface) {
   yield call(raiseCompositorSurfaceView, view)
   yield put(requestSurfaceActive({ key: surfaceKey }))
 
-  yield take((action: AnyAction) =>
-    filterDeleteUserShellSurface(action, surface)
-  )
+  yield take((action: AnyAction) => filterDeleteUserShellSurface(action, surface))
 
-  yield all([
-    call(destroyViewsFromSurface, surfaceKey),
-    call(removeUserSeatGrabsIfSurfaceMatches, surfaceKey),
-  ])
+  yield all([call(destroyViewsFromSurface, surfaceKey), call(removeUserSeatGrabsIfSurfaceMatches, surfaceKey)])
 }
 
 function* watchUserSurfaceCreation() {
@@ -426,27 +352,14 @@ function* watchUserSurfaceDestruction() {
 function* handleOnCreateApplicationClientLifecycle(client: UserShellClient) {
   yield put(createUserShellClient(client))
 
-  yield take(
-    (action: AnyAction) =>
-      action.type === deleteUserShellClient && action.payload.id === client.id
-  )
+  yield take((action: AnyAction) => action.type === deleteUserShellClient && action.payload.id === client.id)
   // TODO listen for user surface creation from client instead of using selector
-  const userSurfaces: UserShellSurface[] = yield select(
-    userShellSurfacesByClientId,
-    client.id
-  )
-  yield all(
-    userSurfaces.map((userSurface) =>
-      put(deleteUserShellSurface({ key: userSurface.key }))
-    )
-  )
+  const userSurfaces: UserShellSurface[] = yield select(userShellSurfacesByClientId, client.id)
+  yield all(userSurfaces.map((userSurface) => put(deleteUserShellSurface({ key: userSurface.key }))))
 }
 
 function* watchOnCreateApplicationClient() {
-  yield takeEvery(
-    onCreateApplicationClient,
-    handleOnCreateApplicationClientLifecycle
-  )
+  yield takeEvery(onCreateApplicationClient, handleOnCreateApplicationClientLifecycle)
 }
 
 function* handleOnDeleteUserShellClient(client: Pick<UserShellClient, 'id'>) {
@@ -463,16 +376,13 @@ function* handleRefreshLocalScene(scene: Pick<UserShellScene, 'id'>) {
 
 function* watchRefresLocalScene(id: string) {
   yield takeLatest(
-    (action: AnyAction) =>
-      action.type === refreshScene.type && action.payload.id === id,
+    (action: AnyAction) => action.type === refreshScene.type && action.payload.id === id,
     handleRefreshLocalScene,
     { id }
   )
 }
 
-function* handleMarkSceneLastActive({
-  payload: scene,
-}: PayloadAction<Pick<UserShellScene, 'id'>>) {
+function* handleMarkSceneLastActive({ payload: scene }: PayloadAction<Pick<UserShellScene, 'id'>>) {
   yield put(updateUserShellScene({ ...scene, lastActive: Date.now() }))
 }
 
@@ -497,14 +407,8 @@ function* handleCreateSceneLifecycle({
     yield fork(watchRefresLocalScene, id)
     yield put(activateScene(scene))
 
-    yield take(
-      (action: AnyAction) =>
-        action.type === deleteUserShellScene.type && action.payload.id === id
-    )
-    const newActiveScene = yield select(
-      userShellSceneByLastActiveExcludingId,
-      id
-    )
+    yield take((action: AnyAction) => action.type === deleteUserShellScene.type && action.payload.id === id)
+    const newActiveScene = yield select(userShellSceneByLastActiveExcludingId, id)
     yield put(activateScene({ id: newActiveScene.id }))
     yield call(deleteCompositorScene, scene)
   }
@@ -514,9 +418,7 @@ function* watchCreateScene() {
   yield takeEvery(createScene, handleCreateSceneLifecycle)
 }
 
-function* handleActivateScene({
-  payload: scene,
-}: PayloadAction<Pick<UserShellScene, 'id'>>) {
+function* handleActivateScene({ payload: scene }: PayloadAction<Pick<UserShellScene, 'id'>>) {
   yield put(markSceneLastActive(scene))
   yield put(push(`/workspace/${scene.id}`))
 }
@@ -525,9 +427,7 @@ function* watchActivateScene() {
   yield takeLatest(activateScene, handleActivateScene)
 }
 
-function* handleDeleteScene({
-  payload: scene,
-}: PayloadAction<Pick<UserShellScene, 'id'>>) {
+function* handleDeleteScene({ payload: scene }: PayloadAction<Pick<UserShellScene, 'id'>>) {
   yield put(deleteUserShellScene(scene))
 }
 
@@ -535,9 +435,7 @@ function* watchDeleteScene() {
   yield takeEvery(deleteScene, handleDeleteScene)
 }
 
-function* handleUpdateScene({
-  payload: scene,
-}: PayloadAction<Pick<UserShellScene, 'id'> & Partial<UserShellScene>>) {
+function* handleUpdateScene({ payload: scene }: PayloadAction<Pick<UserShellScene, 'id'> & Partial<UserShellScene>>) {
   yield put(updateUserShellScene(scene))
 }
 
@@ -545,9 +443,7 @@ function* watchUpdateSceneName() {
   yield takeEvery(updateSceneName, handleUpdateScene)
 }
 
-function* handleRequestSurfaceActive({
-  payload: surface,
-}: PayloadAction<Pick<UserShellSurface, 'key'>>) {
+function* handleRequestSurfaceActive({ payload: surface }: PayloadAction<Pick<UserShellSurface, 'key'>>) {
   yield call(requestCompositorSurfaceActive, surface)
 }
 
@@ -555,9 +451,7 @@ function* watchRequestSurfaceActive() {
   yield takeLatest(requestSurfaceActive, handleRequestSurfaceActive)
 }
 
-function* handleDeleteClient({
-  payload: client,
-}: PayloadAction<Pick<UserShellClient, 'id'>>) {
+function* handleDeleteClient({ payload: client }: PayloadAction<Pick<UserShellClient, 'id'>>) {
   yield call(deleteCompositorClient, client)
 }
 
@@ -565,9 +459,7 @@ function* watchDeleteClient() {
   yield takeEvery(deleteClient, handleDeleteClient)
 }
 
-function* handleOnUpdateUserShellSeat(
-  seat: Pick<UserShellSeat, 'keyboardFocus' | 'pointerGrab'>
-) {
+function* handleOnUpdateUserShellSeat(seat: Pick<UserShellSeat, 'keyboardFocus' | 'pointerGrab'>) {
   yield put(updateUserShellSeat(seat))
 }
 
@@ -575,13 +467,7 @@ function* watchOnUpdateUserShellSeat() {
   yield takeLatest(onUpdateUserShellSeat, handleOnUpdateUserShellSeat)
 }
 
-function* handleOnNotify({
-  variant,
-  message,
-}: {
-  variant: string
-  message: string
-}) {
+function* handleOnNotify({ variant, message }: { variant: string; message: string }) {
   // @ts-ignore
   yield put(showNotification({ variant, message }))
 }
@@ -619,10 +505,7 @@ function* handleUpdateUserShellConfiguration({
 }
 
 function* watchUpdateUserShellConfiguration() {
-  yield takeLatest(
-    updateUserShellConfiguration,
-    handleUpdateUserShellConfiguration
-  )
+  yield takeLatest(updateUserShellConfiguration, handleUpdateUserShellConfiguration)
 }
 
 function* handleActivateLastActiveScene() {

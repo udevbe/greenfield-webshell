@@ -1,8 +1,8 @@
 import Backdrop from '@material-ui/core/Backdrop'
+import { makeStyles } from '@material-ui/core/styles'
 import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import AppsIcon from '@material-ui/icons/Apps'
-import { makeStyles } from '@material-ui/core/styles'
 import type { FunctionComponent } from 'react'
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -12,10 +12,7 @@ import UserSurfaceTab from '../../components/Workspace/UserSurfaceTab'
 import Activity from '../../containers/Activity'
 import UserAppsMenu from '../../containers/UserAppsMenu'
 import type { UserShellSurfaceKey } from '../../middleware/compositor/CompositorApi'
-import type {
-  UserShellSurface,
-  UserShellSurfaceView,
-} from '../../store/compositor'
+import type { UserShellSurface, UserShellSurfaceView } from '../../store/compositor'
 
 const useStyles = makeStyles((theme) => ({
   tabsTop: {
@@ -46,31 +43,22 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const WorkspaceScene: FunctionComponent = () => {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   if (id == null) {
     throw new Error('id must be set.')
   }
   const scene = useSelector((state) => state.compositor.scenes[id])
-  const compositorInitialized = useSelector(
-    ({ compositor }) => compositor.initialized
-  )
+  const compositorInitialized = useSelector(({ compositor }) => compositor.initialized)
   const sceneSurfaceKeys: UserShellSurfaceKey[] = useSelector(
-    ({ compositor }) =>
-      compositor.scenes[id]?.views.map(
-        (view: UserShellSurfaceView) => view.surfaceKey
-      ) ?? []
+    ({ compositor }) => compositor.scenes[id]?.views.map((view: UserShellSurfaceView) => view.surfaceKey) ?? []
   )
   const sceneSurfaces: UserShellSurface[] = useSelector(({ compositor }) =>
-    Object.values<UserShellSurface>(
-      compositor.surfaces
-    ).filter((surface: UserShellSurface) =>
+    Object.values<UserShellSurface>(compositor.surfaces).filter((surface: UserShellSurface) =>
       sceneSurfaceKeys.includes(surface.key)
     )
   )
 
-  const activeSceneUserSurface = sceneSurfaces.find(
-    (userSurface) => userSurface.active
-  )
+  const activeSceneUserSurface = sceneSurfaces.find((userSurface) => userSurface.active)
 
   // TODO i18n
   const mainRef = useRef<HTMLElement>(null)
@@ -88,18 +76,10 @@ const WorkspaceScene: FunctionComponent = () => {
             <Tabs
               className={classes.tabsTop}
               variant="fullWidth"
-              value={
-                activeSceneUserSurface ? activeSceneUserSurface.key : false
-              }
+              value={activeSceneUserSurface ? activeSceneUserSurface.key : false}
             >
               {sceneSurfaces.map((surface) => {
-                return (
-                  <UserSurfaceTab
-                    key={surface.key}
-                    value={surface.key}
-                    surface={surface}
-                  />
-                )
+                return <UserSurfaceTab key={surface.key} value={surface.key} surface={surface} />
               })}
             </Tabs>
             <UserAppsMenu anchorElRef={mainRef} />
@@ -108,15 +88,10 @@ const WorkspaceScene: FunctionComponent = () => {
         mainRef={mainRef}
       >
         {sceneSurfaces.length === 0 && (
-          <Backdrop
-            open
-            className={classes.backdrop}
-            timeout={5000}
-            addEndListener={() => {}}
-          >
+          <Backdrop open className={classes.backdrop} timeout={5000} addEndListener={() => {}}>
             <Typography variant="subtitle1">
-              No applications are running. To launch an application, press the{' '}
-              <AppsIcon /> icon in the top right corner.
+              No applications are running. To launch an application, press the <AppsIcon /> icon in the top right
+              corner.
             </Typography>
           </Backdrop>
         )}

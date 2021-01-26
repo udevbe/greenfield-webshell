@@ -35,7 +35,7 @@ const UserRoleItem: FunctionComponent<{
 }
 
 const UserRoles: FunctionComponent<{ setIsLoading: (loading: boolean) => void }> = ({ setIsLoading }) => {
-  const { uid } = useParams()
+  const { uid } = useParams<{ uid: string }>()
   const firebase = useFirebase()
   const roles = useRoles()
   const rolesIsLoading = useRolesLoading()

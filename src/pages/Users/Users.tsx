@@ -7,7 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Email from '@material-ui/icons/Email'
 import Person from '@material-ui/icons/Person'
 import { push } from 'connected-react-router'
-import type { UserInfo } from 'firebase'
+import firebase from 'firebase'
 import type { FunctionComponent } from 'react'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -36,14 +36,14 @@ export interface User {
 }
 
 const Users: FunctionComponent = () => {
-  const { select } = useParams()
+  const { select } = useParams<{ select: string }>()
   const isSelecting = select || false
   const dispatch = useDispatch()
   const intl = useIntl()
   useFirebaseConnect('/users')
   const users = useSelector((state) => state.firebase.ordered.users)
 
-  const getProviderIcon = (provider: UserInfo) => {
+  const getProviderIcon = (provider: firebase.UserInfo) => {
     const color = 'primary'
 
     switch (provider.providerId) {

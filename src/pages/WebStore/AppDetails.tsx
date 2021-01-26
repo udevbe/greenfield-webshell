@@ -39,7 +39,7 @@ const WebstoreLink = React.forwardRef<HTMLElement, ComponentProps<any>>((props, 
 
 const AppDetails: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const { appid } = useParams()
+  const { appid } = useParams<{ appid: string }>()
   const [addAppBusy, setAddAppBusy] = useState(false)
   const [aboutTxt, setAboutTxt] = useState<string | undefined>(undefined)
   const [icon, setIcon] = useState<string | undefined>(undefined)

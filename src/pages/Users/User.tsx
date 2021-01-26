@@ -1,20 +1,20 @@
-import AccountBox from '@material-ui/icons/AccountBox'
-import Activity from '../../containers/Activity'
 import AppBar from '@material-ui/core/AppBar'
-import Person from '@material-ui/icons/Person'
-import React, { FunctionComponent, useState } from 'react'
-import Scrollbar from '../../components/Scrollbar'
+import { makeStyles } from '@material-ui/core/styles'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
-import UserForm from '../../components/Forms/UserForm'
-import UserRoles from '../../containers/Users/UserRoles'
-import { useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
-import { makeStyles } from '@material-ui/core/styles'
-import { useFirebase } from 'react-redux-firebase'
-import { useIsAdmin, useIsAdminLoading } from '../../utils/auth'
+import AccountBox from '@material-ui/icons/AccountBox'
+import Person from '@material-ui/icons/Person'
 import { push } from 'connected-react-router'
+import React, { FunctionComponent, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { useDispatch } from 'react-redux'
+import { useFirebase } from 'react-redux-firebase'
+import { useParams } from 'react-router-dom'
+import UserForm from '../../components/Forms/UserForm'
+import Scrollbar from '../../components/Scrollbar'
+import Activity from '../../containers/Activity'
+import UserRoles from '../../containers/Users/UserRoles'
+import { useIsAdmin, useIsAdminLoading } from '../../utils/auth'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const User: FunctionComponent = () => {
-  const { uid, editType } = useParams()
+  const { uid, editType } = useParams<{ uid: string; editType: string }>()
   if (uid == null) {
     throw new Error('uid param must be defined.')
   }
@@ -46,8 +46,7 @@ export const User: FunctionComponent = () => {
   const loading = useIsAdminLoading(uid)
   const [isLoading, setIsLoading] = useState(loading)
 
-  const handleTabActive = (_: any, value: string) =>
-    dispatch(push(`/users/edit/${uid}/${value}`))
+  const handleTabActive = (_: any, value: string) => dispatch(push(`/users/edit/${uid}/${value}`))
 
   const handleAdminChange = (_: any, isInputChecked: boolean) => {
     if (isInputChecked) {
@@ -68,30 +67,15 @@ export const User: FunctionComponent = () => {
       <Scrollbar style={{ height: '100%' }}>
         <div className={classes.root}>
           <AppBar position="static">
-            <Tabs
-              value={editType || 'data'}
-              onChange={handleTabActive}
-              variant="fullWidth"
-              centered
-            >
-              <Tab
-                value="profile"
-                icon={<Person className="material-icons" />}
-              />
-              <Tab
-                value="roles"
-                icon={<AccountBox className="material-icons" />}
-              />
+            <Tabs value={editType || 'data'} onChange={handleTabActive} variant="fullWidth" centered>
+              <Tab value="profile" icon={<Person className="material-icons" />} />
+              <Tab value="roles" icon={<AccountBox className="material-icons" />} />
             </Tabs>
           </AppBar>
 
           {editType === 'profile' && (
             <div className={classes.form}>
-              <UserForm
-                handleAdminChange={handleAdminChange}
-                isAdmin={isAdmin}
-                uid={uid}
-              />
+              <UserForm handleAdminChange={handleAdminChange} isAdmin={isAdmin} uid={uid} />
             </div>
           )}
           {editType === 'roles' && <UserRoles setIsLoading={setIsLoading} />}
