@@ -262,6 +262,8 @@ export class CompositorApi {
     const id = uuidv4()
 
     const sceneElement = document.createElement('canvas')
+    // don't show browser context menu on right click
+    sceneElement.oncontextmenu = (event: MouseEvent) => event.preventDefault()
     this.session.userShell.actions.initScene(id, sceneElement)
 
     sceneElement.onpointermove = (event: PointerEvent): void => {
