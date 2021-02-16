@@ -124,13 +124,6 @@ export class CompositorApi {
     userShell.events.destroyUserSurface = (compositorSurface: CompositorSurface): void =>
       this.events.onDeleteUserShellSurface?.(CompositorApi.userShellSurfaceKey(compositorSurface))
 
-    userShell.events.updateUserSeat = ({ keyboardFocus, pointerGrab }): void => {
-      const seat = {
-        keyboardFocus: keyboardFocus ? CompositorApi.userShellSurfaceKey(keyboardFocus) : undefined,
-        pointerGrab: pointerGrab ? CompositorApi.userShellSurfaceKey(pointerGrab) : undefined,
-      }
-      this.events.onUpdateUserShellSeat?.(seat)
-    }
     userShell.events.sceneRefresh = (sceneId: string): void => this.events.onUserShellSceneRefresh?.({ id: sceneId })
   }
 
@@ -188,36 +181,11 @@ export class CompositorApi {
     this.session.userShell.actions.requestActive(compositorSurface)
   }
 
-  raiseCompositorSurfaceView(view: UserShellSurfaceView): void {
-    if (!this.session) {
-      throw new Error('Compositor not initialized.')
-    }
-    const userShellSurfaceKey = view.surfaceKey
-    const compositorSurface = CompositorApi.compositorSurface(userShellSurfaceKey)
-    this.session.userShell.actions.raise(compositorSurface, view.sceneId)
-  }
-
   refreshCompositorScene(id: string): Promise<void> {
     if (!this.session) {
       throw new Error('Compositor not initialized.')
     }
     return this.session.userShell.actions.refreshScene(id)
-  }
-
-  notifyCompositorSurfaceInactive(surfaceKey: UserShellSurfaceKey): void {
-    if (!this.session) {
-      throw new Error('Compositor not initialized.')
-    }
-    const compositorSurface = CompositorApi.compositorSurface(surfaceKey)
-    this.session.userShell.actions.notifyInactive(compositorSurface)
-  }
-
-  updateCompositorKeyboardFocus(surfaceKey: UserShellSurfaceKey): void {
-    if (!this.session) {
-      throw new Error('Compositor not initialized.')
-    }
-    const compositorSurface = CompositorApi.compositorSurface(surfaceKey)
-    this.session.userShell.actions.setKeyboardFocus(compositorSurface)
   }
 
   pointerMove(event: ButtonEvent): void {
@@ -375,10 +343,6 @@ export function createCompositorSurfaceView(view: UserShellSurfaceView): void {
   compositorApi.createCompositorSurfaceView(view)
 }
 
-export function raiseCompositorSurfaceView(view: UserShellSurfaceView): void {
-  compositorApi.raiseCompositorSurfaceView(view)
-}
-
 export function createCompositorScene(): string {
   return compositorApi.createCompositorScene()
 }
@@ -391,16 +355,8 @@ export function refreshCompositorScene(scene: Pick<UserShellScene, 'id'>): Promi
   return compositorApi.refreshCompositorScene(scene.id)
 }
 
-export function updateCompositorKeyboardFocus(surface: Pick<UserShellSurface, 'key'>): void {
-  compositorApi.updateCompositorKeyboardFocus(surface.key)
-}
-
 export function requestCompositorSurfaceActive(surface: Pick<UserShellSurface, 'key'>): void {
   compositorApi.requestCompositorSurfaceActive(surface.key)
-}
-
-export function notifyCompositorSurfaceInactive(surface: Pick<UserShellSurface, 'key'>): void {
-  compositorApi.notifyCompositorSurfaceInactive(surface.key)
 }
 
 export function createCompositor(): Promise<void> {

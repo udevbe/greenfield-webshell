@@ -37,8 +37,7 @@ import {
   launchRemoteAppAction,
   launchWebAppAction,
   markSceneLastActive,
-  refreshScene,
-  requestSurfaceActive,
+  refreshScene, requestSurfaceActive,
   updateSceneName,
 } from './actions'
 import type { CompositorApiEventCallbacks, UserShellSurfaceKey } from './CompositorApi'
@@ -52,12 +51,9 @@ import compositorApi, {
   deleteCompositorScene,
   launchRemoteApp,
   launchWebApp,
-  notifyCompositorSurfaceInactive,
-  raiseCompositorSurfaceView,
   refreshCompositorScene,
   requestCompositorSurfaceActive,
   updateCompositorConfiguration,
-  updateCompositorKeyboardFocus,
 } from './CompositorApi'
 import {
   userShellSceneByLastActive,
@@ -181,78 +177,6 @@ function* watchUserSurfaceUpdate() {
   yield takeLatest(onUpdateUserShellSurface, handleUserSurfaceUpdate)
 }
 
-function* watchActiveUserSurface() {
-  let currentActiveSurfaceKey: UserShellSurfaceKey | undefined = undefined
-  let currentActiveSurfaceLastActive = 0
-
-  while (true) {
-    const [updateUserShellSurfaceAction, deleteUserShellSurfaceAction, updateUserShellSeatAction]: [
-      PayloadAction<Pick<UserShellSurface, 'key'> & Partial<UserShellSurface>>,
-      PayloadAction<Pick<UserShellSurface, 'key'>>,
-      PayloadAction<Partial<UserShellSeat>>
-    ] = yield race([take(updateUserShellSurface), take(deleteUserShellSurface), take(updateUserShellSeat)])
-
-    if (updateUserShellSeatAction) {
-      const pointerGrabUserSurfaceKey = updateUserShellSeatAction.payload.pointerGrab
-
-      if (
-        (pointerGrabUserSurfaceKey &&
-          currentActiveSurfaceKey &&
-          currentActiveSurfaceKey !== pointerGrabUserSurfaceKey) ||
-        (pointerGrabUserSurfaceKey && !currentActiveSurfaceKey)
-      ) {
-        yield put(requestSurfaceActive({ key: pointerGrabUserSurfaceKey }))
-
-        const scene = yield select(userShellSceneByLastActive)
-        const sceneId = scene.id
-        const view = { surfaceKey: pointerGrabUserSurfaceKey, sceneId }
-        yield call(raiseCompositorSurfaceView, view)
-      }
-
-      continue
-    }
-
-    if (deleteUserShellSurfaceAction) {
-      const destroyedUserSurfaceKey = deleteUserShellSurfaceAction.payload.key
-
-      if (currentActiveSurfaceKey && destroyedUserSurfaceKey === currentActiveSurfaceKey) {
-        currentActiveSurfaceKey = undefined
-        currentActiveSurfaceLastActive = 0
-      }
-
-      continue
-    }
-
-    if (updateUserShellSurfaceAction) {
-      const updatedSurface = updateUserShellSurfaceAction.payload
-
-      if (currentActiveSurfaceKey && updatedSurface.key === currentActiveSurfaceKey && !updatedSurface.active) {
-        yield call(notifyCompositorSurfaceInactive, {
-          key: currentActiveSurfaceKey,
-        })
-        currentActiveSurfaceKey = undefined
-        currentActiveSurfaceLastActive = 0
-      } else if (!currentActiveSurfaceKey && updatedSurface.active) {
-        currentActiveSurfaceKey = updatedSurface.key
-        yield call(updateCompositorKeyboardFocus, { key: currentActiveSurfaceKey })
-        currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
-      } else if (
-        currentActiveSurfaceKey &&
-        updatedSurface.key !== currentActiveSurfaceKey &&
-        (updatedSurface?.lastActive ?? 0) > currentActiveSurfaceLastActive
-      ) {
-        const oldActiveUserSurfaceKey: UserShellSurfaceKey | undefined = currentActiveSurfaceKey
-        currentActiveSurfaceKey = updatedSurface.key
-        yield call(updateCompositorKeyboardFocus, { key: currentActiveSurfaceKey })
-        currentActiveSurfaceLastActive = updatedSurface?.lastActive ?? 0
-        yield call(notifyCompositorSurfaceInactive, {
-          key: oldActiveUserSurfaceKey,
-        })
-      }
-    }
-  }
-}
-
 function filterDeleteUserShellSurfaceView(action: AnyAction, view: UserShellSurfaceView): boolean {
   if (action.type === deleteUserShellSurfaceView.type) {
     const userShellSurfaceView: UserShellSurfaceView = action.payload
@@ -328,9 +252,6 @@ function* handleUserSurfaceLifecycle(surface: UserShellSurface) {
   const sceneId = scene.id
   const view = { surfaceKey, sceneId }
   yield put(createUserShellSurfaceView(view))
-
-  yield call(raiseCompositorSurfaceView, view)
-  yield put(requestSurfaceActive({ key: surfaceKey }))
 
   yield take((action: AnyAction) => filterDeleteUserShellSurface(action, surface))
 
@@ -526,7 +447,6 @@ export default function* rootSaga() {
   yield fork(watchUserSurfaceCreation)
   yield fork(watchUserSurfaceDestruction)
   yield fork(watchRequestSurfaceActive)
-  yield fork(watchActiveUserSurface)
 
   yield fork(watchOnCreateApplicationClient)
   yield fork(watchOnDeleteUserShellClient)
